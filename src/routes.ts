@@ -1,6 +1,4 @@
 // src/routes.ts
-import { lazy } from 'react';
-import type { ComponentType, LazyExoticComponent } from 'react';
 import {
   createHashRouter,
   type RouteWithoutRoot,
@@ -15,8 +13,6 @@ export const VIEWS = {
   BRAINBOOSTER:      'brainBoosterView',
   DIARY:             'diaryView',
 } as const;
-
-export type ViewId = (typeof VIEWS)[keyof typeof VIEWS];
 
 /* ------------------------------------------------------------------ */
 /*  Панели                                                             */
@@ -45,76 +41,9 @@ export const PANELS = {
   PROFILE:            'profile',
 } as const;
 
-export type PanelId = (typeof PANELS)[keyof typeof PANELS];
-
-/* ------------------------------------------------------------------ */
-/*  Lazy-компоненты панелей                                            */
-/*  Каждый import() станет отдельным чанком при сборке.                */
-/*  Требует export default в каждом файле panels/*.                    */
-/* ------------------------------------------------------------------ */
-
-type LazyPanel = LazyExoticComponent<ComponentType<any>>;
-
-export const LAZY_PANELS: Record<PanelId, LazyPanel> = {
-  // Калькулятор бегуна
-  [PANELS.HOME]:              lazy(() => import('./panels/Home')),
-  [PANELS.RUNNER_CALCULATOR]: lazy(() => import('./panels/RunnerCalculator')),
-  [PANELS.PACE_CONVERTER]:    lazy(() => import('./panels/PaceConverter')),
-  [PANELS.HEART_RATE_ZONES]:  lazy(() => import('./panels/HeartRateZones')),
-  [PANELS.RACE_PACE]:         lazy(() => import('./panels/RacePace')),
-  [PANELS.VO2_PREDICTOR]:     lazy(() => import('./panels/Vo2Predictor')),
-
-  // Брейнбустер
-  [PANELS.BRAIN_BOOSTER]:     lazy(() => import('./panels/BrainBooster')),
-  [PANELS.RUNNER_DICTIONARY]: lazy(() => import('./panels/RunnerDictionary')),
-  [PANELS.PAIR_GAME]:         lazy(() => import('./panels/games/PairGame')),
-  [PANELS.SPLIT_MEMORY_GAME]: lazy(() => import('./panels/games/SplitMemoryGame')),
-   [PANELS.DICTIONARY_QUIZ]:   lazy(() => import('./panels/games/DictionaryQuiz')),
-
-  // Дневник — тут самое важное для оптимизации (Tracker тянет Leaflet)
-  [PANELS.TRAINING_DIARY]:    lazy(() => import('./panels/TrainingDiary')),
-  [PANELS.TRACKER]:           lazy(() => import('./panels/Tracker')),
-  [PANELS.TRAINING_IMPORT]:   lazy(() => import('./panels/TrainingImport')),
-  [PANELS.PROFILE]:           lazy(() => import('./panels/Profile')),
-};
-
-/* ------------------------------------------------------------------ */
-/*  Какие панели живут в каком View — используется в App.tsx и таббаре */
-/* ------------------------------------------------------------------ */
-
-export const VIEW_PANELS: Record<ViewId, PanelId[]> = {
-  [VIEWS.RUNNER_CALCULATOR]: [
-    PANELS.HOME,
-    PANELS.RUNNER_CALCULATOR,
-    PANELS.PACE_CONVERTER,
-    PANELS.HEART_RATE_ZONES,
-    PANELS.RACE_PACE,
-    PANELS.VO2_PREDICTOR,
-  ],
-  [VIEWS.BRAINBOOSTER]: [
-    PANELS.BRAIN_BOOSTER,
-    PANELS.RUNNER_DICTIONARY,
-    PANELS.PAIR_GAME,
-    PANELS.SPLIT_MEMORY_GAME,
-    PANELS.DICTIONARY_QUIZ,
-  ],
-  [VIEWS.DIARY]: [
-    PANELS.TRAINING_DIARY,
-    PANELS.TRACKER,
-    PANELS.TRAINING_IMPORT,
-    PANELS.PROFILE,
-  ],
-};
-
-export const DEFAULT_VIEW_PANELS: Record<ViewId, PanelId> = {
-  [VIEWS.RUNNER_CALCULATOR]: PANELS.HOME,
-  [VIEWS.BRAINBOOSTER]:      PANELS.BRAIN_BOOSTER,
-  [VIEWS.DIARY]:             PANELS.TRAINING_DIARY,
-};
-
 /* ------------------------------------------------------------------ */
 /*  Конфиг роутера — URL как источник истины для view/panel            */
-/*  element не задаём: рендер делает App.tsx через LAZY_PANELS.        */
+/*  element не задаём: нужный компонент рендерит App.tsx по PANELS.    */
 /* ------------------------------------------------------------------ */
 
 const routes: RouteWithoutRoot[] = [
