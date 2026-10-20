@@ -3,7 +3,7 @@
 //
 // Горячий путь (обработка GPS-точек) работает через ref'ы, а не через состояние React:
 // так не бывает «устаревших замыканий», а побочные эффекты не прячутся внутри setState.
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   startWatchingGeolocation,
@@ -156,23 +156,28 @@ export const useRunTracker = () => {
     if (settingsRef.current.vibration) haptic(kind);
   };
 
-  const getElapsedMs = (): number =>
-    accumulatedRef.current + (timerRef.current ? Date.now() - startTimeRef.current : 0);
+  // Эти три функции читают только ref'ы (и setState), поэтому их идентичность стабильна:
+  // зависимости у них пустые/стабильные, а эффект подписки на GPS не перезапускается.
+  const getElapsedMs = useCallback(
+    (): number =>
+      accumulatedRef.current + (timerRef.current ? Date.now() - startTimeRef.current : 0),
+    []
+  );
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (timerRef.current) return;
     startTimeRef.current = Date.now();
     timerRef.current = setInterval(() => {
       setElapsed(Math.floor(getElapsedMs() / 1000));
     }, 1000);
-  };
+  }, [getElapsedMs]);
 
-  const stopTimer = () => {
+  const stopTimer = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  };
+  }, []);
 
   const resetRunData = () => {
     pointsRef.current = [];
@@ -371,20 +376,22 @@ export const useRunTracker = () => {
   });
 
   /* ------------------------------- GPS-подписка ------------------------------ */
-  const startWatch = () => {
+  // Обе функции работают только с watchStopRef, поэтому стабильны: подписка создаётся
+  // один раз при входе на экран и не пересоздаётся на каждом рендере.
+  const stopWatch = useCallback(() => {
+    if (watchStopRef.current) {
+      watchStopRef.current();
+      watchStopRef.current = null;
+    }
+  }, []);
+
+  const startWatch = useCallback(() => {
     stopWatch();
     watchStopRef.current = startWatchingGeolocation(
       (p) => handlersRef.current.onPosition(p),
       (e) => handlersRef.current.onError(e)
     );
-  };
-
-  const stopWatch = () => {
-    if (watchStopRef.current) {
-      watchStopRef.current();
-      watchStopRef.current = null;
-    }
-  };
+  }, [stopWatch]);
 
   /* -------------------------------- управление -------------------------------- */
   const beginRun = () => {
@@ -614,7 +621,9 @@ export const useRunTracker = () => {
       wakeLock.disable();
       setAdsBlocked(false); // ушли с экрана — пробежка остановлена, рекламу можно снова
     };
-  }, []);
+    // startWatch/stopWatch/stopTimer стабильны (useCallback), поэтому эффект срабатывает
+    // ровно один раз — при входе на экран и при выходе с него
+  }, [startWatch, stopWatch, stopTimer]);
 
   // Пока идёт пробежка (отсчёт, бег, пауза), полноэкранная реклама запрещена везде, включая таббар
   useEffect(() => {
@@ -633,7 +642,7 @@ export const useRunTracker = () => {
       });
     }, AUTOSAVE_INTERVAL_MS);
     return () => clearInterval(timer);
-  }, [phase]);
+  }, [phase, getElapsedMs]);
 
   // Предупреждение, если приложение долго было в фоне во время бега
   useEffect(() => {
