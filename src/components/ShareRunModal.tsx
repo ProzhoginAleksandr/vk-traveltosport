@@ -20,6 +20,7 @@ import {
   loadImageFromUrl,
   renderRunImage,
 } from '../utils/shareImage';
+import { saveFile } from '../utils/fileExport';
 import logoUrl from '../assets/images/TTSlogoShare.png';
 
 interface ShareRunModalProps {
@@ -28,6 +29,11 @@ interface ShareRunModalProps {
 }
 
 const SWIPE_THRESHOLD_PX = 40;
+
+// Клиент VK не сообщает, дошёл ли файл до галереи, поэтому запасной путь
+// (крупный просмотр + скриншот) показываем для любого исхода, кроме отмены.
+const SAVE_FALLBACK_HINT =
+  'Если картинка не появилась в «Загрузках» или галерее — откройте её крупно и сделайте скриншот.';
 
 const buttonBase: CSSProperties = {
   width: '100%',
@@ -80,6 +86,16 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
   const canStory = useMemo(() => {
     try {
       return bridge.supports('VKWebAppShowStoryBox');
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Нативное скачивание файла умеют только мобильные клиенты VK (Android/iOS),
+  // на веб-платформе supports() вернёт false — там работаем браузерными способами.
+  const canNativeDownload = useMemo(() => {
+    try {
+      return bridge.supports('VKWebAppDownloadFile');
     } catch {
       return false;
     }
@@ -235,40 +251,42 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
   const saveImage = async () => {
     if (!preview) return;
     setSaveInfo('');
-    const file = dataUrlToFile(preview, `traveltosport_${Date.now()}.jpg`);
+    setBusy(true);
 
-    // 1. Системное меню «Поделиться» с файлом — там есть «Сохранить изображение»
-    if (
-      typeof navigator.share === 'function' &&
-      typeof navigator.canShare === 'function' &&
-      navigator.canShare({ files: [file] })
-    ) {
-      try {
-        await navigator.share({ files: [file] });
-        return;
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-      }
-    }
+    const filename = `traveltosport_${Date.now()}.jpg`;
 
-    // 2. Обычное скачивание через blob-ссылку (data-ссылки WebView блокирует чаще)
     try {
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
-    } catch (err) {
-      console.warn('Скачивание не удалось:', err);
-    }
+      // 1. Нативное сохранение силами самого приложения VK. Это основной путь на
+      //    Android/iOS: там WebView молча гасит и скачивание по blob-ссылке, и data-ссылки.
+      //    data:-ссылку понимают не все версии клиента, поэтому отказ — не ошибка, идём дальше.
+      if (canNativeDownload) {
+        try {
+          const data = await bridge.send('VKWebAppDownloadFile', { url: preview, filename });
+          if (data?.result) {
+            setSaveInfo(`Файл ${filename} отправлен в «Загрузки» устройства. ${SAVE_FALLBACK_HINT}`);
+            return;
+          }
+        } catch (err) {
+          console.warn('VKWebAppDownloadFile:', err);
+        }
+      }
 
-    // Подтверждения от WebView мы не получаем, поэтому честно подсказываем запасной путь
-    setSaveInfo(
-      'Если файл не появился в «Загрузках» или галерее — откройте картинку крупно и сделайте скриншот.'
-    );
+      // 2. Системное меню «Поделиться» с файлом (там есть «Сохранить изображение»),
+      //    ровно как при экспорте GPX; 3. внутри — скачивание через blob-ссылку.
+      const result = await saveFile(dataUrlToFile(preview, filename));
+
+      if (result === 'shared') {
+        setSaveInfo('В системном меню выберите «Сохранить изображение» или «В галерею».');
+      } else if (result === 'cancelled') {
+        setSaveInfo('Сохранение отменено.');
+      } else if (result === 'download-attempted') {
+        setSaveInfo(`Скачивание запущено: ${filename}. ${SAVE_FALLBACK_HINT}`);
+      } else {
+        setSaveInfo(`Клиент VK не разрешил сохранить файл. ${SAVE_FALLBACK_HINT}`);
+      }
+    } finally {
+      setBusy(false);
+    }
   };
 
   const layout = LAYOUTS[styleIndex];
@@ -485,8 +503,12 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
               <button
                 type="button"
                 onClick={saveImage}
-                disabled={!preview}
-                style={{ ...buttonBase, background: 'rgba(255, 255, 255, 0.2)' }}
+                disabled={busy || !preview}
+                style={{
+                  ...buttonBase,
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  opacity: busy || !preview ? 0.6 : 1,
+                }}
               >
                 💾 Сохранить картинку
               </button>
@@ -568,7 +590,8 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                 textAlign: 'center',
               }}
             >
-              Сделайте скриншот или нажмите и удерживайте картинку · Нажмите на фон, чтобы закрыть
+              Нажмите и удерживайте картинку → «Сохранить изображение» (на iPhone — «Добавить в
+              фото»), или сделайте скриншот · Нажмите на фон, чтобы закрыть
             </div>
             <button
               type="button"
