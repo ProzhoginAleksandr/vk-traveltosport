@@ -1,6 +1,5 @@
 // src/utils/trackerSettings.ts
 export interface TrackerSettings {
-  autoPause: boolean;
   vibration: boolean;
   countdown: boolean;
 }
@@ -8,7 +7,6 @@ export interface TrackerSettings {
 const KEY = 'traveltosport_tracker_settings';
 
 export const DEFAULT_TRACKER_SETTINGS: TrackerSettings = {
-  autoPause: true,
   vibration: true,
   countdown: true,
 };
@@ -17,7 +15,13 @@ export const loadTrackerSettings = (): TrackerSettings => {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return DEFAULT_TRACKER_SETTINGS;
-    return { ...DEFAULT_TRACKER_SETTINGS, ...(JSON.parse(raw) as Partial<TrackerSettings>) };
+    // Читаем только известные поля: в localStorage могли остаться ключи
+    // от удалённых настроек (например, autoPause), и они не должны возвращаться в объект.
+    const stored = JSON.parse(raw) as Partial<TrackerSettings>;
+    return {
+      vibration: stored.vibration ?? DEFAULT_TRACKER_SETTINGS.vibration,
+      countdown: stored.countdown ?? DEFAULT_TRACKER_SETTINGS.countdown,
+    };
   } catch {
     return DEFAULT_TRACKER_SETTINGS;
   }

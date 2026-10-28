@@ -32,7 +32,7 @@ export type FilterResult =
  * Минимальный сдвиг, после которого точка записывается.
  * Чем хуже точность GPS, тем больше порог (от 5 до 15 м): так шум не превращается в «дрожание» трека.
  */
-export const minDistanceFor = (accuracy: number): number =>
+const minDistanceFor = (accuracy: number): number =>
   accuracy > 0 ? Math.min(15, Math.max(5, accuracy * 0.6)) : 5;
 
 export interface FilterOptions {

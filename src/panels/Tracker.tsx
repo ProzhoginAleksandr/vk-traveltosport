@@ -68,7 +68,6 @@ const actionButton = (background: string): CSSProperties => ({
 });
 
 const SETTING_ITEMS: Array<{ key: keyof TrackerSettings; label: string }> = [
-  { key: 'autoPause', label: 'Автопауза, когда вы остановились' },
   { key: 'vibration', label: 'Вибрация на каждом километре' },
   { key: 'countdown', label: 'Отсчёт 3-2-1 перед стартом' },
 ];
@@ -620,9 +619,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                   <Text
                     style={{ color: '#FF9800', textAlign: 'center', marginTop: 10, fontSize: 14 }}
                   >
-                    {run.autoPaused
-                      ? '⏸ Автопауза: вы остановились. Начните движение, и таймер включится сам.'
-                      : '⏸ Пробежка на паузе'}
+                    ⏸ Пробежка на паузе
                   </Text>
                 )}
               </>
@@ -867,7 +864,6 @@ export const Tracker = ({ id }: TrackerProps) => {
           elapsed={run.elapsed}
           currentPace={run.currentPace}
           avgPace={run.avgPace}
-          autoPaused={run.autoPaused}
           lastSplit={run.lastSplit}
           onPause={run.pause}
           onResume={run.resume}

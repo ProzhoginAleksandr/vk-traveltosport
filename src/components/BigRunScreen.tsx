@@ -12,7 +12,6 @@ interface BigRunScreenProps {
   elapsed: number;
   currentPace: number | null;
   avgPace: number | null;
-  autoPaused: boolean;
   lastSplit: Split | null;
   onPause: () => void;
   onResume: () => void;
@@ -45,7 +44,6 @@ export const BigRunScreen = ({
   elapsed,
   currentPace,
   avgPace,
-  autoPaused,
   lastSplit,
   onPause,
   onResume,
@@ -104,7 +102,7 @@ export const BigRunScreen = ({
       >
         {paused && (
           <div style={{ color: '#FF9800', fontFamily: 'Impact', fontSize: 22 }}>
-            {autoPaused ? '⏸ АВТОПАУЗА' : '⏸ ПАУЗА'}
+            ⏸ ПАУЗА
           </div>
         )}
 

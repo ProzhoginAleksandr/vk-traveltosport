@@ -27,7 +27,6 @@ import {
 import {
   acceptPoint,
   smoothPosition,
-  minDistanceFor,
   FILTER_DEFAULTS,
   type TrackPoint,
   type Sample,
@@ -68,31 +67,8 @@ const MIN_SAVE_DURATION_S = 60;
 
 const AUTOSAVE_INTERVAL_MS = 10000;
 const BACKGROUND_WARN_AFTER_MS = 15000;
-// Автопауза ставится, только если за это время не было ни одного реального смещения.
-// 12 с, а не 10: при редких GPS-фиксах 10 с истекали между двумя нормальными точками.
-const AUTO_PAUSE_AFTER_MS = 12000;
-// Смещение меньше этого порога — дрожание приёмника, а не бег.
-const AUTO_PAUSE_NOISE_FLOOR_M = 10;
-// Выход из паузы чуть чувствительнее входа: пробежка возобновляется за 3–5 с,
-// но одиночный выброс GPS её не разбудит — нужны два фикса подряд.
-const AUTO_PAUSE_RESUME_FLOOR_M = 8;
-const AUTO_PAUSE_RESUME_CONFIRM = 2;
-// Точка хуже этого порога не может поставить пробежку на паузу — это шум, а не остановка.
-const AUTO_PAUSE_MAX_ACCURACY_M = FILTER_DEFAULTS.accuracyThreshold;
 const COUNTDOWN_SECONDS = 3;
 const PACE_WINDOW_M = 300;
-
-/**
- * Пороги автопаузы зависят от точности приёмника: чем хуже сигнал, тем больше смещение
- * нужно, чтобы отличить бег от дрожания. Верхняя граница — 15 м (порог фильтра точек).
- */
-const autoPauseThresholds = (accuracy: number): { move: number; resume: number } => {
-  const noise = minDistanceFor(accuracy);
-  return {
-    move: Math.max(AUTO_PAUSE_NOISE_FLOOR_M, noise),
-    resume: Math.min(AUTO_PAUSE_NOISE_FLOOR_M, Math.max(AUTO_PAUSE_RESUME_FLOOR_M, noise)),
-  };
-};
 
 // Один Wake Lock на весь модуль
 const wakeLock = createWakeLock();
@@ -118,7 +94,6 @@ export const useRunTracker = () => {
   const [currentPace, setCurrentPace] = useState<number | null>(null);
   const [splits, setSplits] = useState<Split[]>([]);
   const [lastSplit, setLastSplit] = useState<Split | null>(null);
-  const [autoPaused, setAutoPaused] = useState(false);
   const [position, setPosition] = useState<LatLon | null>(null);
   const [gps, setGps] = useState<GpsInfo>({
     level: 'searching',
@@ -152,10 +127,6 @@ export const useRunTracker = () => {
   const simulatingRef = useRef(false);
   const lastPosRef = useRef<GeoPosition | null>(null);
   const smoothRef = useRef<Sample[]>([]);
-  const anchorRef = useRef<{ lat: number; lon: number; t: number } | null>(null);
-  const autoPausedRef = useRef(false);
-  const resumeHitsRef = useRef(0);
-  const countNextSegmentRef = useRef(false);
   const splitsRef = useRef<Split[]>([]);
   const lastBoundaryRef = useRef(0);
   const lastCountedElapsedRef = useRef(0);
@@ -212,10 +183,6 @@ export const useRunTracker = () => {
     lastCountedElapsedRef.current = 0;
     samplesRef.current = [{ d: 0, t: 0 }];
     smoothRef.current = [];
-    anchorRef.current = null;
-    autoPausedRef.current = false;
-    resumeHitsRef.current = 0;
-    countNextSegmentRef.current = false;
     summaryRef.current = null;
 
     setPoints([]);
@@ -224,7 +191,6 @@ export const useRunTracker = () => {
     setCurrentPace(null);
     setSplits([]);
     setLastSplit(null);
-    setAutoPaused(false);
     setFilteredCount(0);
     setBackgroundWarning('');
     setNotice('');
@@ -270,71 +236,19 @@ export const useRunTracker = () => {
   };
 
   /* ----------------------------- пауза и возобновление ----------------------------- */
-  const pauseInternal = (auto: boolean) => {
+  // Пауза только ручная: автопаузы нет, поэтому и автоматического возобновления тоже нет.
+  const pauseInternal = () => {
     if (phaseRef.current !== 'running') return;
     accumulatedRef.current += Date.now() - startTimeRef.current;
     stopTimer();
-    autoPausedRef.current = auto;
-    resumeHitsRef.current = 0;
-    setAutoPaused(auto);
     setCurrentPace(null);
     setPhase('paused');
-    if (auto) buzz('light');
   };
 
   const resumeInternal = () => {
     if (phaseRef.current !== 'paused') return;
-    // После автопаузы первый отрезок — реальный бег, его считаем; после ручной — нет
-    // (пользователь мог пройти пешком, пока стоял на паузе)
-    if (autoPausedRef.current) countNextSegmentRef.current = true;
-    autoPausedRef.current = false;
-    resumeHitsRef.current = 0;
-    setAutoPaused(false);
     startTimer();
     setPhase('running');
-    const lp = lastPosRef.current;
-    anchorRef.current = lp ? { lat: lp.lat, lon: lp.lon, t: Date.now() } : null;
-  };
-
-  /* -------------------------------- автопауза -------------------------------- */
-  // Раньше «зона стояния» равнялась точности приёмника (Math.max(8, accuracy)), и при
-  // слабом сигнале она раздувалась до 25–45 м: бегун успевал пробежать 20–30 м, не
-  // выйдя из неё, и пробежка вставала на паузу, а для возобновления требовалось
-  // 1,5 радиуса (до 45 м) реального бега. Теперь пауза ставится по отсутствию
-  // реального смещения, а якорь обновляется на каждом таком смещении.
-  const handleAutoPause = (p: LatLon, accuracy: number, now: number) => {
-    const anchor = anchorRef.current;
-    if (!anchor) {
-      anchorRef.current = { lat: p.lat, lon: p.lon, t: now };
-      return;
-    }
-
-    const { move, resume } = autoPauseThresholds(accuracy);
-    const d = haversine(anchor, p);
-
-    if (autoPausedRef.current) {
-      // «Якорь» остаётся там, где остановились, пока человек реально не отойдёт
-      if (d >= resume) {
-        resumeHitsRef.current += 1;
-        if (resumeHitsRef.current >= AUTO_PAUSE_RESUME_CONFIRM) resumeInternal();
-      } else {
-        resumeHitsRef.current = 0;
-      }
-      return;
-    }
-
-    if (d >= move) {
-      // Реальное смещение — бежим: якорь переезжает, отсчёт паузы начинается заново
-      anchorRef.current = { lat: p.lat, lon: p.lon, t: now };
-      return;
-    }
-
-    // Мусорная точка (хуже порога фильтра) не может поставить пробежку на паузу
-    if (accuracy > AUTO_PAUSE_MAX_ACCURACY_M) return;
-
-    if (phaseRef.current === 'running' && now - anchor.t >= AUTO_PAUSE_AFTER_MS) {
-      pauseInternal(true);
-    }
   };
 
   /* ---------------------------- запись GPS-точки ---------------------------- */
@@ -343,10 +257,8 @@ export const useRunTracker = () => {
     const prev = list.length > 0 ? list[list.length - 1] : null;
     list.push(pt);
 
-    const forced = countNextSegmentRef.current;
-    if (!pt.isPaused) countNextSegmentRef.current = false;
-
-    if (prev && !pt.isPaused && (!prev.isPaused || forced)) {
+    // Участок через паузу не считаем: пока таймер стоял, можно было уйти пешком
+    if (prev && !pt.isPaused && !prev.isPaused) {
       const seg = haversine(prev, pt);
       const prevDist = distanceRef.current;
       distanceRef.current = prevDist + seg;
@@ -359,8 +271,6 @@ export const useRunTracker = () => {
   const recordPoint = (pos: GeoPosition) => {
     const now = Date.now();
     const smooth = smoothPosition(smoothRef.current, { lat: pos.lat, lon: pos.lon, t: now });
-
-    if (settingsRef.current.autoPause) handleAutoPause(smooth, pos.accuracy, now);
 
     const result = acceptPoint(
       pointsRef.current,
@@ -444,7 +354,6 @@ export const useRunTracker = () => {
   /* -------------------------------- управление -------------------------------- */
   const beginRun = () => {
     accumulatedRef.current = 0;
-    anchorRef.current = null;
     setPhase('running');
     startTimer();
     buzz('heavy');
@@ -491,7 +400,7 @@ export const useRunTracker = () => {
     else beginRun();
   };
 
-  const pause = () => pauseInternal(false);
+  const pause = () => pauseInternal();
   const resume = () => resumeInternal();
 
   const reset = () => {
@@ -542,8 +451,6 @@ export const useRunTracker = () => {
     if (p === 'running') accumulatedRef.current += Date.now() - startTimeRef.current;
     stopTimer();
     wakeLock.disable();
-    autoPausedRef.current = false;
-    setAutoPaused(false);
     setCurrentPace(null);
 
     const duration = Math.floor(accumulatedRef.current / 1000);
@@ -722,7 +629,6 @@ export const useRunTracker = () => {
     avgPace,
     splits,
     lastSplit,
-    autoPaused,
     position,
     gps,
     geoError,
