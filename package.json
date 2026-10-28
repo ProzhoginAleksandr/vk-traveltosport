@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "node build.cjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "tunnel": "vk-tunnel --http-protocol=http --host=localhost --port=5173",
-    "deploy": "vite build && node deploy.cjs both",
-    "deploy:dev": "vite build && node deploy.cjs dev",
-    "deploy:prod": "vite build && node deploy.cjs production"
+    "deploy": "node build.cjs && node deploy.cjs both",
+    "deploy:dev": "node build.cjs && node deploy.cjs dev",
+    "deploy:prod": "node build.cjs && node deploy.cjs production"
   },
   "dependencies": {
     "@vkontakte/icons": "^3.1.1",
