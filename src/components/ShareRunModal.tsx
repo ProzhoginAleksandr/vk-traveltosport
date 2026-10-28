@@ -30,10 +30,10 @@ interface ShareRunModalProps {
 
 const SWIPE_THRESHOLD_PX = 40;
 
-// Клиент VK не сообщает, дошёл ли файл до галереи, поэтому запасной путь
-// (крупный просмотр + скриншот) показываем для любого исхода, кроме отмены.
+// Клиент VK не сообщает, дошёл ли файл до галереи, поэтому при любом исходе
+// напоминаем про ручное сохранение из просмотра крупным планом.
 const SAVE_FALLBACK_HINT =
-  'Если картинка не появилась в «Загрузках» или галерее — откройте её крупно и сделайте скриншот.';
+  'Если картинка не появилась в «Загрузках» — откройте её крупно и удерживайте палец: в меню телефона будет «Сохранить изображение».';
 
 const buttonBase: CSSProperties = {
   width: '100%',
@@ -248,45 +248,76 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
     }
   };
 
-  const saveImage = async () => {
+  // Сохранение картинки. Порядок принципиален: системное меню вызывается СИНХРОННО
+  // из обработчика нажатия — если перед вызовом сделать хотя бы один await,
+  // браузер отклонит запрос с «Must be handling a user gesture».
+  const saveImage = () => {
     if (!preview) return;
     setSaveInfo('');
-    setBusy(true);
 
     const filename = `traveltosport_${Date.now()}.jpg`;
-
+    let file: File | null = null;
     try {
-      // 1. Нативное сохранение силами самого приложения VK. Это основной путь на
-      //    Android/iOS: там WebView молча гасит и скачивание по blob-ссылке, и data-ссылки.
-      //    data:-ссылку понимают не все версии клиента, поэтому отказ — не ошибка, идём дальше.
-      if (canNativeDownload) {
-        try {
-          const data = await bridge.send('VKWebAppDownloadFile', { url: preview, filename });
-          if (data?.result) {
-            setSaveInfo(`Файл ${filename} отправлен в «Загрузки» устройства. ${SAVE_FALLBACK_HINT}`);
+      file = dataUrlToFile(preview, filename);
+    } catch {
+      file = null;
+    }
+
+    const canShareFile =
+      !!file &&
+      typeof navigator.share === 'function' &&
+      (typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] }));
+
+    if (file && canShareFile) {
+      setBusy(true);
+      navigator
+        .share({ files: [file], title: 'Моя пробежка', text: 'TraveltoSport' })
+        .then(() =>
+          setSaveInfo('Меню закрыто. Если вы выбрали «Сохранить в галерею» — картинка уже там.')
+        )
+        .catch((err: unknown) => {
+          if (err instanceof DOMException && err.name === 'AbortError') {
+            setSaveInfo('Сохранение отменено.');
             return;
           }
-        } catch (err) {
-          console.warn('VKWebAppDownloadFile:', err);
-        }
-      }
-
-      // 2. Системное меню «Поделиться» с файлом (там есть «Сохранить изображение»),
-      //    ровно как при экспорте GPX; 3. внутри — скачивание через blob-ссылку.
-      const result = await saveFile(dataUrlToFile(preview, filename));
-
-      if (result === 'shared') {
-        setSaveInfo('В системном меню выберите «Сохранить изображение» или «В галерею».');
-      } else if (result === 'cancelled') {
-        setSaveInfo('Сохранение отменено.');
-      } else if (result === 'download-attempted') {
-        setSaveInfo(`Скачивание запущено: ${filename}. ${SAVE_FALLBACK_HINT}`);
-      } else {
-        setSaveInfo(`Клиент VK не разрешил сохранить файл. ${SAVE_FALLBACK_HINT}`);
-      }
-    } finally {
-      setBusy(false);
+          console.warn('navigator.share:', err);
+          setSaveInfo(SAVE_FALLBACK_HINT);
+          setViewerOpen(true);
+        })
+        .finally(() => setBusy(false));
+      return;
     }
+
+    // Дальше — клиенты без системного меню (обычно WebView приложения VK).
+    setBusy(true);
+    void (async () => {
+      try {
+        if (canNativeDownload) {
+          // Мост VK не умеет таймауты сам: если клиент не ответит, кнопка зависнет навсегда.
+          const data = await Promise.race([
+            bridge.send('VKWebAppDownloadFile', { url: preview, filename }).catch(() => null),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 6000)),
+          ]);
+          if (data?.result) {
+            setSaveInfo(`Файл ${filename} отправлен в «Загрузки» устройства.`);
+            return;
+          }
+        }
+
+        if (file) {
+          const result = await saveFile(file);
+          if (result === 'download-attempted') {
+            setSaveInfo(`Скачивание запущено: ${filename}. ${SAVE_FALLBACK_HINT}`);
+            return;
+          }
+        }
+
+        setSaveInfo(SAVE_FALLBACK_HINT);
+        setViewerOpen(true);
+      } finally {
+        setBusy(false);
+      }
+    })();
   };
 
   const layout = LAYOUTS[styleIndex];
@@ -591,7 +622,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
               }}
             >
               Нажмите и удерживайте картинку → «Сохранить изображение» (на iPhone — «Добавить в
-              фото»), или сделайте скриншот · Нажмите на фон, чтобы закрыть
+              фото») · Нажмите на фон, чтобы закрыть
             </div>
             <button
               type="button"
