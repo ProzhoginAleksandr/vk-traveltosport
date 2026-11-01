@@ -25,6 +25,7 @@ import { formatDuration, formatKm, formatPaceValue } from '../utils/runFormat';
 import { trackToGpx } from '../utils/gpx';
 import { saveFile, textToFile } from '../utils/fileExport';
 import { showAdIfDue } from '../utils/adUtils';
+import { getBuildId } from '../utils/buildInfo';
 import type { TrackerSettings } from '../utils/trackerSettings';
 
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -355,6 +356,9 @@ export const Tracker = ({ id }: TrackerProps) => {
             🛰️ {run.gps.text}
             {phase === 'idle' && run.gps.ready ? ' · готов к старту' : ''}
             {run.filteredCount > 0 ? ` · отфильтровано: ${run.filteredCount}` : ''}
+          </Text>
+          <Text style={{ color: '#FF9800', textAlign: 'center', fontSize: '12px', marginTop: 2 }}>
+            сборка {getBuildId() || 'dev'}
           </Text>
         </Div>
 

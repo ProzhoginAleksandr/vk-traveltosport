@@ -32,6 +32,7 @@ import {
   deleteUserTrack,
   SavedTrack,
 } from '../utils/trackStorage';
+import { getBuildId } from '../utils/buildInfo';
 
 // 🛠️ Иконка маркера
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -582,6 +583,12 @@ export const Profile = ({ id }: ProfileProps) => {
             )}
           </>
         )}
+      {/* Метка сборки: сразу видно, какой бандл исполняется на устройстве */}
+      <Div style={{ textAlign: 'center', paddingTop: 0, paddingBottom: 4 }}>
+        <Text style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11 }}>
+          сборка {getBuildId() || 'dev'}
+        </Text>
+      </Div>
       </PageBackground>
 
       {/* Окно «Поделиться пробежкой» */}
