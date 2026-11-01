@@ -31,8 +31,10 @@ export class GeoError extends Error {
   }
 }
 
-// Частота опроса VK Bridge во время активного трекинга на мобильных
-const POLL_INTERVAL_MS = 2000;
+// Частота опроса VK Bridge во время активного трекинга на мобильных.
+// 1 с вместо 2 с: при опросе раз в две секунды между точками набегает 6–10 м,
+// из-за чего линия трека рисовалась редкими рывками и запаздывала.
+const POLL_INTERVAL_MS = 1000;
 
 interface VKGeodataResponse {
   available?: number | boolean;

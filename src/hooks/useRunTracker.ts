@@ -270,7 +270,14 @@ export const useRunTracker = () => {
 
   const recordPoint = (pos: GeoPosition) => {
     const now = Date.now();
-    const smooth = smoothPosition(smoothRef.current, { lat: pos.lat, lon: pos.lon, t: now });
+    // Сглаживание только для устойчивости координат: окно 5 с и два отсчёта
+    // дают задержку около одного фикса вместо прежних 8 секунд.
+    const smooth = smoothPosition(
+      smoothRef.current,
+      { lat: pos.lat, lon: pos.lon, t: now },
+      5000,
+      2
+    );
 
     const result = acceptPoint(
       pointsRef.current,
@@ -292,7 +299,7 @@ export const useRunTracker = () => {
     lastPosRef.current = pos;
     setPosition({ lat: pos.lat, lon: pos.lon });
 
-    const weak = pos.accuracy > FILTER_DEFAULTS.accuracyThreshold;
+    const weak = pos.accuracy > FILTER_DEFAULTS.weakAccuracy;
     setGps({
       level: weak ? 'weak' : 'good',
       text: weak
