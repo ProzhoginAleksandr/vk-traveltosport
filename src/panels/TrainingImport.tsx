@@ -155,7 +155,6 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
           }
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             marginTop: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -178,7 +177,6 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             marginTop: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -242,7 +240,6 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
             }
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               marginTop: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -258,7 +255,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
                   borderRadius: '12px',
                 }}
               >
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
                   Дистанция
                 </Text>
                 <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
@@ -273,7 +270,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
                   borderRadius: '12px',
                 }}
               >
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Время</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Время</Text>
                 <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                   {formatDuration(lastImported.duration)}
                 </Text>
@@ -286,7 +283,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
                   borderRadius: '12px',
                 }}
               >
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Темп</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Темп</Text>
                 <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                   {formatPace(lastImported.pace)}
                 </Text>
@@ -299,7 +296,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
                   borderRadius: '12px',
                 }}
               >
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Скорость</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Скорость</Text>
                 <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                   {lastImported.speed.toFixed(2)} км/ч
                 </Text>

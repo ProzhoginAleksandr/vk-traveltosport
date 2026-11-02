@@ -220,7 +220,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '16px',
@@ -229,19 +228,19 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
         >
           <CardGrid size="l">
             <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Уровень</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Уровень</Text>
               <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                 {level} отрезков
               </Text>
             </Card>
             <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Рекорд</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Рекорд</Text>
               <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                 {bestLevel || '—'}
               </Text>
             </Card>
             <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Сыграно</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Сыграно</Text>
               <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                 {gamesPlayed}
               </Text>
@@ -255,7 +254,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
             header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Правила игры</Header>}
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               padding: '16px',
@@ -283,7 +281,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
             }
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               padding: '16px',
@@ -331,7 +328,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
             }
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               padding: '16px',
@@ -388,7 +384,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
               }
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 padding: '16px',
@@ -417,7 +412,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                     {results[index] ? '✅' : '❌'} {split.km} км
                   </Text>
                   <div style={{ textAlign: 'right' }}>
-                    <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
+                    <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px' }}>
                       Ваш ответ: {userAnswers[index] || '—'}
                     </Text>
                     <Text
@@ -438,7 +433,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
               <Group
                 style={{
                   background: 'rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(12px)',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   padding: '16px',
@@ -458,7 +452,6 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '16px',

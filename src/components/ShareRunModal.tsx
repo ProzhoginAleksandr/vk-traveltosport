@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import bridge from '@vkontakte/vk-bridge';
+import { Icon24Download, Icon24Fullscreen, Icon24Share } from '@vkontakte/icons';
 
 import type { SavedTrack } from '../utils/trackStorage';
 import {
@@ -44,6 +45,10 @@ const buttonBase: CSSProperties = {
   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
   fontSize: 16,
   cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
 };
 
 const arrowStyle: CSSProperties = {
@@ -478,7 +483,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                   />
                 ))}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 8, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
+              <div style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.6)', marginTop: 8, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                 Свайпайте влево и вправо, чтобы сменить стиль
               </div>
             </div>
@@ -549,7 +554,8 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                     opacity: busy || !preview ? 0.6 : 1,
                   }}
                 >
-                  📤 Опубликовать в истории VK
+                  <Icon24Share />
+                  Опубликовать в истории VK
                 </button>
               )}
               <button
@@ -562,7 +568,8 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                   opacity: busy || !preview ? 0.6 : 1,
                 }}
               >
-                💾 Сохранить картинку
+                <Icon24Download />
+                Сохранить картинку
               </button>
               <button
                 type="button"
@@ -570,7 +577,8 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                 disabled={!preview}
                 style={{ ...buttonBase, background: 'rgba(255, 255, 255, 0.12)' }}
               >
-                🔍 Открыть крупно
+                <Icon24Fullscreen />
+                Открыть крупно
               </button>
               <button
                 type="button"
@@ -584,7 +592,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
             {saveInfo && (
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 13,
                   color: '#FF9800',
                   textAlign: 'center',
                   marginTop: 8,

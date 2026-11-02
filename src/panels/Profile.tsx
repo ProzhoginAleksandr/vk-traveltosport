@@ -197,7 +197,6 @@ export const Profile = ({ id }: ProfileProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             marginTop: '16px',
             marginBottom: '12px',
@@ -234,14 +233,13 @@ export const Profile = ({ id }: ProfileProps) => {
             <Group
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginBottom: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 padding: '8px',
               }}
             >
-              <div style={{ height: '300px', borderRadius: '12px', overflow: 'hidden' }}>
+              <div className="app-map" style={{ height: '300px' }}>
                 <MapContainer
                   center={
                     selectedTrack.points.length > 0
@@ -250,11 +248,11 @@ export const Profile = ({ id }: ProfileProps) => {
                   }
                   zoom={15}
                   style={{ height: '100%', width: '100%' }}
-                  attributionControl={false}
                 >
                   <TileLayer
                     url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
                     maxZoom={16}
+                    attribution="Tiles &copy; Esri"
                   />
                   {selectedTrack.points.length > 1 && (
                     <Polyline
@@ -278,7 +276,6 @@ export const Profile = ({ id }: ProfileProps) => {
             <Group
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginBottom: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -298,7 +295,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Дистанция</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Дистанция</Text>
                   <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                     {(selectedTrack.distance / 1000).toFixed(2)} км
                   </Text>
@@ -311,7 +308,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Время</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Время</Text>
                   <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                     {formatDuration(selectedTrack.duration)}
                   </Text>
@@ -324,7 +321,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Темп</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Темп</Text>
                   <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                     {formatPace(selectedTrack.pace)}
                   </Text>
@@ -337,7 +334,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Скорость</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Скорость</Text>
                   <Text style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
                     {selectedTrack.speed.toFixed(2)} км/ч
                   </Text>
@@ -348,7 +345,6 @@ export const Profile = ({ id }: ProfileProps) => {
             <Group
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 padding: '16px',
@@ -396,7 +392,7 @@ export const Profile = ({ id }: ProfileProps) => {
                 <Text
                   style={{
                     color: '#FF9800',
-                    fontSize: '12px',
+                    fontSize: '13px',
                     textAlign: 'center',
                     marginBottom: '12px',
                     whiteSpace: 'normal',
@@ -455,7 +451,6 @@ export const Profile = ({ id }: ProfileProps) => {
               }
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginBottom: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -471,7 +466,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Пробежек</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Пробежек</Text>
                   <Text style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF' }}>
                     {totalRuns}
                   </Text>
@@ -484,7 +479,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Всего км</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Всего км</Text>
                   <Text style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF' }}>
                     {(totalDistance / 1000).toFixed(1)}
                   </Text>
@@ -497,7 +492,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                   }}
                 >
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
                     Всего времени
                   </Text>
                   <Text style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF' }}>
@@ -516,7 +511,6 @@ export const Profile = ({ id }: ProfileProps) => {
               }
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginBottom: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -555,7 +549,6 @@ export const Profile = ({ id }: ProfileProps) => {
               <Group
                 style={{
                   background: 'rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(12px)',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   padding: '16px',
@@ -585,7 +578,7 @@ export const Profile = ({ id }: ProfileProps) => {
         )}
       {/* Метка сборки: сразу видно, какой бандл исполняется на устройстве */}
       <Div style={{ textAlign: 'center', paddingTop: 0, paddingBottom: 4 }}>
-        <Text style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11 }}>
+        <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: 11 }}>
           сборка {getBuildId() || 'dev'}
         </Text>
       </Div>

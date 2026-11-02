@@ -1,6 +1,6 @@
 // src/AppConfig.tsx
 import vkBridge, { parseURLSearchParamsForGetLaunchParams } from '@vkontakte/vk-bridge';
-import { useAdaptivity, useAppearance, useInsets } from '@vkontakte/vk-bridge-react';
+import { useAdaptivity, useInsets } from '@vkontakte/vk-bridge-react';
 import { AdaptivityProvider, ConfigProvider, AppRoot } from '@vkontakte/vkui';
 import { RouterProvider } from '@vkontakte/vk-mini-apps-router';
 import '@vkontakte/vkui/dist/vkui.css';
@@ -12,14 +12,16 @@ import { App } from './App';
 
 
 export const AppConfig = () => {
-  const vkBridgeAppearance = useAppearance() || undefined;
   const vkBridgeInsets = useInsets() || undefined;
   const adaptivity = transformVKBridgeAdaptivity(useAdaptivity());
   const { vk_platform } = parseURLSearchParamsForGetLaunchParams(window.location.search);
 
   return (
     <ConfigProvider
-      colorScheme={vkBridgeAppearance}
+      // Оформление приложения всегда тёмное: свои поверхности (фоны, карточки,
+      // текст) заданы тёмными вручную. Если следовать теме VK, у пользователя
+      // со светлой темой компоненты VKUI окажутся светлыми на тёмном фоне.
+      colorScheme="dark"
       platform={vk_platform === 'desktop_web' ? 'vkcom' : undefined}
       isWebView={vkBridge.isWebView()}
       hasCustomPanelHeaderAfter={true}

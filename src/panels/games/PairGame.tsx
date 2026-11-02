@@ -311,7 +311,6 @@ export const PairGame = ({ id }: PairGameProps) => {
             header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Выберите сложность</Header>}
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               padding: '16px',
@@ -355,7 +354,6 @@ export const PairGame = ({ id }: PairGameProps) => {
           <Group
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               padding: '16px',
@@ -364,25 +362,25 @@ export const PairGame = ({ id }: PairGameProps) => {
           >
             <CardGrid size="l">
               <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Время</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Время</Text>
                 <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                   {formatGameTime(elapsedTime)}
                 </Text>
               </Card>
               <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Ходы</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Ходы</Text>
                 <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                   {moves}
                 </Text>
               </Card>
               <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Рекорд {sizeLabel}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Рекорд {sizeLabel}</Text>
                 <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                   {bestTime !== null ? formatGameTime(bestTime) : '—'}
                 </Text>
               </Card>
               <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Лучшие ходы</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Лучшие ходы</Text>
                 <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                   {bestMoves !== null ? bestMoves : '—'}
                 </Text>
@@ -409,7 +407,6 @@ export const PairGame = ({ id }: PairGameProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '12px',
@@ -461,7 +458,6 @@ export const PairGame = ({ id }: PairGameProps) => {
           <Group
             style={{
               background: 'rgba(76, 175, 80, 0.15)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(76, 175, 80, 0.4)',
               padding: '16px',
@@ -482,7 +478,6 @@ export const PairGame = ({ id }: PairGameProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '16px',

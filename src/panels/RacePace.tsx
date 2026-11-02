@@ -145,8 +145,6 @@ export const RacePace = ({ id }: RacePaceProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
             borderRadius: '16px',
             marginTop: '16px',
             marginBottom: '12px',
@@ -225,8 +223,6 @@ export const RacePace = ({ id }: RacePaceProps) => {
               }
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginTop: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',

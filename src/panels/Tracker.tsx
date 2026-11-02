@@ -15,6 +15,8 @@ import { MapContainer, TileLayer, Polyline, Marker, Circle, useMap, useMapEvents
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+import { Icon24Fullscreen, Icon24Pause, Icon24Play, Icon24Stop } from '@vkontakte/icons';
+
 import trackerHeaderImage from '../assets/images/TrackerHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
@@ -45,7 +47,6 @@ interface TrackerProps {
 
 const glass: CSSProperties = {
   background: 'rgba(255, 255, 255, 0.08)',
-  backdropFilter: 'blur(12px)',
   borderRadius: '16px',
   border: '1px solid rgba(255, 255, 255, 0.12)',
 };
@@ -282,7 +283,7 @@ export const Tracker = ({ id }: TrackerProps) => {
 
   const renderSplits = (list: typeof run.splits) => (
     <div style={{ marginTop: 12 }}>
-      <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginBottom: 6 }}>
+      <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginBottom: 6 }}>
         Отсечки по километрам
       </Text>
       {list.map((s) => (
@@ -357,7 +358,7 @@ export const Tracker = ({ id }: TrackerProps) => {
             {phase === 'idle' && run.gps.ready ? ' · готов к старту' : ''}
             {run.filteredCount > 0 ? ` · отфильтровано: ${run.filteredCount}` : ''}
           </Text>
-          <Text style={{ color: '#FF9800', textAlign: 'center', fontSize: '12px', marginTop: 2 }}>
+          <Text style={{ color: '#FF9800', textAlign: 'center', fontSize: '13px', marginTop: 2 }}>
             сборка {getBuildId() || 'dev'}
           </Text>
         </Div>
@@ -402,12 +403,11 @@ export const Tracker = ({ id }: TrackerProps) => {
 
         {/* Карта */}
         <Group style={{ ...glass, marginTop: '16px', padding: '8px' }}>
-          <div style={{ height: '300px', borderRadius: '12px', overflow: 'hidden' }}>
+          <div className="app-map" style={{ height: '300px' }}>
             <MapContainer
               center={mapCenter}
               zoom={16}
               style={{ height: '100%', width: '100%' }}
-              attributionControl={false}
             >
               <TileLayer
                 url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
@@ -486,25 +486,25 @@ export const Tracker = ({ id }: TrackerProps) => {
           >
             <CardGrid size="l">
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Дистанция</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Дистанция</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatKm(run.distance)} км
                 </Text>
               </Card>
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Время</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Время</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatDuration(run.elapsed)}
                 </Text>
               </Card>
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Темп сейчас</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Темп сейчас</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatPaceValue(run.currentPace)}
                 </Text>
               </Card>
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Средний темп</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Средний темп</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatPaceValue(run.avgPace)}
                 </Text>
@@ -534,11 +534,12 @@ export const Tracker = ({ id }: TrackerProps) => {
                   stretched
                   disabled={!run.gps.ready}
                   onClick={run.start}
+                  before={run.gps.ready ? <Icon24Play /> : undefined}
                   style={actionButton(
                     run.gps.ready ? 'rgba(76, 175, 80, 0.7)' : 'rgba(255, 255, 255, 0.15)'
                   )}
                 >
-                  {run.gps.ready ? '▶ Начать пробежку' : '⏳ Ждём сигнал GPS…'}
+                  {run.gps.ready ? 'Начать пробежку' : 'Ждём сигнал GPS…'}
                 </Button>
                 {!run.gps.ready && (
                   <Button
@@ -554,7 +555,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                 <Text
                   style={{
                     color: 'rgba(255,255,255,0.6)',
-                    fontSize: 12,
+                    fontSize: 13,
                     textAlign: 'center',
                     marginTop: 8,
                   }}
@@ -590,34 +591,38 @@ export const Tracker = ({ id }: TrackerProps) => {
                     <Button
                       size="l"
                       onClick={run.resume}
+                      before={<Icon24Play />}
                       style={{ ...actionButton('rgba(76, 175, 80, 0.7)'), flex: 1 }}
                     >
-                      ▶ Возобновить
+                      Возобновить
                     </Button>
                   ) : (
                     <Button
                       size="l"
                       onClick={run.pause}
+                      before={<Icon24Pause />}
                       style={{ ...actionButton('rgba(255, 152, 0, 0.7)'), flex: 1 }}
                     >
-                      ⏸ Пауза
+                      Пауза
                     </Button>
                   )}
                   <Button
                     size="l"
                     onClick={() => setStopConfirm(true)}
+                    before={<Icon24Stop />}
                     style={{ ...actionButton('rgba(244, 67, 54, 0.7)'), flex: 1 }}
                   >
-                    ⏹ Остановить
+                    Остановить
                   </Button>
                 </div>
                 <Button
                   size="l"
                   stretched
                   onClick={() => setBigMode(true)}
+                  before={<Icon24Fullscreen />}
                   style={{ ...actionButton('rgba(255, 255, 255, 0.18)'), marginTop: 12 }}
                 >
-                  🔎 Крупный режим
+                  Крупный режим
                 </Button>
                 {phase === 'paused' && (
                   <Text
@@ -676,19 +681,19 @@ export const Tracker = ({ id }: TrackerProps) => {
           >
             <CardGrid size="l">
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Дистанция</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Дистанция</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatKm(summary.track.distance)} км
                 </Text>
               </Card>
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Время</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Время</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatDuration(summary.track.duration)}
                 </Text>
               </Card>
               <Card style={statCard}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Средний темп</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Средний темп</Text>
                 <Text style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>
                   {formatPaceValue(summary.track.pace)}
                 </Text>
@@ -793,7 +798,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                 <Text
                   style={{
                     color: '#FF9800',
-                    fontSize: 12,
+                    fontSize: 13,
                     textAlign: 'center',
                     marginTop: 8,
                     whiteSpace: 'normal',
@@ -852,7 +857,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                     if (file) run.simulate(await file.text(), simSpeed);
                   }}
                 />
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
                   Выберите GPX-файл, затем нажмите «Начать пробежку».
                 </Text>
               </div>

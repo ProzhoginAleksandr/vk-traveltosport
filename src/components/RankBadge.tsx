@@ -45,8 +45,6 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
           borderRadius: 999,
           border: '1px solid rgba(255, 255, 255, 0.18)',
           background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
           color: '#FFFFFF',
           cursor: 'pointer',
           fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
@@ -70,8 +68,6 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
               justifyContent: 'center',
               padding: 24,
               background: 'rgba(0, 0, 0, 0.6)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
             }}
           >
             <div

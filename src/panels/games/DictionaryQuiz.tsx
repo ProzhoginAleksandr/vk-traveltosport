@@ -291,7 +291,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '16px',
@@ -300,19 +299,19 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
         >
           <CardGrid size="l">
             <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Очки</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Очки</Text>
               <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                 {phase === 'playing' ? `${score} / ${currentIndex + (selectedIndex !== null ? 1 : 0)}` : score}
               </Text>
             </Card>
             <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Рекорд</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Рекорд</Text>
               <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                 {bestScore !== null ? `${bestScore} / ${QUESTIONS_COUNT}` : '—'}
               </Text>
             </Card>
             <Card style={{ padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Сыграно</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Сыграно</Text>
               <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                 {gamesPlayed}
               </Text>
@@ -326,7 +325,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
             header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Правила игры</Header>}
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
               borderRadius: '16px',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               padding: '16px',
@@ -350,7 +348,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
             <Group
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 padding: '16px',
@@ -373,7 +370,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
             <Group
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 padding: '16px',
@@ -405,7 +401,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
             <Group
               style={{
                 background: 'rgba(76, 175, 80, 0.15)',
-                backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 border: '1px solid rgba(76, 175, 80, 0.4)',
                 padding: '20px',
@@ -425,7 +420,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
               <Group
                 style={{
                   background: 'rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(12px)',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   padding: '16px',
@@ -450,7 +444,6 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '16px',

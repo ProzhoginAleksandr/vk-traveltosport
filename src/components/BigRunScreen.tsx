@@ -2,6 +2,7 @@
 // Крупный режим: огромные цифры и большие кнопки, чтобы можно было глянуть на экран на бегу.
 import { useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
+import { Icon24Pause, Icon24Play, Icon24Stop } from '@vkontakte/icons';
 
 import type { RunPhase, Split } from '../hooks/useRunTracker';
 import { formatDuration, formatKm, formatPaceValue } from '../utils/runFormat';
@@ -28,6 +29,10 @@ const bigButton: CSSProperties = {
   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
   fontSize: 22,
   cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 10,
 };
 
 const label: CSSProperties = {
@@ -175,7 +180,8 @@ export const BigRunScreen = ({
               onClick={onResume}
               style={{ ...bigButton, background: 'rgba(76, 175, 80, 0.8)' }}
             >
-              ▶ Продолжить
+              <Icon24Play />
+              Продолжить
             </button>
           ) : (
             <button
@@ -183,7 +189,8 @@ export const BigRunScreen = ({
               onClick={onPause}
               style={{ ...bigButton, background: 'rgba(255, 152, 0, 0.8)' }}
             >
-              ⏸ Пауза
+              <Icon24Pause />
+              Пауза
             </button>
           )}
           <button
@@ -191,7 +198,8 @@ export const BigRunScreen = ({
             onClick={() => setConfirming(true)}
             style={{ ...bigButton, background: 'rgba(244, 67, 54, 0.75)' }}
           >
-            ⏹ Стоп
+            <Icon24Stop />
+            Стоп
           </button>
         </div>
       )}

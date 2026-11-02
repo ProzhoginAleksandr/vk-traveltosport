@@ -144,8 +144,6 @@ const ZoneModal = ({ zone, onClose }: ZoneModalProps) => {
         justifyContent: 'center',
         padding: 24,
         background: 'rgba(0, 0, 0, 0.6)',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
       }}
     >
       <div
@@ -356,8 +354,6 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
         <Group
           style={{
             background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
             borderRadius: '16px',
             marginTop: '16px',
             marginBottom: '12px',
@@ -444,8 +440,6 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
               }
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginTop: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -474,8 +468,6 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
               }
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 marginTop: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -487,7 +479,7 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
                 <Text
                   style={{
                     color: 'rgba(255,255,255,0.6)',
-                    fontSize: 12,
+                    fontSize: 13,
                     textAlign: 'center',
                     marginBottom: 12,
                   }}
@@ -532,8 +524,8 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
 
                 <Text
                   style={{
-                    color: 'rgba(255,255,255,0.5)',
-                    fontSize: 12,
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontSize: 13,
                     marginTop: 16,
                     whiteSpace: 'normal',
                   }}
