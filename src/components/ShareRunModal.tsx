@@ -43,7 +43,7 @@ const buttonBase: CSSProperties = {
   border: '1px solid rgba(255, 255, 255, 0.15)',
   color: '#FFFFFF',
   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-  fontSize: 16,
+  fontSize: 15,
   cursor: 'pointer',
   display: 'inline-flex',
   alignItems: 'center',
@@ -462,7 +462,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
 
             {/* Название стиля и индикатор */}
             <div style={{ textAlign: 'center', marginTop: 10 }}>
-              <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 16 }}>{layout.name}</div>
+              <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 15 }}>{layout.name}</div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 8 }}>
                 {LAYOUTS.map((l, i) => (
                   <button
@@ -523,7 +523,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                 gap: 10,
                 marginTop: 14,
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: 14,
+                fontSize: 15,
                 cursor: 'pointer',
               }}
             >

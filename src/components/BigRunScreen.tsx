@@ -38,7 +38,7 @@ const bigButton: CSSProperties = {
 const label: CSSProperties = {
   color: 'rgba(255, 255, 255, 0.6)',
   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-  fontSize: 14,
+  fontSize: 15,
   letterSpacing: 1,
   textTransform: 'uppercase',
 };
@@ -142,7 +142,7 @@ export const BigRunScreen = ({
 
         {lastSplit && (
           <div style={{ color: '#4CAF50', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 22 }}>
-            🏁 Км {lastSplit.km}: {formatDuration(lastSplit.seconds)}
+            Км {lastSplit.km}: {formatDuration(lastSplit.seconds)}
           </div>
         )}
       </div>

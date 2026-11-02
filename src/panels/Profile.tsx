@@ -159,7 +159,7 @@ export const Profile = ({ id }: ProfileProps) => {
     }
   };
 
-  // 📊 Общая статистика
+  // Общая статистика
   const totalDistance = tracks.reduce((sum, t) => sum + t.distance, 0);
   const totalTime = tracks.reduce((sum, t) => sum + t.duration, 0);
   const totalRuns = tracks.length;
@@ -362,7 +362,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
                   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   height: '56px',
                   marginBottom: '12px',
                 }}
@@ -381,7 +381,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
                   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   height: '56px',
                   marginBottom: exportInfo ? '8px' : '12px',
                 }}
@@ -413,7 +413,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
                   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   height: '56px',
                   marginBottom: '12px',
                 }}
@@ -432,11 +432,11 @@ export const Profile = ({ id }: ProfileProps) => {
                   border: '1px solid rgba(244, 67, 54, 0.7)',
                   color: '#FFFFFF',
                   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   height: '56px',
                 }}
               >
-                🗑️ Удалить пробежку
+                Удалить пробежку
               </Button>
             </Group>
           </>
@@ -446,7 +446,7 @@ export const Profile = ({ id }: ProfileProps) => {
             <Group
               header={
                 <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
-                  📊 Общая статистика
+                  Общая статистика
                 </Header>
               }
               style={{
@@ -467,7 +467,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   }}
                 >
                   <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Пробежек</Text>
-                  <Text style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF' }}>
+                  <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                     {totalRuns}
                   </Text>
                 </Card>
@@ -480,7 +480,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   }}
                 >
                   <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Всего км</Text>
-                  <Text style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF' }}>
+                  <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                     {(totalDistance / 1000).toFixed(1)}
                   </Text>
                 </Card>
@@ -495,7 +495,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
                     Всего времени
                   </Text>
-                  <Text style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF' }}>
+                  <Text style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
                     {formatDuration(totalTime)}
                   </Text>
                 </Card>
@@ -535,8 +535,8 @@ export const Profile = ({ id }: ProfileProps) => {
                         {formatDate(track.date)}
                       </Text>
                       <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>
-                        📏 {(track.distance / 1000).toFixed(2)} км &nbsp;·&nbsp; ⏱{' '}
-                        {formatDuration(track.duration)} &nbsp;·&nbsp; ⚡ {formatPace(track.pace)}
+                        {(track.distance / 1000).toFixed(2)} км &nbsp;·&nbsp;{' '}
+                        {formatDuration(track.duration)} &nbsp;·&nbsp; {formatPace(track.pace)}
                       </Text>
                     </div>
                   </Cell>
@@ -566,11 +566,11 @@ export const Profile = ({ id }: ProfileProps) => {
                     border: '1px solid rgba(244, 67, 54, 0.6)',
                     color: '#FFFFFF',
                     fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                    fontSize: '16px',
+                    fontSize: '15px',
                     height: '56px',
                   }}
                 >
-                  🗑️ Очистить всё
+                  Очистить всё
                 </Button>
               </Group>
             )}
@@ -578,7 +578,7 @@ export const Profile = ({ id }: ProfileProps) => {
         )}
       {/* Метка сборки: сразу видно, какой бандл исполняется на устройстве */}
       <Div style={{ textAlign: 'center', paddingTop: 0, paddingBottom: 4 }}>
-        <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: 11 }}>
+        <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: 13 }}>
           сборка {getBuildId() || 'dev'}
         </Text>
       </Div>

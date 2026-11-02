@@ -137,7 +137,7 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
                   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   height: '56px',
                 }}
               >

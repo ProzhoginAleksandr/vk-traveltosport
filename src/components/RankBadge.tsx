@@ -89,7 +89,7 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
               }}
             >
               <div style={{ fontSize: 56, lineHeight: 1 }}>{icon}</div>
-              <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 24, margin: '12px 0 8px' }}>{name}</div>
+              <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 22, margin: '12px 0 8px' }}>{name}</div>
               <Text style={{ color: '#DDDDDD', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', whiteSpace: 'normal' }}>
                 {description}
               </Text>
@@ -131,7 +131,7 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
                   background: 'rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
                   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                  fontSize: 16,
+                  fontSize: 15,
                   cursor: 'pointer',
                 }}
               >

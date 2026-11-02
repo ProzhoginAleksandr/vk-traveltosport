@@ -362,7 +362,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
                   ⏱ {formatGameTime(elapsedTime)}
                 </Text>
               </div>
-              <Text style={{ color: '#FFFFFF', fontSize: '16px', lineHeight: '1.6' }}>
+              <Text style={{ color: '#FFFFFF', fontSize: '15px', lineHeight: '1.6' }}>
                 {currentQuestion.definition}
               </Text>
             </Group>
@@ -408,10 +408,10 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
                 textAlign: 'center',
               }}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: '28px', fontWeight: 700, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
+              <Text style={{ color: '#FFFFFF', fontSize: '26px', fontWeight: 700, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                 {score} / {QUESTIONS_COUNT}
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', marginTop: '8px' }}>
+              <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: '15px', marginTop: '8px' }}>
                 Правильных ответов за {formatGameTime(elapsedTime)}
               </Text>
             </Group>
@@ -427,7 +427,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
                   textAlign: 'center',
                 }}
               >
-                <Text style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 600 }}>
+                <Text style={{ color: '#FFFFFF', fontSize: '15px', fontWeight: 600 }}>
                   {message}
                 </Text>
                 {bestTime !== null && (
@@ -462,7 +462,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
               }}
             >

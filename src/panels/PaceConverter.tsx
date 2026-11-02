@@ -126,7 +126,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 color: '#FFFFFF',
                 height: '56px',
-                fontSize: '16px',
+                fontSize: '15px',
                 padding: '0 16px',
                 boxSizing: 'border-box',
                 marginBottom: '8px',
@@ -144,7 +144,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
                 boxSizing: 'border-box',
                 marginBottom: '16px',
@@ -155,7 +155,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
 
             {paceResult && (
               <div style={{ marginBottom: '16px' }}>
-                <Text weight="2" style={{ fontSize: '16px', color: '#4CAF50' }}>
+                <Text weight="2" style={{ fontSize: '15px', color: '#4CAF50' }}>
                   {paceResult}
                 </Text>
               </div>
@@ -178,7 +178,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 color: '#FFFFFF',
                 height: '56px',
-                fontSize: '16px',
+                fontSize: '15px',
                 padding: '0 16px',
                 boxSizing: 'border-box',
                 marginBottom: '8px',
@@ -196,7 +196,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
                 boxSizing: 'border-box',
                 marginBottom: '16px',
@@ -207,7 +207,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
 
             {speedResult && (
               <div>
-                <Text weight="2" style={{ fontSize: '16px', color: '#4CAF50' }}>
+                <Text weight="2" style={{ fontSize: '15px', color: '#4CAF50' }}>
                   {speedResult}
                 </Text>
               </div>

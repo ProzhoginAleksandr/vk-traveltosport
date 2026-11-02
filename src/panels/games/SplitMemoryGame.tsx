@@ -300,7 +300,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                   borderRadius: '12px',
                 }}
               >
-                <Text style={{ color: '#FFFFFF', fontSize: '16px' }}>
+                <Text style={{ color: '#FFFFFF', fontSize: '15px' }}>
                   {split.km} км
                 </Text>
                 <Text
@@ -347,7 +347,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 <Text
                   style={{
                     color: '#FFFFFF',
-                    fontSize: '16px',
+                    fontSize: '15px',
                     minWidth: '50px',
                   }}
                 >
@@ -365,7 +365,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                     borderRadius: '12px',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     height: '48px',
-                    fontSize: '16px',
+                    fontSize: '15px',
                   }}
                 />
               </div>
@@ -408,7 +408,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                       : '1px solid rgba(244, 67, 54, 0.5)',
                   }}
                 >
-                  <Text style={{ color: '#FFFFFF', fontSize: '14px' }}>
+                  <Text style={{ color: '#FFFFFF', fontSize: '15px' }}>
                     {results[index] ? '✅' : '❌'} {split.km} км
                   </Text>
                   <div style={{ textAlign: 'right' }}>
@@ -418,7 +418,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                     <Text
                       style={{
                         color: '#4CAF50',
-                        fontSize: '16px',
+                        fontSize: '15px',
                         fontWeight: 700,
                       }}
                     >
@@ -440,7 +440,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                   textAlign: 'center',
                 }}
               >
-                <Text style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 600 }}>
+                <Text style={{ color: '#FFFFFF', fontSize: '15px', fontWeight: 600 }}>
                   {message}
                 </Text>
               </Group>
@@ -470,7 +470,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
               }}
             >
@@ -490,7 +490,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
               }}
             >
@@ -510,7 +510,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
               }}
             >
@@ -531,7 +531,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
               }}
             >
@@ -551,7 +551,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
               }}
             >
@@ -572,7 +572,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '14px',
+                fontSize: '15px',
                 height: '48px',
                 marginTop: '12px',
               }}

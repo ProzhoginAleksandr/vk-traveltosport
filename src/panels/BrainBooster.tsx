@@ -132,7 +132,7 @@ export const BrainBooster = ({ id }: BrainBoosterProps) => {
                 ) : (
                   <span
                     aria-label={tool.alt}
-                    style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}
+                    style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px' }}
                   >
                     {tool.emoji}
                   </span>

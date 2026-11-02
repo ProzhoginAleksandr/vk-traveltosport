@@ -65,7 +65,7 @@ const actionButton = (background: string): CSSProperties => ({
   border: '1px solid rgba(255, 255, 255, 0.15)',
   color: '#FFFFFF',
   fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-  fontSize: '16px',
+  fontSize: '15px',
   height: '56px',
 });
 
@@ -342,7 +342,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {run.geoError && (
           <Div>
             <Text style={{ color: '#FF9800', textAlign: 'center', fontSize: '13px' }}>
-              📍 {run.geoError}
+              {run.geoError}
             </Text>
           </Div>
         )}
@@ -354,7 +354,7 @@ export const Tracker = ({ id }: TrackerProps) => {
 
         <Div>
           <Text style={{ color: gpsColor, textAlign: 'center', fontSize: '13px' }}>
-            🛰️ {run.gps.text}
+            {run.gps.text}
             {phase === 'idle' && run.gps.ready ? ' · готов к старту' : ''}
             {run.filteredCount > 0 ? ` · отфильтровано: ${run.filteredCount}` : ''}
           </Text>
@@ -445,7 +445,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {/* Настройки */}
         {phase === 'idle' && (
           <Group
-            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>⚙️ Настройки</Header>}
+            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Настройки</Header>}
             style={{ ...glass, marginTop: '16px', padding: '4px 0' }}
           >
             <div style={{ padding: '8px 16px 12px' }}>
@@ -480,7 +480,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {phase !== 'finished' && (
           <Group
             header={
-              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>📊 Текущая пробежка</Header>
+              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Текущая пробежка</Header>
             }
             style={{ ...glass, marginTop: '16px', padding: '4px 0' }}
           >
@@ -514,7 +514,7 @@ export const Tracker = ({ id }: TrackerProps) => {
             {isActive && run.lastSplit && (
               <Div>
                 <Text style={{ color: '#4CAF50', textAlign: 'center', fontWeight: 600 }}>
-                  🏁 Км {run.lastSplit.km}: {formatDuration(run.lastSplit.seconds)}
+                  Км {run.lastSplit.km}: {formatDuration(run.lastSplit.seconds)}
                 </Text>
               </Div>
             )}
@@ -626,7 +626,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                 </Button>
                 {phase === 'paused' && (
                   <Text
-                    style={{ color: '#FF9800', textAlign: 'center', marginTop: 10, fontSize: 14 }}
+                    style={{ color: '#FF9800', textAlign: 'center', marginTop: 10, fontSize: 15 }}
                   >
                     ⏸ Пробежка на паузе
                   </Text>
@@ -675,7 +675,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {phase === 'finished' && summary && (
           <Group
             header={
-              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>🏁 Пробежка завершена</Header>
+              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Пробежка завершена</Header>
             }
             style={{ ...glass, marginTop: '16px', padding: '4px 0' }}
           >

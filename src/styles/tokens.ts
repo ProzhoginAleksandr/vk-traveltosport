@@ -46,12 +46,13 @@ export const SPACING = {
   xxl: 24,
 } as const;
 
-/** Шкала размеров: 13 — подписи, 15 — текст, 18 — подзаголовок, 24 — заголовок, 32+ — цифры */
+/** Шкала размеров: 13 — подписи, 15 — текст, 18/20 — подзаголовки, 22 — заголовок, 32+ — цифры */
 export const FONT_SIZE = {
   caption: 13,
   body: 15,
-  subtitle: 18,
-  title: 24,
+  subtitleSmall: 18,
+  subtitle: 20,
+  title: 22,
   display: 32,
 } as const;
 

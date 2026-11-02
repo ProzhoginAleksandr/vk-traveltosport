@@ -109,7 +109,7 @@ const inputStyle = {
   border: '1px solid rgba(255, 255, 255, 0.1)',
   color: '#FFFFFF',
   height: '56px',
-  fontSize: '16px',
+  fontSize: '15px',
   padding: '0 16px',
   boxSizing: 'border-box' as const,
   marginBottom: '16px',
@@ -167,9 +167,9 @@ const ZoneModal = ({ zone, onClose }: ZoneModalProps) => {
         }}
       >
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 40, lineHeight: 1 }}>{zone.emoji}</div>
+          <div style={{ fontSize: 32, lineHeight: 1 }}>{zone.emoji}</div>
           <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 22, margin: '10px 0 4px' }}>{zone.name}</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>
             {zone.min} – {zone.max} уд/мин
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
@@ -178,14 +178,14 @@ const ZoneModal = ({ zone, onClose }: ZoneModalProps) => {
         </div>
 
         <div style={{ marginTop: 20 }}>
-          <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 14, color: zone.color, marginBottom: 4 }}>
+          <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 15, color: zone.color, marginBottom: 4 }}>
             Ощущения
           </div>
           <Text style={{ color: '#DDDDDD', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', whiteSpace: 'normal' }}>{zone.feel}</Text>
         </div>
 
         <div style={{ marginTop: 16 }}>
-          <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 14, color: zone.color, marginBottom: 4 }}>
+          <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 15, color: zone.color, marginBottom: 4 }}>
             Для чего
           </div>
           <Text style={{ color: '#DDDDDD', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', whiteSpace: 'normal' }}>{zone.purpose}</Text>
@@ -203,7 +203,7 @@ const ZoneModal = ({ zone, onClose }: ZoneModalProps) => {
             background: 'rgba(255, 255, 255, 0.15)',
             color: '#FFFFFF',
             fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-            fontSize: 16,
+            fontSize: 15,
             cursor: 'pointer',
           }}
         >
@@ -415,7 +415,7 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
                 fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                fontSize: '16px',
+                fontSize: '15px',
                 height: '56px',
                 boxSizing: 'border-box',
                 marginBottom: '16px',
