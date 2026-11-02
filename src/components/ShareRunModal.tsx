@@ -41,7 +41,7 @@ const buttonBase: CSSProperties = {
   borderRadius: 12,
   border: '1px solid rgba(255, 255, 255, 0.15)',
   color: '#FFFFFF',
-  fontFamily: 'Impact',
+  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
   fontSize: 16,
   cursor: 'pointer',
 };
@@ -139,13 +139,34 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
 
   useEffect(() => {
     if (!logo.ready) return;
-    try {
-      setPreview(getImage(styleIndex));
-      setError('');
-    } catch (err) {
-      console.error('Ошибка создания изображения:', err);
-      setError('Не удалось создать изображение');
-    }
+    let cancelled = false;
+
+    const render = () => {
+      if (cancelled) return;
+      try {
+        setPreview(getImage(styleIndex));
+        setError('');
+      } catch (err) {
+        console.error('Ошибка создания изображения:', err);
+        setError('Не удалось создать изображение');
+      }
+    };
+
+    // Канвас рисует только уже загруженными шрифтами, поэтому дожидаемся Oswald,
+    // иначе в карточку попадёт запасной шрифт.
+    const fontsReady =
+      typeof document.fonts?.load === 'function'
+        ? Promise.all([
+            document.fonts.load('700 40px Oswald'),
+            document.fonts.load('400 20px Oswald'),
+          ]).catch(() => undefined)
+        : Promise.resolve(undefined);
+
+    void fontsReady.then(render);
+
+    return () => {
+      cancelled = true;
+    };
   }, [getImage, styleIndex, logo.ready]);
 
   // В фоне готовим остальные стили, чтобы свайп был мгновенным
@@ -367,7 +388,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
             }}
           >
-            <div style={{ fontFamily: 'Impact', fontSize: 20, textAlign: 'center', marginBottom: 12 }}>
+            <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 20, textAlign: 'center', marginBottom: 12 }}>
               Поделиться пробежкой
             </div>
 
@@ -436,7 +457,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
 
             {/* Название стиля и индикатор */}
             <div style={{ textAlign: 'center', marginTop: 10 }}>
-              <div style={{ fontFamily: 'Impact', fontSize: 16 }}>{layout.name}</div>
+              <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 16 }}>{layout.name}</div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 8 }}>
                 {LAYOUTS.map((l, i) => (
                   <button
@@ -457,7 +478,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                   />
                 ))}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 8, fontFamily: 'Arial' }}>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 8, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                 Свайпайте влево и вправо, чтобы сменить стиль
               </div>
             </div>
@@ -496,7 +517,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                 alignItems: 'center',
                 gap: 10,
                 marginTop: 14,
-                fontFamily: 'Arial',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: 14,
                 cursor: 'pointer',
               }}
@@ -511,7 +532,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
             </label>
 
             {error && (
-              <div style={{ color: '#FF9800', fontSize: 13, marginTop: 12, fontFamily: 'Arial' }}>
+              <div style={{ color: '#FF9800', fontSize: 13, marginTop: 12, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                 {error}
               </div>
             )}
@@ -567,7 +588,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
                   color: '#FF9800',
                   textAlign: 'center',
                   marginTop: 8,
-                  fontFamily: 'Arial',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 }}
               >
                 {saveInfo}
@@ -615,7 +636,7 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
             <div
               style={{
                 color: 'rgba(255,255,255,0.7)',
-                fontFamily: 'Arial',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: 13,
                 marginTop: 10,
                 textAlign: 'center',

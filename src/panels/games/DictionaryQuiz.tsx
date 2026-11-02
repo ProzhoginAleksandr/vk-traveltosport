@@ -228,7 +228,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
       borderRadius: '12px',
       border: '1px solid rgba(255, 255, 255, 0.15)',
       color: '#FFFFFF',
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
       fontSize: '15px',
       lineHeight: '1.3',
       textAlign: 'left',
@@ -323,7 +323,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
         {/* Фаза: Готовность */}
         {phase === 'ready' && (
           <Group
-            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>Правила игры</Header>}
+            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Правила игры</Header>}
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(12px)',
@@ -413,7 +413,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
                 textAlign: 'center',
               }}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: '28px', fontWeight: 700, fontFamily: 'Impact' }}>
+              <Text style={{ color: '#FFFFFF', fontSize: '28px', fontWeight: 700, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                 {score} / {QUESTIONS_COUNT}
               </Text>
               <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', marginTop: '8px' }}>
@@ -468,7 +468,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
                 borderRadius: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
-                fontFamily: 'Impact',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: '16px',
                 height: '56px',
               }}

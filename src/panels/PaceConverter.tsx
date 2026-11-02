@@ -110,7 +110,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
           }}
         >
           <div style={{ padding: '16px' }}>
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Скорость (км/ч)
             </Text>
 
@@ -145,7 +145,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
                 borderRadius: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
-                fontFamily: 'Impact',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: '16px',
                 height: '56px',
                 boxSizing: 'border-box',
@@ -165,7 +165,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
 
             <div style={{ height: '16px' }} />
 
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Темп (мин/км)
             </Text>
 
@@ -197,7 +197,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
                 borderRadius: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
-                fontFamily: 'Impact',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: '16px',
                 height: '56px',
                 boxSizing: 'border-box',

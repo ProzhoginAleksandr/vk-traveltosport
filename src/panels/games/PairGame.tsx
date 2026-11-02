@@ -297,7 +297,7 @@ export const PairGame = ({ id }: PairGameProps) => {
             weight="2"
             style={{
               color: '#FFFFFF',
-              fontFamily: 'Impact',
+              fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
               fontSize: '22px',
             }}
           >
@@ -308,7 +308,7 @@ export const PairGame = ({ id }: PairGameProps) => {
         {/* Выбор размера поля: до старта и после окончания партии */}
         {!isPlaying && (
           <Group
-            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>Выберите сложность</Header>}
+            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>Выберите сложность</Header>}
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(12px)',
@@ -326,7 +326,7 @@ export const PairGame = ({ id }: PairGameProps) => {
                   background: gridSize === 4 ? 'rgba(76, 175, 80, 0.9)' : 'rgba(255, 255, 255, 0.15)',
                   borderRadius: '12px',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   height: '56px',
                 }}
               >
@@ -340,7 +340,7 @@ export const PairGame = ({ id }: PairGameProps) => {
                   background: gridSize === 6 ? 'rgba(76, 175, 80, 0.9)' : 'rgba(255, 255, 255, 0.15)',
                   borderRadius: '12px',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   height: '56px',
                 }}
               >
@@ -499,7 +499,7 @@ export const PairGame = ({ id }: PairGameProps) => {
               borderRadius: '12px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               color: '#FFFFFF',
-              fontFamily: 'Impact',
+              fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
               fontSize: '16px',
               height: '56px',
             }}

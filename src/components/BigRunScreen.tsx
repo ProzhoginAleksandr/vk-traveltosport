@@ -25,14 +25,14 @@ const bigButton: CSSProperties = {
   borderRadius: 18,
   border: '1px solid rgba(255, 255, 255, 0.2)',
   color: '#FFFFFF',
-  fontFamily: 'Impact',
+  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
   fontSize: 22,
   cursor: 'pointer',
 };
 
 const label: CSSProperties = {
   color: 'rgba(255, 255, 255, 0.6)',
-  fontFamily: 'Arial',
+  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
   fontSize: 14,
   letterSpacing: 1,
   textTransform: 'uppercase',
@@ -81,7 +81,7 @@ export const BigRunScreen = ({
             border: '1px solid rgba(255, 255, 255, 0.25)',
             background: 'rgba(255, 255, 255, 0.12)',
             color: '#FFFFFF',
-            fontFamily: 'Arial',
+            fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
             fontSize: 15,
             cursor: 'pointer',
           }}
@@ -101,21 +101,21 @@ export const BigRunScreen = ({
         }}
       >
         {paused && (
-          <div style={{ color: '#FF9800', fontFamily: 'Impact', fontSize: 22 }}>
+          <div style={{ color: '#FF9800', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 22 }}>
             ⏸ ПАУЗА
           </div>
         )}
 
         <div>
           <div style={label}>Дистанция, км</div>
-          <div style={{ fontFamily: 'Impact', fontSize: 'min(30vw, 150px)', lineHeight: 1 }}>
+          <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 'min(30vw, 150px)', lineHeight: 1 }}>
             {formatKm(distance)}
           </div>
         </div>
 
         <div>
           <div style={label}>Время</div>
-          <div style={{ fontFamily: 'Impact', fontSize: 'min(20vw, 96px)', lineHeight: 1 }}>
+          <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 'min(20vw, 96px)', lineHeight: 1 }}>
             {formatDuration(elapsed)}
           </div>
         </div>
@@ -123,20 +123,20 @@ export const BigRunScreen = ({
         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
           <div>
             <div style={label}>Темп сейчас</div>
-            <div style={{ fontFamily: 'Impact', fontSize: 'min(13vw, 60px)', lineHeight: 1.1 }}>
+            <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 'min(13vw, 60px)', lineHeight: 1.1 }}>
               {formatPaceValue(currentPace)}
             </div>
           </div>
           <div>
             <div style={label}>Средний темп</div>
-            <div style={{ fontFamily: 'Impact', fontSize: 'min(13vw, 60px)', lineHeight: 1.1 }}>
+            <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 'min(13vw, 60px)', lineHeight: 1.1 }}>
               {formatPaceValue(avgPace)}
             </div>
           </div>
         </div>
 
         {lastSplit && (
-          <div style={{ color: '#4CAF50', fontFamily: 'Impact', fontSize: 22 }}>
+          <div style={{ color: '#4CAF50', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 22 }}>
             🏁 Км {lastSplit.km}: {formatDuration(lastSplit.seconds)}
           </div>
         )}
@@ -144,7 +144,7 @@ export const BigRunScreen = ({
 
       {confirming ? (
         <div>
-          <div style={{ textAlign: 'center', fontFamily: 'Impact', fontSize: 20, marginBottom: 12 }}>
+          <div style={{ textAlign: 'center', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 20, marginBottom: 12 }}>
             Завершить пробежку?
           </div>
           <div style={{ display: 'flex', gap: 12 }}>

@@ -149,7 +149,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
         {/* Информация */}
         <Group
           header={
-            <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+            <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               📥 Импорт тренировок
             </Header>
           }
@@ -205,7 +205,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
               borderRadius: '12px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               color: '#FFFFFF',
-              fontFamily: 'Impact',
+              fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
               fontSize: '16px',
               height: '56px',
             }}
@@ -236,7 +236,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
         {lastImported && (
           <Group
             header={
-              <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                 📊 Импортированная тренировка
               </Header>
             }

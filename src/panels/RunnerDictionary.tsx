@@ -117,7 +117,7 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
           >
             <Text
               weight="2"
-              style={{ color: '#FFFFFF', fontFamily: 'Impact', fontSize: '20px', marginBottom: '12px' }}
+              style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: '20px', marginBottom: '12px' }}
             >
               {selectedDefinition.term}
             </Text>
@@ -137,7 +137,7 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   fontSize: '16px',
                   height: '56px',
                 }}
@@ -206,7 +206,7 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
             {/* Список терминов */}
             <Group
               header={
-                <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+                <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   📖 Термины
                 </Header>
               }

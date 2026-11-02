@@ -51,7 +51,7 @@ export const Home = ({ id }: HomeProps) => {
             color: colors.text,
             marginTop: '16px',
             marginBottom: '16px',
-            fontFamily: 'Impact',
+            fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
             fontSize: '20px',
           }}
         >
@@ -82,14 +82,14 @@ export const Home = ({ id }: HomeProps) => {
                 style={{ width: '32px', height: '32px', objectFit: 'contain' }}
               />
               <div>
-                <Text weight="2" style={{ color: colors.text, fontFamily: 'Impact' }}>
+                <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Личный кабинет
                 </Text>
                 <Text
                   style={{
                     color: colors.textSecondary,
                     fontSize: '13px',
-                    fontFamily: 'Arial',
+                    fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                     whiteSpace: 'normal',
                   }}
                 >
@@ -124,10 +124,10 @@ export const Home = ({ id }: HomeProps) => {
         style={{ width: '32px', height: '32px', objectFit: 'contain' }}
       />
       <div>
-        <Text weight="2" style={{ color: colors.text, fontFamily: 'Impact' }}>
+        <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
           Дневник тренировок
         </Text>
-        <Text style={{ color: colors.textSecondary, fontSize: '13px', fontFamily: 'Arial' }}>
+        <Text style={{ color: colors.textSecondary, fontSize: '13px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
           Трекер и импорт тренировок
         </Text>
       </div>
@@ -159,14 +159,14 @@ export const Home = ({ id }: HomeProps) => {
                 style={{ width: '32px', height: '32px', objectFit: 'contain' }}
               />
               <div>
-                <Text weight="2" style={{ color: colors.text, fontFamily: 'Impact' }}>
+                <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Калькулятор бегуна
                 </Text>
                 <Text
                   style={{
                     color: colors.textSecondary,
                     fontSize: '13px',
-                    fontFamily: 'Arial',
+                    fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                     whiteSpace: 'normal',
                   }}
                 >
@@ -201,10 +201,10 @@ export const Home = ({ id }: HomeProps) => {
                 style={{ width: '32px', height: '32px', objectFit: 'contain' }}
               />
               <div>
-                <Text weight="2" style={{ color: colors.text, fontFamily: 'Impact' }}>
+                <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Брейнбустер
                 </Text>
-                <Text style={{ color: colors.textSecondary, fontSize: '13px', fontFamily: 'Arial' }}>
+                <Text style={{ color: colors.textSecondary, fontSize: '13px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Тренируйте извилины
                 </Text>
               </div>

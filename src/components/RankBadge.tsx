@@ -49,7 +49,7 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
           WebkitBackdropFilter: 'blur(12px)',
           color: '#FFFFFF',
           cursor: 'pointer',
-          fontFamily: 'Impact',
+          fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
           fontSize: 15,
         }}
       >
@@ -93,13 +93,13 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
               }}
             >
               <div style={{ fontSize: 56, lineHeight: 1 }}>{icon}</div>
-              <div style={{ fontFamily: 'Impact', fontSize: 24, margin: '12px 0 8px' }}>{name}</div>
-              <Text style={{ color: '#DDDDDD', fontFamily: 'Arial', whiteSpace: 'normal' }}>
+              <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 24, margin: '12px 0 8px' }}>{name}</div>
+              <Text style={{ color: '#DDDDDD', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', whiteSpace: 'normal' }}>
                 {description}
               </Text>
 
               <div style={{ marginTop: 20, textAlign: 'left' }}>
-                <Text style={{ color: '#AAAAAA', fontSize: 13, fontFamily: 'Arial' }}>
+                <Text style={{ color: '#AAAAAA', fontSize: 13, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Пробежек: {runsCount}
                   {next ? ` · до «${next.name}»: ${next.minRuns - runsCount}` : ' · максимальное звание'}
                 </Text>
@@ -134,7 +134,7 @@ export const RankBadge = ({ runsCount }: RankBadgeProps) => {
                   border: 'none',
                   background: 'rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   fontSize: 16,
                   cursor: 'pointer',
                 }}

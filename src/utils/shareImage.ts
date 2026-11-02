@@ -22,8 +22,8 @@ const W = 1080;
 const H = 1920;
 const PRIVACY_ZONE_M = 200;
 
-const FONT_TITLE = 'Impact, "Arial Black", sans-serif';
-const FONT_TEXT = 'Arial, Helvetica, sans-serif';
+const FONT_TITLE = 'Oswald, Impact, "Arial Narrow", Arial, sans-serif';
+const FONT_TEXT = 'Oswald, Impact, "Arial Narrow", Arial, sans-serif';
 
 interface Pt {
   lat: number;

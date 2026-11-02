@@ -63,7 +63,7 @@ const actionButton = (background: string): CSSProperties => ({
   borderRadius: '12px',
   border: '1px solid rgba(255, 255, 255, 0.15)',
   color: '#FFFFFF',
-  fontFamily: 'Impact',
+  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
   fontSize: '16px',
   height: '56px',
 });
@@ -294,7 +294,7 @@ export const Tracker = ({ id }: TrackerProps) => {
             padding: '6px 0',
             borderBottom: '1px solid rgba(255,255,255,0.08)',
             color: s.seconds === fastestKm ? '#4CAF50' : '#FFFFFF',
-            fontFamily: 'Arial',
+            fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
             fontSize: 15,
           }}
         >
@@ -445,7 +445,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {/* Настройки */}
         {phase === 'idle' && (
           <Group
-            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>⚙️ Настройки</Header>}
+            header={<Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>⚙️ Настройки</Header>}
             style={{ ...glass, marginTop: '16px', padding: '4px 0' }}
           >
             <div style={{ padding: '8px 16px 12px' }}>
@@ -458,7 +458,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                     gap: 12,
                     padding: '8px 0',
                     color: '#FFFFFF',
-                    fontFamily: 'Arial',
+                    fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                     fontSize: 15,
                     cursor: 'pointer',
                   }}
@@ -480,7 +480,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {phase !== 'finished' && (
           <Group
             header={
-              <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>📊 Текущая пробежка</Header>
+              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>📊 Текущая пробежка</Header>
             }
             style={{ ...glass, marginTop: '16px', padding: '4px 0' }}
           >
@@ -567,7 +567,7 @@ export const Tracker = ({ id }: TrackerProps) => {
             {phase === 'countdown' && (
               <>
                 <div style={{ textAlign: 'center', color: '#FFFFFF' }}>
-                  <div style={{ fontFamily: 'Impact', fontSize: 96, lineHeight: 1 }}>
+                  <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 96, lineHeight: 1 }}>
                     {run.countdown}
                   </div>
                   <Text style={{ color: 'rgba(255,255,255,0.7)' }}>Приготовьтесь…</Text>
@@ -635,7 +635,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                   style={{
                     color: '#FFFFFF',
                     textAlign: 'center',
-                    fontFamily: 'Impact',
+                    fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                     fontSize: 18,
                     marginBottom: 12,
                   }}
@@ -670,7 +670,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {phase === 'finished' && summary && (
           <Group
             header={
-              <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>🏁 Пробежка завершена</Header>
+              <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>🏁 Пробежка завершена</Header>
             }
             style={{ ...glass, marginTop: '16px', padding: '4px 0' }}
           >
@@ -763,7 +763,7 @@ export const Tracker = ({ id }: TrackerProps) => {
                   }}
                 >
                   <div style={{ fontSize: 32 }}>{run.rankUp.icon}</div>
-                  <div style={{ fontFamily: 'Impact', fontSize: 18 }}>
+                  <div style={{ fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', fontSize: 18 }}>
                     Новое звание: {run.rankUp.name}!
                   </div>
                 </div>
@@ -819,7 +819,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {/* Симуляция GPS: только при разработке (npm start), в сборке этого блока нет */}
         {import.meta.env.DEV && phase === 'idle' && (
           <Group style={{ ...glass, marginTop: '16px', padding: '16px' }}>
-            <Text style={{ color: '#FFFFFF', fontFamily: 'Impact', marginBottom: 8 }}>
+            <Text style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif', marginBottom: 8 }}>
               🧪 Симуляция (только для разработки)
             </Text>
             {run.simulating ? (

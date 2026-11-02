@@ -93,7 +93,7 @@ export const RunnerCalculator = ({ id }: RunnerCalculatorProps) => {
             color: colors.text,
             marginTop: '16px',
             marginBottom: '16px',
-            fontFamily: 'Impact',
+            fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
             fontSize: '20px',
           }}
         >
@@ -126,14 +126,14 @@ export const RunnerCalculator = ({ id }: RunnerCalculatorProps) => {
                   style={{ width: '32px', height: '32px', objectFit: 'contain' }}
                 />
                 <div>
-                  <Text weight="2" style={{ color: colors.text, fontFamily: 'Impact' }}>
+                  <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                     {calc.title}
                   </Text>
                   <Text
                     style={{
                       color: colors.textSecondary,
                       fontSize: '13px',
-                      fontFamily: 'Arial',
+                      fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                       whiteSpace: 'normal',
                     }}
                   >

@@ -8,6 +8,14 @@ import { getBuildId } from './utils/buildInfo';
 const buildId = getBuildId();
 if (buildId) document.title = `TraveltoSport · ${buildId}`;
 
+// Шрифт интерфейса грузим сразу: канвас карточки умеет рисовать только уже
+// загруженными шрифтами, иначе вместо Oswald в картинку попадёт запасной.
+if (typeof document.fonts?.load === 'function') {
+  void document.fonts.load('400 16px Oswald');
+  void document.fonts.load('600 16px Oswald');
+  void document.fonts.load('700 16px Oswald');
+}
+
 vkBridge.send('VKWebAppInit')
   .then(() => console.log('✅ Bridge init OK'))
   .catch(err => console.error('❌ Bridge init error:', err));

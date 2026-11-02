@@ -156,7 +156,7 @@ export const RacePace = ({ id }: RacePaceProps) => {
           }}
         >
           <div style={{ padding: '16px' }}>
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Дистанция
             </Text>
             <Select
@@ -166,7 +166,7 @@ export const RacePace = ({ id }: RacePaceProps) => {
               style={{ width: '100%', marginBottom: '16px' }}
             />
 
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Финишное время
             </Text>
             <Input
@@ -197,7 +197,7 @@ export const RacePace = ({ id }: RacePaceProps) => {
                 borderRadius: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
-                fontFamily: 'Impact',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: '16px',
                 height: '56px',
                 boxSizing: 'border-box',
@@ -219,7 +219,7 @@ export const RacePace = ({ id }: RacePaceProps) => {
             <Separator style={{ background: 'rgba(255,255,255,0.2)' }} />
             <Group
               header={
-                <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+                <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Раскладка по километрам
                 </Header>
               }

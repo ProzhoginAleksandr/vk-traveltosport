@@ -179,7 +179,7 @@ export const Vo2Predictor = ({ id }: Vo2PredictorProps) => {
           }}
         >
           <div style={{ padding: '16px' }}>
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Контрольная дистанция
             </Text>
             <Select
@@ -189,7 +189,7 @@ export const Vo2Predictor = ({ id }: Vo2PredictorProps) => {
               style={{ width: '100%', marginBottom: '16px' }}
             />
 
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Время на {controlLabel}
             </Text>
             <Input
@@ -210,7 +210,7 @@ export const Vo2Predictor = ({ id }: Vo2PredictorProps) => {
               }}
             />
 
-            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Arial' }}>
+            <Text style={{ color: '#FFFFFF', marginBottom: '8px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
               Целевая дистанция
             </Text>
             <Select
@@ -230,7 +230,7 @@ export const Vo2Predictor = ({ id }: Vo2PredictorProps) => {
                 borderRadius: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: '#FFFFFF',
-                fontFamily: 'Impact',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                 fontSize: '16px',
                 height: '56px',
                 boxSizing: 'border-box',
@@ -252,7 +252,7 @@ export const Vo2Predictor = ({ id }: Vo2PredictorProps) => {
             <Separator style={{ background: 'rgba(255,255,255,0.2)' }} />
             <Group
               header={
-                <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+                <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   Результат прогноза (VDOT)
                 </Header>
               }

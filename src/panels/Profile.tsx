@@ -214,7 +214,7 @@ export const Profile = ({ id }: ProfileProps) => {
                 <div>
                   <Title
                     level="2"
-                    style={{ marginBottom: 4, color: '#FFFFFF', fontFamily: 'Impact' }}
+                    style={{ marginBottom: 4, color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}
                   >
                     {user ? `${user.first_name} ${user.last_name}` : 'Гость'}
                   </Title>
@@ -365,7 +365,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   fontSize: '16px',
                   height: '56px',
                   marginBottom: '12px',
@@ -384,7 +384,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   fontSize: '16px',
                   height: '56px',
                   marginBottom: exportInfo ? '8px' : '12px',
@@ -416,7 +416,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   fontSize: '16px',
                   height: '56px',
                   marginBottom: '12px',
@@ -435,7 +435,7 @@ export const Profile = ({ id }: ProfileProps) => {
                   borderRadius: '12px',
                   border: '1px solid rgba(244, 67, 54, 0.7)',
                   color: '#FFFFFF',
-                  fontFamily: 'Impact',
+                  fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                   fontSize: '16px',
                   height: '56px',
                 }}
@@ -449,7 +449,7 @@ export const Profile = ({ id }: ProfileProps) => {
             {/* Общая статистика */}
             <Group
               header={
-                <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+                <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   📊 Общая статистика
                 </Header>
               }
@@ -510,7 +510,7 @@ export const Profile = ({ id }: ProfileProps) => {
             {/* Список пробежек */}
             <Group
               header={
-                <Header style={{ color: '#FFFFFF', fontFamily: 'Impact' }}>
+                <Header style={{ color: '#FFFFFF', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                   🏃 Мои пробежки
                 </Header>
               }
@@ -572,7 +572,7 @@ export const Profile = ({ id }: ProfileProps) => {
                     borderRadius: '12px',
                     border: '1px solid rgba(244, 67, 54, 0.6)',
                     color: '#FFFFFF',
-                    fontFamily: 'Impact',
+                    fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                     fontSize: '16px',
                     height: '56px',
                   }}

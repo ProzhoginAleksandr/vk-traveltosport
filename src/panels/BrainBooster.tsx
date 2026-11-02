@@ -99,7 +99,7 @@ export const BrainBooster = ({ id }: BrainBoosterProps) => {
             color: colors.text,
             marginTop: '16px',
             marginBottom: '16px',
-            fontFamily: 'Impact',
+            fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
             fontSize: '20px',
           }}
         >
@@ -140,14 +140,14 @@ export const BrainBooster = ({ id }: BrainBoosterProps) => {
                   </span>
                 )}
                 <div>
-                  <Text weight="2" style={{ color: colors.text, fontFamily: 'Impact' }}>
+                  <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                     {tool.title}
                   </Text>
                   <Text
                     style={{
                       color: colors.textSecondary,
                       fontSize: '13px',
-                      fontFamily: 'Arial',
+                      fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
                       whiteSpace: 'normal',
                     }}
                   >
