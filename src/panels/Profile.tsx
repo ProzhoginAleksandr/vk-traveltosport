@@ -14,12 +14,9 @@ import {
   CardGrid,
   Spinner,
 } from '@vkontakte/vkui';
-import { MapContainer, TileLayer, Polyline, Marker } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
 import profileHeaderImage from '../assets/images/ProfileHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
+import { MapCanvas } from '../components/MapCanvas';
 import { RankBadge } from '../components/RankBadge';
 import { ShareRunModal } from '../components/ShareRunModal';
 import { trackToGpx } from '../utils/gpx';
@@ -33,18 +30,6 @@ import {
   SavedTrack,
 } from '../utils/trackStorage';
 import { getBuildId } from '../utils/buildInfo';
-
-// 🛠️ Иконка маркера
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
 
 interface ProfileProps {
   id: string;
@@ -170,7 +155,7 @@ export const Profile = ({ id }: ProfileProps) => {
         .vkuiGroup { background: transparent !important; }
         .vkuiCard { background: transparent !important; }
         .vkuiCell { background: transparent !important; }
-        .leaflet-container { border-radius: 12px; background: #0a0f0a; }
+        .maplibregl-map { border-radius: 12px; background: #0a0f0a; }
       `}</style>
 
       
@@ -239,37 +224,35 @@ export const Profile = ({ id }: ProfileProps) => {
                 padding: '8px',
               }}
             >
-              <div className="app-map" style={{ height: '300px' }}>
-                <MapContainer
+              <div style={{ height: '300px' }}>
+                <MapCanvas
                   center={
                     selectedTrack.points.length > 0
                       ? [selectedTrack.points[0].lat, selectedTrack.points[0].lon]
                       : [55.7558, 37.6173]
                   }
                   zoom={15}
-                  style={{ height: '100%', width: '100%' }}
-                >
-                  <TileLayer
-                    url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                    maxZoom={16}
-                    attribution="Tiles &copy; Esri"
-                  />
-                  {selectedTrack.points.length > 1 && (
-                    <Polyline
-                      positions={selectedTrack.points.map((p) => [p.lat, p.lon])}
-                      color="#4CAF50"
-                      weight={5}
-                    />
-                  )}
-                  {selectedTrack.points.length > 0 && (
-                    <Marker
-                      position={[
-                        selectedTrack.points[selectedTrack.points.length - 1].lat,
-                        selectedTrack.points[selectedTrack.points.length - 1].lon,
-                      ]}
-                    />
-                  )}
-                </MapContainer>
+                  segments={
+                    selectedTrack.points.length > 1
+                      ? [
+                          {
+                            positions: selectedTrack.points.map(
+                              (p) => [p.lat, p.lon] as [number, number]
+                            ),
+                            paused: false,
+                          },
+                        ]
+                      : []
+                  }
+                  marker={
+                    selectedTrack.points.length > 0
+                      ? [
+                          selectedTrack.points[selectedTrack.points.length - 1].lat,
+                          selectedTrack.points[selectedTrack.points.length - 1].lon,
+                        ]
+                      : null
+                  }
+                />
               </div>
             </Group>
 

@@ -1,5 +1,5 @@
 // src/panels/Tracker.tsx
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import {
   Panel,
   Group,
@@ -11,16 +11,13 @@ import {
   CardGrid,
 } from '@vkontakte/vkui';
 
-import { MapContainer, TileLayer, Polyline, Marker, Circle, useMap, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
 import { Icon24Fullscreen, Icon24Pause, Icon24Play, Icon24Stop } from '@vkontakte/icons';
 
 import trackerHeaderImage from '../assets/images/TrackerHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
 import { BigRunScreen } from '../components/BigRunScreen';
+import { MapCanvas, type MapSegment } from '../components/MapCanvas';
 import { ShareRunModal } from '../components/ShareRunModal';
 import { useRunTracker, type TrackPoint } from '../hooks/useRunTracker';
 import { formatDuration, formatKm, formatPaceValue } from '../utils/runFormat';
@@ -29,17 +26,6 @@ import { saveFile, textToFile } from '../utils/fileExport';
 import { showAdIfDue } from '../utils/adUtils';
 import { getBuildId } from '../utils/buildInfo';
 import type { TrackerSettings } from '../utils/trackerSettings';
-
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
 
 interface TrackerProps {
   id: string;
@@ -75,125 +61,35 @@ const SETTING_ITEMS: Array<{ key: keyof TrackerSettings; label: string }> = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/*  Карта: слежение за позицией и кнопка «Где я»                               */
+/*  Карта: участки маршрута для MapLibre                                        */
 /* -------------------------------------------------------------------------- */
 
-interface MapControllerProps {
-  position: { lat: number; lon: number } | null;
-  follow: boolean;
-  onUserPan: () => void;
-  onLocate: () => void;
-}
-
-const MapController = ({ position, follow, onUserPan, onLocate }: MapControllerProps) => {
-  const map = useMap();
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const onLocateRef = useRef(onLocate);
-
-  useEffect(() => {
-    onLocateRef.current = onLocate;
-  });
-
-  // Пользователь двигает карту пальцем — перестаём за ним «убегать»
-  useMapEvents({ dragstart: onUserPan });
-
-  // В режиме слежения центрируем карту, но не трогаем выбранный пользователем масштаб
-  useEffect(() => {
-    if (follow && position) {
-      map.setView([position.lat, position.lon], map.getZoom(), { animate: true });
-    }
-  }, [follow, position, map]);
-
-  // Кнопка создаётся один раз (раньше пересоздавалась при каждой точке GPS)
-  useEffect(() => {
-    const LocateButton = L.Control.extend({
-      onAdd: () => {
-        const btn = L.DomUtil.create('button');
-        btn.innerHTML = '📍';
-        btn.title = 'Где я';
-        btn.setAttribute('aria-label', 'Где я');
-        btn.style.cssText = `
-          width: 40px;
-          height: 40px;
-          font-size: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 8px;
-          cursor: pointer;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0;
-          color: white;
-        `;
-        L.DomEvent.disableClickPropagation(btn);
-        btn.onclick = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onLocateRef.current();
-        };
-        buttonRef.current = btn;
-        return btn;
-      },
-    });
-
-    const control = new LocateButton({ position: 'topright' });
-    control.addTo(map);
-    return () => {
-      control.remove();
-      buttonRef.current = null;
-    };
-  }, [map]);
-
-  // Цвет кнопки показывает, включено ли слежение
-  useEffect(() => {
-    if (buttonRef.current) {
-      buttonRef.current.style.background = follow
-        ? 'rgba(9, 107, 17, 0.95)'
-        : 'rgba(70, 70, 70, 0.9)';
-    }
-  }, [follow]);
-
-  return null;
-};
-
 // Линия маршрута: пройденное — зелёным, участки на паузе — серым пунктиром
-const renderPolylines = (track: TrackPoint[]) => {
-  if (track.length < 2) return null;
+const buildSegments = (track: TrackPoint[]): MapSegment[] => {
+  if (track.length < 2) return [];
 
-  const result: JSX.Element[] = [];
+  const segments: MapSegment[] = [];
   let segmentStart = 0;
   let currentIsPaused = track[0].isPaused || track[1].isPaused;
 
-  const push = (key: string, from: number, to: number | undefined, paused: boolean) => {
-    const positions: [number, number][] = track
+  const push = (from: number, to: number | undefined, paused: boolean) => {
+    const positions: Array<[number, number]> = track
       .slice(from, to)
       .map((p) => [p.lat, p.lon]);
-    if (positions.length >= 2) {
-      result.push(
-        <Polyline
-          key={key}
-          positions={positions}
-          color={paused ? '#888888' : '#4CAF50'}
-          weight={paused ? 3 : 5}
-          opacity={paused ? 0.7 : 1}
-          dashArray={paused ? '8, 8' : undefined}
-        />
-      );
-    }
+    if (positions.length >= 2) segments.push({ positions, paused });
   };
 
   for (let i = 2; i < track.length; i++) {
     const segPaused = track[i - 1].isPaused || track[i].isPaused;
     if (segPaused !== currentIsPaused) {
-      push(`seg-${segmentStart}`, segmentStart, i, currentIsPaused);
+      push(segmentStart, i, currentIsPaused);
       segmentStart = i - 1;
       currentIsPaused = segPaused;
     }
   }
-  push('seg-final', segmentStart, undefined, currentIsPaused);
+  push(segmentStart, undefined, currentIsPaused);
 
-  return result;
+  return segments;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -216,7 +112,7 @@ export const Tracker = ({ id }: TrackerProps) => {
   const isActive = phase === 'running' || phase === 'paused';
 
   // Линия маршрута пересобирается только когда меняются точки, а не каждую секунду вместе с таймером
-  const polylines = useMemo(() => renderPolylines(run.points), [run.points]);
+  const segments = useMemo(() => buildSegments(run.points), [run.points]);
 
   useEffect(() => {
     setStopConfirm(false);
@@ -314,7 +210,7 @@ export const Tracker = ({ id }: TrackerProps) => {
       <style>{`
         .vkuiGroup { background: transparent !important; }
         .vkuiCard { background: transparent !important; }
-        .leaflet-container { border-radius: 12px; background: #0a0f0a; }
+        .maplibregl-map { border-radius: 12px; background: #0a0f0a; }
       `}</style>
 
       <PageBackground variant="blue" pattern="footsteps">
@@ -403,42 +299,23 @@ export const Tracker = ({ id }: TrackerProps) => {
 
         {/* Карта */}
         <Group style={{ ...glass, marginTop: '16px', padding: '8px' }}>
-          <div className="app-map" style={{ height: '300px' }}>
-            <MapContainer
+          <div style={{ height: '300px' }}>
+            <MapCanvas
               center={mapCenter}
               zoom={16}
-              style={{ height: '100%', width: '100%' }}
-            >
-              <TileLayer
-                url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                maxZoom={16}
-                attribution="Tiles &copy; Esri"
-              />
-              <MapController
-                position={run.position}
-                follow={follow}
-                onUserPan={() => setFollow(false)}
-                onLocate={handleLocate}
-              />
-
-              {run.position && (
-                <>
-                  <Circle
-                    center={[run.position.lat, run.position.lon]}
-                    radius={20}
-                    pathOptions={{ color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.3 }}
-                  />
-                  <Circle
-                    center={[run.position.lat, run.position.lon]}
-                    radius={5}
-                    pathOptions={{ color: '#FFFFFF', fillColor: '#2196F3', fillOpacity: 1, weight: 2 }}
-                  />
-                </>
-              )}
-
-              {polylines}
-              {lastPoint && <Marker position={[lastPoint.lat, lastPoint.lon]} />}
-            </MapContainer>
+              segments={segments}
+              marker={
+                run.position
+                  ? [run.position.lat, run.position.lon]
+                  : lastPoint
+                  ? [lastPoint.lat, lastPoint.lon]
+                  : null
+              }
+              accuracyMeters={run.gps.accuracy > 0 ? run.gps.accuracy : 20}
+              follow={follow}
+              onUserPan={() => setFollow(false)}
+              onLocate={handleLocate}
+            />
           </div>
         </Group>
 
