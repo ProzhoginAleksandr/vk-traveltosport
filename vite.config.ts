@@ -8,13 +8,15 @@ import react from '@vitejs/plugin-react';
 const mapLibreWorkerAsJs = (): Plugin => ({
   name: 'maplibre-worker-as-js',
   generateBundle(_options, bundle) {
-    for (const item of Object.values(bundle)) {
-      if (item.type === 'asset' && /maplibre-gl-worker.*\.mjs$/.test(item.fileName)) {
+    for (const [fileName, item] of Object.entries(bundle)) {
+      if (item.type === 'asset' && /maplibre-gl-worker.*\.mjs$/.test(fileName)) {
         this.emitFile({
           type: 'asset',
-          fileName: item.fileName.replace(/\.mjs$/, '.js'),
+          fileName: fileName.replace(/\.mjs$/, '.js'),
           source: item.source,
         });
+        // Оригинальный .mjs не нужен: код карты ссылается на .js-копию
+        delete bundle[fileName];
       }
     }
   },

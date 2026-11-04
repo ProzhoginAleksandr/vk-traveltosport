@@ -17,7 +17,7 @@ import trackerHeaderImage from '../assets/images/TrackerHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
 import { BigRunScreen } from '../components/BigRunScreen';
-import { MapCanvas, type MapSegment } from '../components/MapCanvas';
+import { MapView, type MapSegment } from '../components/MapView';
 import { ShareRunModal } from '../components/ShareRunModal';
 import { useRunTracker, type TrackPoint } from '../hooks/useRunTracker';
 import { formatDuration, formatKm, formatPaceValue } from '../utils/runFormat';
@@ -300,7 +300,7 @@ export const Tracker = ({ id }: TrackerProps) => {
         {/* Карта */}
         <Group style={{ ...glass, marginTop: '16px', padding: '8px' }}>
           <div style={{ height: '300px' }}>
-            <MapCanvas
+            <MapView
               center={mapCenter}
               zoom={16}
               segments={segments}

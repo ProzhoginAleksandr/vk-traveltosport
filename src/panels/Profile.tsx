@@ -16,7 +16,7 @@ import {
 } from '@vkontakte/vkui';
 import profileHeaderImage from '../assets/images/ProfileHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
-import { MapCanvas } from '../components/MapCanvas';
+import { MapView } from '../components/MapView';
 import { RankBadge } from '../components/RankBadge';
 import { ShareRunModal } from '../components/ShareRunModal';
 import { trackToGpx } from '../utils/gpx';
@@ -225,7 +225,7 @@ export const Profile = ({ id }: ProfileProps) => {
               }}
             >
               <div style={{ height: '300px' }}>
-                <MapCanvas
+                <MapView
                   center={
                     selectedTrack.points.length > 0
                       ? [selectedTrack.points[0].lat, selectedTrack.points[0].lon]
