@@ -6,7 +6,7 @@
 // Компонент самодостаточный: принимает центр, зум, участки маршрута, точку
 // текущей позиции и радиус точности, рисует их слоями и умеет «следить» за точкой.
 import { useEffect, useRef, useState } from 'react';
-import { GeoJSONSource, Map as MapLibreMap, setWorkerUrl } from 'maplibre-gl';
+import { GeoJSONSource, Map as MapLibreMap, setWorkerUrl, type StyleSpecification } from 'maplibre-gl';
 import type { Feature, FeatureCollection } from 'geojson';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -17,6 +17,27 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 setWorkerUrl(workerUrl.replace(/\.mjs$/, '.js'));
 
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
+
+// Запасной стиль: обычные растровые тайлы Esri, у них другой CDN (без Cloudflare).
+// Нужен там, где OpenFreeMap недоступен — например, в мобильной сети оператора.
+const RASTER_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    esri: {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      maxzoom: 16,
+      attribution: 'Tiles &copy; Esri',
+    },
+  },
+  layers: [
+    { id: 'background', type: 'background', paint: { 'background-color': '#0a0f0a' } },
+    { id: 'esri', type: 'raster', source: 'esri' },
+  ],
+};
 
 export interface MapSegment {
   /** Координаты в формате [широта, долгота], как в остальном коде */
@@ -156,11 +177,6 @@ export const MapCanvas = ({
     }
     mapRef.current = map;
 
-    // Если стиль и тайлы не пришли за 12 секунд, честно сообщаем об этом на карте
-    const diagTimer = window.setTimeout(() => {
-      setDebugInfo((prev) => prev || 'Карта не загрузилась. Проверьте соединение.');
-    }, 12000);
-
     // VKUI может менять высоту панели — без resize канвас остаётся нулевого размера
     const resizeObserver = new ResizeObserver(() => {
       try {
@@ -235,9 +251,48 @@ export const MapCanvas = ({
 
     applyDataRef.current = applyData;
 
-    map.on('load', () => {
+    // Векторные тайлы OpenFreeMap живут за Cloudflare, а мобильные операторы
+    // в РФ нередко замедляют или режут такие домены. Если стиль не пришёл за
+    // 6 секунд или пришла сетевая ошибка — переключаемся на растровые тайлы
+    // с другого CDN, чтобы карта осталась рабочей и на мобильной сети.
+    let fallbackApplied = false;
+    let styleReady = false;
+
+    const applyRasterFallback = () => {
+      if (fallbackApplied || styleReady) return;
+      fallbackApplied = true;
+      console.warn('OpenFreeMap недоступен, включаем растровые тайлы');
+      try {
+        map.setStyle(RASTER_STYLE);
+      } catch (err) {
+        console.error('Не удалось включить запасные тайлы:', err);
+      }
+    };
+
+    const vectorTimer = window.setTimeout(applyRasterFallback, 6000);
+
+    map.on('error', (event) => {
+      const message = String(
+        (event as { error?: { message?: string } })?.error?.message ?? ''
+      );
+      // Переключаемся только если не загрузился сам стиль: единичные ошибки
+      // отдельных тайлов уже загруженной карты поводом для этого не являются
+      if (!styleReady && /style|fetch|network|load failed|abort/i.test(message)) {
+        applyRasterFallback();
+      }
+    });
+
+    // Если не пришёл даже запасной стиль — сообщаем пользователю
+    const failTimer = window.setTimeout(() => {
+      if (!styleReady) setDebugInfo('Карта не загрузилась. Проверьте соединение.');
+    }, 16000);
+
+    // Срабатывает и для основного стиля, и для запасного
+    map.on('style.load', () => {
+      styleReady = true;
       readyRef.current = true;
-      window.clearTimeout(diagTimer);
+      window.clearTimeout(vectorTimer);
+      window.clearTimeout(failTimer);
       setDebugInfo('');
       applyData();
     });
@@ -247,7 +302,8 @@ export const MapCanvas = ({
 
     return () => {
       readyRef.current = false;
-      window.clearTimeout(diagTimer);
+      window.clearTimeout(vectorTimer);
+      window.clearTimeout(failTimer);
       resizeObserver.disconnect();
       applyDataRef.current = () => undefined;
       map.remove();
