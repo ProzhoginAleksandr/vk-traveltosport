@@ -60,6 +60,16 @@ const isMobileVKClient = (): boolean => {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 };
 
+// VK дописывает к адресу параметры запуска мини-приложения (vk_app_id и другие).
+// Если их нет — страница открыта как обычная ссылка, моста VK нет, и запрос
+// геоданных заведомо не получит ответа: сразу используем браузерную геолокацию.
+const hasLaunchParams = (): boolean => {
+  try {
+    return new URLSearchParams(window.location.search).has('vk_app_id');
+  } catch {
+    return false;
+  }
+};
 const vkGeodataSupported = (): boolean => {
   try {
     return bridge.supports('VKWebAppGetGeodata');
@@ -68,8 +78,24 @@ const vkGeodataSupported = (): boolean => {
   }
 };
 
+// Мост VK может не ответить вообще (например, страница открыта без параметров
+// запуска мини-приложения). Без таймаута опрос навсегда замирал на первом запросе.
+const VK_GEO_TIMEOUT_MS = 5000;
+
+const withTimeout = <T,>(promise: Promise<T>, ms: number, message: string): Promise<T> =>
+  Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new GeoError(GEO_ERROR.TIMEOUT, message)), ms);
+    }),
+  ]);
+
 const getFromVK = async (): Promise<GeoPosition> => {
-  const response = (await bridge.send('VKWebAppGetGeodata')) as VKGeodataResponse;
+  const response = (await withTimeout(
+    bridge.send('VKWebAppGetGeodata') as Promise<VKGeodataResponse>,
+    VK_GEO_TIMEOUT_MS,
+    'VK не ответил на запрос геопозиции'
+  )) as VKGeodataResponse;
 
   if (!response || !response.available) {
     throw new GeoError(GEO_ERROR.PERMISSION_DENIED, 'Доступ к геопозиции не предоставлен');
@@ -109,11 +135,22 @@ const getFromNavigator = (): Promise<GeoPosition> =>
 // к геопозиции (нативный диалог на мобильных VK или браузерный на десктопе).
 export const getGeolocation = async (): Promise<GeoPosition> => {
   // В мобильном клиенте VK получить координаты можно только через VK Bridge
-  if (isMobileVKClient() && vkGeodataSupported()) {
+  if (isMobileVKClient() && vkGeodataSupported() && hasLaunchParams()) {
     return getFromVK();
   }
 
   return getFromNavigator();
+};
+
+// ВРЕМЕННО: состояние геолокации для отладочной строки на экране трекера.
+// Помогает понять, доходит ли запрос до VK Bridge и что он отвечает.
+export const GEO_DEBUG = {
+  mode: '' as '' | 'vk' | 'navigator',
+  platform: '',
+  supports: false,
+  ticks: 0,
+  responses: 0,
+  lastError: '',
 };
 
 // 📡 Непрерывное отслеживание позиции. Возвращает функцию остановки.
@@ -124,6 +161,10 @@ export const startWatchingGeolocation = (
   let stopped = false;
   let pollTimer: ReturnType<typeof setInterval> | null = null;
   let navWatchId: number | null = null;
+
+  GEO_DEBUG.platform = getVKPlatform() || 'нет параметра';
+  GEO_DEBUG.supports = vkGeodataSupported();
+  GEO_DEBUG.mode = isMobileVKClient() && GEO_DEBUG.supports && hasLaunchParams() ? 'vk' : 'navigator';
 
   const stop = (): void => {
     stopped = true;
@@ -139,18 +180,50 @@ export const startWatchingGeolocation = (
 
   // Мобильный клиент VK: непрерывных событий от VK Bridge нет,
   // поэтому опрашиваем VKWebAppGetGeodata с заданным интервалом.
-  if (isMobileVKClient() && vkGeodataSupported()) {
+  if (isMobileVKClient() && vkGeodataSupported() && hasLaunchParams()) {
   let errorWasShown = false;
   let inFlight = false; // ← 1. новый флаг
+  let vkFailures = 0;
+
+  // Если VK-мост не отвечает (нет параметров запуска, сломанный мост в WebView),
+  // переключаемся на браузерную геолокацию — иногда она в WebView доступна.
+  const startNavigatorWatch = (): void => {
+    if (!('geolocation' in navigator) || !navigator.geolocation) return;
+    GEO_DEBUG.mode = 'navigator';
+    navWatchId = navigator.geolocation.watchPosition(
+      (position) => {
+        GEO_DEBUG.responses += 1;
+        GEO_DEBUG.lastError = '';
+        if (!stopped) {
+          onPosition({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+          });
+        }
+      },
+      (err) => {
+        GEO_DEBUG.lastError = err.message;
+        if (!stopped) onError(new GeoError(err.code, err.message));
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
 
   const tick = async (): Promise<void> => {
     if (inFlight) return; // ← 2. пропускаем тик, если прошлый запрос ещё не завершился
     inFlight = true;
+    GEO_DEBUG.ticks += 1;
     try {
       const position = await getFromVK();
       errorWasShown = false;
+      vkFailures = 0;
+      GEO_DEBUG.responses += 1;
+      GEO_DEBUG.lastError = '';
       if (!stopped) onPosition(position);
     } catch (err) {
+      GEO_DEBUG.lastError = err instanceof Error ? err.message : String(err);
+      vkFailures += 1;
       if (!stopped && !errorWasShown) {
         errorWasShown = true;
         onError(
@@ -158,6 +231,14 @@ export const startWatchingGeolocation = (
             ? err
             : new GeoError(GEO_ERROR.POSITION_UNAVAILABLE, 'Не удалось получить геопозицию')
         );
+      }
+      // Две неудачи подряд — VK-мост бесполезен, пробуем браузерную геолокацию
+      if (!stopped && vkFailures >= 2) {
+        if (pollTimer !== null) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+        startNavigatorWatch();
       }
     } finally {
       inFlight = false; // ← 3. снимаем флаг в любом случае, даже при ошибке
@@ -176,13 +257,19 @@ export const startWatchingGeolocation = (
   }
 
   navWatchId = navigator.geolocation.watchPosition(
-    (position) =>
+    (position) => {
+      GEO_DEBUG.responses += 1;
+      GEO_DEBUG.lastError = '';
       onPosition({
         lat: position.coords.latitude,
         lon: position.coords.longitude,
         accuracy: position.coords.accuracy,
-      }),
-    (err) => onError(new GeoError(err.code, err.message)),
+      });
+    },
+    (err) => {
+      GEO_DEBUG.lastError = err.message;
+      onError(new GeoError(err.code, err.message));
+    },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
 

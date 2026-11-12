@@ -133,7 +133,7 @@ export const MapCanvas = ({
   const mapRef = useRef<MapLibreMap | null>(null);
   const readyRef = useRef(false);
   // ВРЕМЕННО: текст диагностики, если карта не отрисовалась
-  const [debugInfo, setDebugInfo] = useState('');
+  const [debugInfo, setDebugInfo] = useState('карта: загрузка стиля…');
 
   // Свежие данные и колбэки для обработчиков, которые создаются один раз
   const dataRef = useRef({ segments, marker, accuracyMeters });
@@ -262,6 +262,7 @@ export const MapCanvas = ({
       if (fallbackApplied || styleReady) return;
       fallbackApplied = true;
       console.warn('OpenFreeMap недоступен, включаем растровые тайлы');
+      setDebugInfo('карта: OpenFreeMap не ответил, пробую растровые тайлы…');
       try {
         map.setStyle(RASTER_STYLE);
       } catch (err) {
@@ -275,6 +276,7 @@ export const MapCanvas = ({
       const message = String(
         (event as { error?: { message?: string } })?.error?.message ?? ''
       );
+      if (message) setDebugInfo(`карта: ошибка — ${message.slice(0, 90)}`);
       // Переключаемся только если не загрузился сам стиль: единичные ошибки
       // отдельных тайлов уже загруженной карты поводом для этого не являются
       if (!styleReady && /style|fetch|network|load failed|abort/i.test(message)) {
@@ -293,7 +295,8 @@ export const MapCanvas = ({
       readyRef.current = true;
       window.clearTimeout(vectorTimer);
       window.clearTimeout(failTimer);
-      setDebugInfo('');
+      setDebugInfo(fallbackApplied ? 'карта: ок (запасные тайлы)' : 'карта: ок (векторные тайлы)');
+      window.setTimeout(() => setDebugInfo(''), 4000);
       applyData();
     });
 
