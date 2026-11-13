@@ -7,6 +7,7 @@ export { Vo2Predictor } from './Vo2Predictor';
 export { BrainBooster } from './BrainBooster';
 export { RunnerDictionary } from './RunnerDictionary';
 export { TrainingDiary } from './TrainingDiary';
+export { RacePlan } from './RacePlan';
 export { Tracker } from './Tracker';
 export { TrainingImport } from './TrainingImport';
 export { Profile } from './Profile';

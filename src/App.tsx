@@ -11,6 +11,7 @@ import {
   RunnerDictionary,
   PairGame,
   TrainingDiary,
+  RacePlan,
   Tracker,
   TrainingImport,
   Profile,
@@ -43,6 +44,7 @@ export const App = () => {
 
           {/* Дневник тренировок */}
           <TrainingDiary id={PANELS.TRAINING_DIARY} />
+          <RacePlan id={PANELS.RACE_PLAN} />
           <Tracker id={PANELS.TRACKER} />
           <TrainingImport id={PANELS.TRAINING_IMPORT} />
           <Profile id={PANELS.PROFILE} />

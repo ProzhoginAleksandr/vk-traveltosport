@@ -36,6 +36,7 @@ export const PANELS = {
 
   // --- Дневник тренировок ---
   TRAINING_DIARY:     'training_diary',
+  RACE_PLAN:          'race_plan',
   TRACKER:            'tracker',
   TRAINING_IMPORT:    'training_import',
   PROFILE:            'profile',
@@ -64,6 +65,7 @@ const routes: RouteWithoutRoot[] = [
 
   // Дневник тренировок
   { path: `/${PANELS.TRAINING_DIARY}`,  view: VIEWS.DIARY, panel: PANELS.TRAINING_DIARY },
+  { path: `/${PANELS.RACE_PLAN}`,       view: VIEWS.DIARY, panel: PANELS.RACE_PLAN },
   { path: `/${PANELS.TRACKER}`,         view: VIEWS.DIARY, panel: PANELS.TRACKER },
   { path: `/${PANELS.TRAINING_IMPORT}`, view: VIEWS.DIARY, panel: PANELS.TRAINING_IMPORT },
   { path: `/${PANELS.PROFILE}`,         view: VIEWS.DIARY, panel: PANELS.PROFILE },
