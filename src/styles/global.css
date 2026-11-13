@@ -51,6 +51,37 @@ html body *::after {
   --vkui--font_family_fallbacks: var(--app-font-family) !important;
 }
 
+/* VKUI 7 задаёт шрифт ещё и отдельно для каждой типографической роли.
+   Text берёт --vkui--font_text--font_family--regular, Header — headline,
+   Button — headline/accent. Без этого списка часть текста остаётся системной. */
+html body,
+html body *,
+html body *::before,
+html body *::after {
+  --vkui--font_display_title1--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_display_title2--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_display_title2--font_family--compact: var(--app-font-family) !important;
+  --vkui--font_display_title3--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_display_title4--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_title1--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_title2--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_title3--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_headline1--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_headline2--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_headline--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_subhead--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_text--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_paragraph--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_footnote--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_footnote_caps--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_caption1--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_caption1_caps--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_caption2--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_caption2_caps--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_caption3--font_family--regular: var(--app-font-family) !important;
+  --vkui--font_caption3_caps--font_family--regular: var(--app-font-family) !important;
+}
+
 /* --------------------------- карта --------------------------- */
 /* Карта на MapLibre GL JS с векторными тайлами OpenFreeMap (стиль dark).
    Оформление как у остальных карточек: тёмная подложка, скруглённые края,

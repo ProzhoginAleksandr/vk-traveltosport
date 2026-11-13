@@ -100,13 +100,30 @@ const buildSegments = (track: TrackPoint[]): MapSegment[] => {
 // Заглушка на время отключения трекера: сам трекер и вся его логика остаются
 // в проекте, но пользователь видит пояснение вместо записи пробежки.
 const TrackerPaused = ({ id }: TrackerProps) => (
-  <Panel id={id}>
-    <PageBackground variant="green">
+  <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
+    <PageBackground variant="blue" pattern="footsteps">
+      {/* Header */}
+      <div
+        style={{
+          paddingTop: '20px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <img
+          src={trackerHeaderImage}
+          alt="Трекер пробежек"
+          style={{ width: '100%', maxWidth: '380px', height: 'auto', objectFit: 'contain' }}
+        />
+      </div>
+
       <Group style={{ ...glass, marginTop: 16, padding: '20px 16px', textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
           <Icon24Pause />
         </div>
-        <Text style={{ color: '#FFFFFF', fontSize: 17, fontWeight: 600, marginBottom: 10 }}>
+        <Text style={{ color: '#FFFFFF', fontSize: 17, fontStyle: 'italic', marginBottom: 10 }}>
           Трекер временно недоступен
         </Text>
         <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: 14, lineHeight: 1.45 }}>
@@ -116,8 +133,8 @@ const TrackerPaused = ({ id }: TrackerProps) => (
           Дневник, история пробежек, карточки и калькуляторы работают как обычно.
         </Text>
       </Group>
-      <AppTabbar active="diary" />
     </PageBackground>
+    <AppTabbar active="diary" />
   </Panel>
 );
 

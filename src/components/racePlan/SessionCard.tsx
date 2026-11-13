@@ -58,12 +58,12 @@ export const SessionCard = ({
       </div>
 
       <Text
-        weight="2"
         style={{
           color: COLORS.text,
           fontSize: FONT_SIZE.subtitleSmall,
           lineHeight: LINE_HEIGHT.title,
           marginBottom: SPACING.sm,
+          fontStyle: 'italic',
         }}
       >
         {session.title}

@@ -62,7 +62,7 @@ export const Home = ({ id }: HomeProps) => {
           />
         </div>
 
-        {/* План до старта */}
+        {/* Программа подготовки */}
         <Group
           style={{
             background: 'rgba(76, 175, 80, 0.12)',
@@ -95,7 +95,7 @@ export const Home = ({ id }: HomeProps) => {
                   weight="2"
                   style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}
                 >
-                  План до старта
+                  Программа подготовки
                 </Text>
                 <Text
                   style={{

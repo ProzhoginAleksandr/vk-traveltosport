@@ -120,12 +120,12 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
       </div>
 
       <Text
-        weight="2"
         style={{
           color: COLORS.text,
           fontSize: FONT_SIZE.title,
           lineHeight: LINE_HEIGHT.title,
           marginBottom: SPACING.xs,
+          fontStyle: 'italic',
         }}
       >
         {STEP_TITLES[step]}
@@ -321,12 +321,12 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
                 Вот что получится
               </Text>
               <Text
-                weight="2"
                 style={{
                   color: COLORS.text,
                   fontSize: FONT_SIZE.subtitleSmall,
                   lineHeight: LINE_HEIGHT.title,
                   margin: `${SPACING.xs}px 0`,
+                  fontStyle: 'italic',
                 }}
               >
                 {preview.weeksTotal} {plural(preview.weeksTotal, 'неделя', 'недели', 'недель')} до старта

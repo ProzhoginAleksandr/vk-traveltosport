@@ -29,8 +29,7 @@ import {
 } from '../../utils/planStorage';
 import { COLORS, FONT_SIZE, LINE_HEIGHT, RADIUS, SPACING } from '../../styles/tokens';
 import { SessionCard } from './SessionCard';
-import { captionStyle, cardStyle, chipStyle, sectionTitleStyle } from './ui';
-
+import { captionStyle, cardStyle, chipStyle, FONT, sectionTitleStyle } from './ui';
 interface PlanOverviewProps {
   state: PlanState;
   onChange: (state: PlanState) => void;
@@ -119,7 +118,6 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
         </div>
 
         <Text
-          weight="2"
           style={{
             color: COLORS.text,
             fontSize: FONT_SIZE.display,
@@ -191,8 +189,12 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
       ) : allDone ? (
         <div style={cardStyle}>
           <Text
-            weight="2"
-            style={{ color: COLORS.accent, fontSize: FONT_SIZE.subtitleSmall, lineHeight: LINE_HEIGHT.title }}
+            style={{
+              color: COLORS.accent,
+              fontSize: FONT_SIZE.subtitleSmall,
+              lineHeight: LINE_HEIGHT.title,
+              fontStyle: 'italic',
+            }}
           >
             Все тренировки плана отмечены
           </Text>
@@ -344,9 +346,10 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
                 color: COLORS.text,
                 cursor: 'pointer',
                 textAlign: 'left',
+                fontFamily: FONT,
               }}
             >
-              <span style={{ flex: 1, fontSize: FONT_SIZE.body, fontFamily: 'inherit' }}>
+              <span style={{ flex: 1, fontSize: FONT_SIZE.body }}>
                 Неделя {week.index} · {formatKmNumber(week.volumeKm)} км
               </span>
               <span style={{ ...captionStyle, fontSize: FONT_SIZE.caption }}>

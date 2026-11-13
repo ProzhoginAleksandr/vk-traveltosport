@@ -1,5 +1,5 @@
 // src/panels/RacePlan.tsx
-// Экран «План до старта»: онбординг с нуля и сам план с отметками.
+// Экран «Программа подготовки»: онбординг с нуля и сам план с отметками.
 // План хранится на устройстве, поэтому экран не делает сетевых запросов.
 
 import { useState } from 'react';
@@ -60,6 +60,7 @@ export const RacePlan = ({ id }: RacePlanProps) => {
   return (
     <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
       <PageBackground variant="violet" pattern="track" paddingBottom={96} style={{ fontFamily: FONT }}>
+        {/* Header раздела появится позже: изображение встанет над строкой с кнопкой «Назад» */}
         <div
           style={{
             display: 'flex',
@@ -89,14 +90,14 @@ export const RacePlan = ({ id }: RacePlanProps) => {
             <Icon24ChevronLeft />
           </button>
           <Text
-            weight="2"
             style={{
               color: COLORS.text,
               fontSize: FONT_SIZE.title,
               lineHeight: LINE_HEIGHT.title,
+              fontStyle: 'italic',
             }}
           >
-            План до старта
+            Программа подготовки
           </Text>
         </div>
 

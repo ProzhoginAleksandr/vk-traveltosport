@@ -291,7 +291,7 @@ const buildStrides = (
   return {
     type: 'easy',
     title: 'Лёгкий бег с ускорениями',
-    detail: `${kmText(distanceKm)} легко, в конце ${count}×30 с быстро, между ними 90 с трусцой`,
+    detail: `${kmText(distanceKm)} легко, в конце ${count}×30 сек быстро, между ними 90 сек трусцой`,
     distanceKm: round1(distanceKm),
     paceText: paceRangeText(paces.easy),
     hrText: heartRateText(age, 'Z2'),
@@ -323,7 +323,7 @@ const buildInterval = (
   return {
     type: 'interval',
     title: 'Интервалы',
-    detail: `Разминка ${kmText(warm)}, затем ${reps}×${spec.repMeters} м быстро, между ними ${spec.recoverySec} с трусцой, заминка ${kmText(cool)}`,
+    detail: `Разминка ${kmText(warm)}, затем ${reps}×${spec.repMeters} м быстро, между ними ${spec.recoverySec} сек трусцой, заминка ${kmText(cool)}`,
     distanceKm,
     paceText: paceRangeText(paces.interval),
     hrText: heartRateText(age, 'Z4'),
