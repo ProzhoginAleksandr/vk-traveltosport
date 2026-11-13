@@ -25,6 +25,7 @@ import { trackToGpx } from '../utils/gpx';
 import { saveFile, textToFile } from '../utils/fileExport';
 import { showAdIfDue } from '../utils/adUtils';
 import { getBuildId } from '../utils/buildInfo';
+import { TRACKER_ENABLED } from '../config/features';
 import type { TrackerSettings } from '../utils/trackerSettings';
 
 interface TrackerProps {
@@ -96,7 +97,34 @@ const buildSegments = (track: TrackPoint[]): MapSegment[] => {
 /*  Экран                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export const Tracker = ({ id }: TrackerProps) => {
+// Заглушка на время отключения трекера: сам трекер и вся его логика остаются
+// в проекте, но пользователь видит пояснение вместо записи пробежки.
+const TrackerPaused = ({ id }: TrackerProps) => (
+  <Panel id={id}>
+    <PageBackground variant="green">
+      <Group style={{ ...glass, marginTop: 16, padding: '20px 16px', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+          <Icon24Pause />
+        </div>
+        <Text style={{ color: '#FFFFFF', fontSize: 17, fontWeight: 600, marginBottom: 10 }}>
+          Трекер временно недоступен
+        </Text>
+        <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: 14, lineHeight: 1.45 }}>
+          Работа функции временно приостановлена из-за сбоев сигнала GPS.
+        </Text>
+        <Text style={{ color: 'rgba(255, 255, 255, 0.55)', fontSize: 13, marginTop: 14, lineHeight: 1.4 }}>
+          Дневник, история пробежек, карточки и калькуляторы работают как обычно.
+        </Text>
+      </Group>
+      <AppTabbar active="diary" />
+    </PageBackground>
+  </Panel>
+);
+
+export const Tracker = ({ id }: TrackerProps) =>
+  TRACKER_ENABLED ? <TrackerActive id={id} /> : <TrackerPaused id={id} />;
+
+const TrackerActive = ({ id }: TrackerProps) => {
   
   const run = useRunTracker();
   const { phase, summary } = run;
