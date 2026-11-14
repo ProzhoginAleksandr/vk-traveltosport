@@ -7,9 +7,9 @@ import {
   Text,
 } from '@vkontakte/vkui';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
-import { Icon24CalendarOutline } from '@vkontakte/icons';
 
 import diaryHeader from '../assets/images/TrainingDiaryHeader.png';
+import planIcon from '../assets/images/RacePlanIcon.png';
 import trackerIcon from '../assets/images/TrackerIcon.png';
 import importIcon from '../assets/images/ProfileIcon.png';
 
@@ -31,13 +31,13 @@ interface ToolItem {
   description: string;
   route: string;
   alt: string;
-  /** PNG-иконка в общем стиле; если нет — рисуем вектор в акцентной плашке */
-  icon?: string;
+  icon: string;
 }
 
 const TOOLS: ToolItem[] = [
   {
     key: 'plan',
+    icon: planIcon,
     title: 'Программа подготовки',
     description: 'План тренировок к забегу по неделям',
     route: 'race_plan',
@@ -120,30 +120,11 @@ export const TrainingDiary = ({ id }: TrainingDiaryProps) => {
               style={{ color: colors.text }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {tool.icon ? (
-                  <img
-                    src={tool.icon}
-                    alt={tool.alt}
-                    style={{ width: '32px', height: '32px', objectFit: 'contain' }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '10px',
-                      background: 'rgba(76, 175, 80, 0.2)',
-                      border: '1px solid rgba(76, 175, 80, 0.45)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#4CAF50',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Icon24CalendarOutline />
-                  </div>
-                )}
+                <img
+                  src={tool.icon}
+                  alt={tool.alt}
+                  style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+                />
                 <div>
                   <Text weight="2" style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
                     {tool.title}

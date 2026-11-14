@@ -7,11 +7,6 @@ import brainIcon from '../assets/images/BrainBoosterIcon.png';
 import diaryIcon from '../assets/images/DiaryIcon.png';
 import profileIcon from '../assets/images/ProfileIcon.png';
 import { PageBackground } from '../components/PageBackground';
-import { Icon24CalendarOutline } from '@vkontakte/icons';
-import { loadPlanState } from '../utils/planStorage';
-import { buildPlanView, plural } from '../utils/planProgress';
-import { todayISO } from '../utils/racePlan';
-import { formatKmNumber } from '../utils/racePlan';
 
 interface HomeProps {
   id: string;
@@ -24,19 +19,6 @@ const colors = {
 
 export const Home = ({ id }: HomeProps) => {
   const routeNavigator = useRouteNavigator();
-
-  const planState = loadPlanState();
-  const planView = planState ? buildPlanView(planState, todayISO()) : null;
-  const planToday = planView?.todaySessions[0] ?? null;
-  const planSubtitle = !planView
-    ? 'Поставьте цель и получите план на каждую неделю'
-    : planToday
-      ? `Сегодня: ${planToday.title.toLowerCase()} · ${formatKmNumber(planToday.distanceKm ?? 0)} км`
-      : planView.racePassed
-        ? `Старт позади · выполнено ${planView.doneCount} из ${planView.total}`
-        : planView.nextSession
-          ? `До старта ${planView.daysLeft} ${plural(planView.daysLeft, 'день', 'дня', 'дней')} · ${planView.doneCount} из ${planView.total} тренировок`
-          : `Выполнено ${planView.doneCount} из ${planView.total}`;
 
   return (
     <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
@@ -61,76 +43,6 @@ export const Home = ({ id }: HomeProps) => {
             style={{ width: '100%', maxWidth: '380px', height: 'auto', objectFit: 'contain' }}
           />
         </div>
-
-        {/* Программа подготовки */}
-        <Group
-          style={{
-            background: 'rgba(76, 175, 80, 0.12)',
-            borderRadius: '16px',
-            marginBottom: '12px',
-            border: '1px solid rgba(76, 175, 80, 0.45)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-            padding: '4px 0',
-          }}
-        >
-          <Cell onClick={() => routeNavigator.push('/race_plan')} style={{ color: colors.text }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '10px',
-                  background: 'rgba(76, 175, 80, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#4CAF50',
-                  flexShrink: 0,
-                }}
-              >
-                <Icon24CalendarOutline />
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <Text
-                  weight="2"
-                  style={{ color: colors.text, fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}
-                >
-                  Программа подготовки
-                </Text>
-                <Text
-                  style={{
-                    color: colors.textSecondary,
-                    fontSize: '13px',
-                    fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-                    whiteSpace: 'normal',
-                  }}
-                >
-                  {planSubtitle}
-                </Text>
-                {planView && planView.percent > 0 ? (
-                  <div
-                    style={{
-                      height: '4px',
-                      borderRadius: '2px',
-                      background: 'rgba(255, 255, 255, 0.12)',
-                      marginTop: '6px',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${planView.percent}%`,
-                        height: '100%',
-                        background: '#4CAF50',
-                        borderRadius: '2px',
-                      }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </Cell>
-        </Group>
 
         {/* Заголовок */}
         <Title

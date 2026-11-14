@@ -3,10 +3,11 @@
 // План хранится на устройстве, поэтому экран не делает сетевых запросов.
 
 import { useState } from 'react';
-import { Panel, Text } from '@vkontakte/vkui';
+import { Panel } from '@vkontakte/vkui';
 import { Icon24ChevronLeft } from '@vkontakte/icons';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
+import racePlanHeaderImage from '../assets/images/RacePlanHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
 import { PlanOnboarding } from '../components/racePlan/PlanOnboarding';
@@ -20,7 +21,7 @@ import {
   type PlanState,
 } from '../utils/planStorage';
 import type { PlanInput } from '../utils/racePlan';
-import { COLORS, FONT_SIZE, LINE_HEIGHT, RADIUS, SPACING } from '../styles/tokens';
+import { COLORS, RADIUS, SPACING } from '../styles/tokens';
 
 interface RacePlanProps {
   id: string;
@@ -60,16 +61,8 @@ export const RacePlan = ({ id }: RacePlanProps) => {
   return (
     <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
       <PageBackground variant="violet" pattern="track" paddingBottom={96} style={{ fontFamily: FONT }}>
-        {/* Header раздела появится позже: изображение встанет над строкой с кнопкой «Назад» */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: SPACING.sm,
-            paddingTop: 20,
-            marginBottom: SPACING.lg,
-          }}
-        >
+        {/* Кнопка «Назад» */}
+        <div style={{ paddingTop: 12, display: 'flex', alignItems: 'center' }}>
           <button
             type="button"
             aria-label="Назад"
@@ -89,16 +82,24 @@ export const RacePlan = ({ id }: RacePlanProps) => {
           >
             <Icon24ChevronLeft />
           </button>
-          <Text
-            style={{
-              color: COLORS.text,
-              fontSize: FONT_SIZE.title,
-              lineHeight: LINE_HEIGHT.title,
-              fontStyle: 'italic',
-            }}
-          >
-            Программа подготовки
-          </Text>
+        </div>
+
+        {/* Header раздела */}
+        <div
+          style={{
+            paddingTop: 4,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            marginBottom: SPACING.md,
+          }}
+        >
+          <img
+            src={racePlanHeaderImage}
+            alt="Программа подготовки"
+            style={{ width: '100%', maxWidth: '380px', height: 'auto', objectFit: 'contain' }}
+          />
         </div>
 
         <div style={{ maxWidth: 560, margin: '0 auto' }}>
