@@ -11,6 +11,7 @@ import {
   daysUntilRace,
   formatKmNumber,
   formatPace,
+  formatRaceTime,
   GOAL_DISTANCE_TEXT,
   LEVEL_TITLES,
   shiftDate,
@@ -51,6 +52,8 @@ const parseNumber = (value: string, fallback = 0): number => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const percentText = (ratio: number): string => `${(ratio * 100).toFixed(1).replace('.', ',')}%`;
+
 export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingProps) => {
   const [step, setStep] = useState(0);
   const [goalKm, setGoalKm] = useState<GoalDistance>(initial?.goalKm ?? 10);
@@ -71,6 +74,13 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
   const [resultSecText, setResultSecText] = useState(
     initial?.recentResult ? String(initial.recentResult.timeSec % 60) : ''
   );
+  const [useTarget, setUseTarget] = useState(Boolean(initial?.targetTimeSec));
+  const [targetMinText, setTargetMinText] = useState(
+    initial?.targetTimeSec ? String(Math.floor(initial.targetTimeSec / 60)) : ''
+  );
+  const [targetSecText, setTargetSecText] = useState(
+    initial?.targetTimeSec ? String(initial.targetTimeSec % 60) : ''
+  );
 
   const dateValid = DATE_RE.test(raceDate) && daysUntilRace(raceDate) >= 1;
   const daysLeft = dateValid ? daysUntilRace(raceDate) : 0;
@@ -79,6 +89,9 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
   const age = ageValue >= 10 && ageValue <= 90 ? Math.round(ageValue) : undefined;
   const resultTime =
     parseNumber(resultMinText, 0) * 60 + Math.min(59, Math.max(0, parseNumber(resultSecText, 0)));
+  const targetTime =
+    parseNumber(targetMinText, 0) * 60 + Math.min(59, Math.max(0, parseNumber(targetSecText, 0)));
+  const targetValid = useTarget && targetTime >= 60;
 
   const composeInput = (): PlanInput => ({
     goalKm,
@@ -88,10 +101,14 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
     weeklyKm,
     age,
     recentResult: useResult && resultTime >= 300 ? { distanceKm: resultKm, timeSec: resultTime } : undefined,
+    targetTimeSec: targetValid ? targetTime : undefined,
     startDate: todayISO(),
   });
 
   const preview = dateValid ? buildRacePlan(composeInput()) : null;
+  const improvementSec = preview ? preview.paces.currentTimeSec - preview.paces.targetTimeSec : 0;
+  const improvementRatio =
+    preview && preview.paces.currentTimeSec > 0 ? improvementSec / preview.paces.currentTimeSec : 0;
 
   const canNext = step === 0 ? dateValid : true;
 
@@ -315,6 +332,74 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
             </div>
           ) : null}
 
+          <Text style={sectionTitleStyle}>Желаемый результат</Text>
+          <button
+            type="button"
+            onClick={() => setUseTarget(!useTarget)}
+            style={{
+              ...choiceStyle(useTarget),
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              padding: '12px 14px',
+            }}
+          >
+            {useTarget
+              ? 'Цель указана — план построится под неё'
+              : 'Хочу задать желаемое время на финише'}
+          </button>
+
+          {useTarget ? (
+            <div style={{ marginTop: SPACING.md }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.sm }}>
+                <input
+                  value={targetMinText}
+                  onChange={(event) => setTargetMinText(event.target.value.replace(/[^\d]/g, ''))}
+                  inputMode="numeric"
+                  placeholder="минуты"
+                  style={{ ...fieldStyle, width: '50%' }}
+                />
+                <Text style={{ color: COLORS.textSecondary }}>:</Text>
+                <input
+                  value={targetSecText}
+                  onChange={(event) => setTargetSecText(event.target.value.replace(/[^\d]/g, ''))}
+                  inputMode="numeric"
+                  placeholder="секунды"
+                  style={{ ...fieldStyle, width: '50%' }}
+                />
+              </div>
+
+              {targetValid && preview ? (
+                <Text style={{ ...captionStyle, marginTop: SPACING.sm }}>
+                  {improvementSec > 0
+                    ? `Это на ${formatRaceTime(improvementSec)} быстрее текущей формы (${percentText(
+                        improvementRatio
+                      )}).`
+                    : improvementSec < 0
+                      ? `Это на ${formatRaceTime(-improvementSec)} медленнее текущей формы — нормально для комфортного финиша.`
+                      : 'Это ровно ваша текущая форма.'}
+                </Text>
+              ) : (
+                <Text style={{ ...captionStyle, marginTop: SPACING.sm }}>
+                  Укажите время, за которое хотите финишировать на дистанции забега.
+                </Text>
+              )}
+
+              {targetValid && preview && preview.paces.assessment === 'unrealistic' ? (
+                <Text style={{ ...captionStyle, color: COLORS.warning, marginTop: SPACING.xs }}>
+                  Цель больше чем на 10% быстрее текущей формы — план будет очень тяжёлым. Лучше
+                  выбрать цель поскромнее или увеличить срок подготовки.
+                </Text>
+              ) : null}
+              {targetValid && preview && preview.paces.assessment === 'ambitious' ? (
+                <Text style={{ ...captionStyle, color: COLORS.warning, marginTop: SPACING.xs }}>
+                  На 5–10% быстрее текущей формы — амбициозно, но выполнимо при регулярных
+                  тренировках.
+                </Text>
+              ) : null}
+            </div>
+          ) : null}
+
           {preview ? (
             <div style={{ ...cardStyle, marginTop: SPACING.lg }}>
               <Text style={{ ...captionStyle, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -338,7 +423,19 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
               </Text>
               <Text style={{ ...captionStyle, marginTop: SPACING.sm }}>
                 Пик объёма {formatKmNumber(preview.peakKm)} км · лёгкий темп {formatPace(preview.paces.easy[0])}–
-                {formatPace(preview.paces.easy[1])} /км · целевой темп {formatPace(preview.paces.goal)} /км
+                {formatPace(preview.paces.easy[1])} /км
+              </Text>
+              <Text style={{ ...captionStyle, marginTop: SPACING.xs, color: COLORS.text }}>
+                Сейчас {GOAL_DISTANCE_TEXT[goalKm]}:{' '}
+                {formatRaceTime(preview.paces.currentTimeSec)} · цель:{' '}
+                {formatRaceTime(preview.paces.targetTimeSec)} ({formatPace(preview.paces.goal)} /км)
+              </Text>
+              <Text style={{ ...captionStyle, marginTop: SPACING.xs }}>
+                Прогноз плана: {formatRaceTime(preview.paces.predictedTimeSec)} · заложено улучшение{' '}
+                {percentText(preview.paces.gainRatio)}
+                {preview.paces.goalSource === 'user'
+                  ? ' · цель ваша'
+                  : ' · цель рассчитана автоматически'}
               </Text>
               {goalKm === 42 && level === 'novice' ? (
                 <Text style={{ ...captionStyle, color: COLORS.warning, marginTop: SPACING.sm }}>

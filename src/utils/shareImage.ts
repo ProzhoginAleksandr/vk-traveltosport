@@ -22,6 +22,9 @@ const W = 1080;
 const H = 1920;
 const PRIVACY_ZONE_M = 200;
 
+/** Цвет линии маршрута */
+const ROUTE_COLOR = '#bedda2';
+
 const FONT_TITLE = 'Oswald, Impact, "Arial Narrow", Arial, sans-serif';
 const FONT_TEXT = 'Oswald, Impact, "Arial Narrow", Arial, sans-serif';
 
@@ -95,7 +98,7 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'classic',
     name: 'Классика',
     overlay: 'bottom',
-    route: { x: 110, y: 230, w: 860, h: 940 },
+    route: { x: 240, y: 350, w: 600, h: 650 },
     stats: [
       { key: 'distance', x: 540, y: 1450, align: 'center', size: 230 },
       { key: 'duration', x: 324, y: 1685, align: 'center', size: 84, label: true, maxW: 420 },
@@ -109,7 +112,7 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'big',
     name: 'Крупно',
     overlay: 'bottom',
-    route: { x: 160, y: 210, w: 760, h: 760 },
+    route: { x: 260, y: 320, w: 560, h: 580 },
     stats: [
       { key: 'distance', x: 540, y: 1370, align: 'center', size: 330 },
       { key: 'duration', x: 190, y: 1640, align: 'center', size: 72, label: true, maxW: 300 },
@@ -124,11 +127,11 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'minimal',
     name: 'Минимал',
     overlay: 'bottom',
-    route: { x: 90, y: 170, w: 900, h: 1180 },
+    route: { x: 240, y: 300, w: 600, h: 720 },
     stats: [
-      { key: 'distance', x: 200, y: 1640, align: 'center', size: 70, label: true, maxW: 300 },
-      { key: 'duration', x: 540, y: 1640, align: 'center', size: 70, label: true, maxW: 300 },
-      { key: 'pace', x: 880, y: 1640, align: 'center', size: 70, label: true, maxW: 300 },
+      { key: 'distance', x: 200, y: 1580, align: 'center', size: 70, label: true, maxW: 300 },
+      { key: 'duration', x: 540, y: 1580, align: 'center', size: 70, label: true, maxW: 300 },
+      { key: 'pace', x: 880, y: 1580, align: 'center', size: 70, label: true, maxW: 300 },
     ],
     date: { x: 90, y: 110, align: 'left', size: 40 },
     brand: { x: 540, y: 1830, align: 'center', size: 44 },
@@ -138,7 +141,7 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'left',
     name: 'Слева',
     overlay: 'left',
-    route: { x: 500, y: 260, w: 500, h: 1400 },
+    route: { x: 560, y: 420, w: 400, h: 800 },
     lineScale: 0.85,
     stats: [
       { key: 'distance', x: 80, y: 1010, align: 'left', size: 190, maxW: 400 },
@@ -154,7 +157,7 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'right',
     name: 'Справа',
     overlay: 'right',
-    route: { x: 80, y: 260, w: 500, h: 1400 },
+    route: { x: 120, y: 420, w: 400, h: 800 },
     lineScale: 0.85,
     stats: [
       { key: 'distance', x: 1000, y: 1010, align: 'right', size: 190, maxW: 400 },
@@ -170,7 +173,7 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'top',
     name: 'Сверху',
     overlay: 'top',
-    route: { x: 130, y: 740, w: 820, h: 980 },
+    route: { x: 260, y: 700, w: 560, h: 660 },
     stats: [
       { key: 'distance', x: 540, y: 400, align: 'center', size: 280 },
       { key: 'duration', x: 200, y: 620, align: 'center', size: 80, label: true, maxW: 320 },
@@ -185,12 +188,12 @@ export const LAYOUTS: readonly LayoutSpec[] = [
     id: 'compact',
     name: 'Мелко',
     overlay: 'bottom',
-    route: { x: 90, y: 200, w: 900, h: 1250 },
+    route: { x: 240, y: 330, w: 600, h: 660 },
     lineScale: 0.8,
     stats: [
-      { key: 'distance', x: 90, y: 1700, align: 'left', size: 110, label: true, maxW: 310 },
-      { key: 'duration', x: 540, y: 1700, align: 'center', size: 110, label: true, maxW: 280 },
-      { key: 'pace', x: 990, y: 1700, align: 'right', size: 110, label: true, maxW: 310 },
+      { key: 'distance', x: 90, y: 1600, align: 'left', size: 110, label: true, maxW: 310 },
+      { key: 'duration', x: 540, y: 1600, align: 'center', size: 110, label: true, maxW: 280 },
+      { key: 'pace', x: 990, y: 1600, align: 'right', size: 110, label: true, maxW: 310 },
     ],
     date: { x: 90, y: 130, align: 'left', size: 44 },
     brand: { x: 540, y: 1840, align: 'center', size: 44 },
@@ -262,6 +265,50 @@ const trimEnds = (points: Pt[], meters: number): Pt[] => {
   return trimmed.length >= 2 ? trimmed : points;
 };
 
+const roundedRect = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radius: number
+) => {
+  const r = Math.max(0, Math.min(radius, w / 2, h / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+};
+
+/** Подложка вокруг маршрута: трек перестаёт «плавать» по фото и держит композицию */
+const drawRoutePanel = (ctx: CanvasRenderingContext2D, bounds: Box) => {
+  const pad = 42;
+  const x = bounds.x - pad;
+  const y = bounds.y - pad;
+  const w = bounds.w + pad * 2;
+  const h = bounds.h + pad * 2;
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+  ctx.shadowBlur = 40;
+  ctx.shadowOffsetY = 14;
+  ctx.fillStyle = 'rgba(6, 12, 8, 0.34)';
+  roundedRect(ctx, x, y, w, h, 64);
+  ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+  ctx.lineWidth = 2;
+  roundedRect(ctx, x, y, w, h, 64);
+  ctx.stroke();
+  ctx.restore();
+};
+
 const drawRoute = (ctx: CanvasRenderingContext2D, points: Pt[], box: Box, lineScale: number) => {
   if (points.length < 2) return;
 
@@ -290,21 +337,33 @@ const drawRoute = (ctx: CanvasRenderingContext2D, points: Pt[], box: Box, lineSc
     pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
   };
 
+  // Подложка по фактическим габаритам маршрута, а не по всему отведённому полю
+  const px = pts.map((p) => p.x);
+  const py = pts.map((p) => p.y);
+  const boundsMinX = Math.min(...px);
+  const boundsMinY = Math.min(...py);
+  drawRoutePanel(ctx, {
+    x: boundsMinX,
+    y: boundsMinY,
+    w: Math.max(1, Math.max(...px) - boundsMinX),
+    h: Math.max(1, Math.max(...py) - boundsMinY),
+  });
+
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
 
-  // тень → белая подложка → цветная линия
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-  ctx.shadowBlur = 24;
-  ctx.strokeStyle = '#FFFFFF';
-  ctx.lineWidth = 20 * lineScale;
+  // тень → тёмная подложка → светлая линия: так трек читается и на светлом фото
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+  ctx.shadowBlur = 18;
+  ctx.strokeStyle = 'rgba(9, 16, 10, 0.55)';
+  ctx.lineWidth = 18 * lineScale;
   trace();
   ctx.stroke();
 
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#4CAF50';
-  ctx.lineWidth = 11 * lineScale;
+  ctx.strokeStyle = ROUTE_COLOR;
+  ctx.lineWidth = 9 * lineScale;
   trace();
   ctx.stroke();
 
@@ -312,14 +371,14 @@ const drawRoute = (ctx: CanvasRenderingContext2D, points: Pt[], box: Box, lineSc
   const dot = (p: { x: number; y: number }, color: string) => {
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 20 * lineScale, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, 18 * lineScale, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 11 * lineScale, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, 9 * lineScale, 0, Math.PI * 2);
     ctx.fill();
   };
-  dot(pts[0], '#4CAF50');
+  dot(pts[0], ROUTE_COLOR);
   dot(pts[pts.length - 1], '#F44336');
 };
 

@@ -17,6 +17,7 @@ import vo2Icon from '../assets/images/Vo2PredictorIcon.png';
 
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface RunnerCalculatorProps {
   id: string;
@@ -68,6 +69,7 @@ export const RunnerCalculator = ({ id }: RunnerCalculatorProps) => {
       `}</style>
 
       <PageBackground variant="red" pattern="topo">
+        <BackButton to="/" />
 
         {/* Header */}
         <div

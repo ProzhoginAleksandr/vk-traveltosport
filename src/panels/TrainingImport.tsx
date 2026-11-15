@@ -19,8 +19,10 @@ import { AppTabbar } from '../components/AppTabbar';
 import { getCurrentUser } from '../utils/userUtils';
 import { saveTrackToStorage } from '../utils/trackStorage';
 import { parseTrackFile } from '../utils/importUtils';
+import { showEventAd } from '../utils/adUtils';
 
 import { PageBackground} from '../components/PageBackground';
+import { BackButton} from '../components/BackButton';
 
 interface TrainingImportProps {
   id: string;
@@ -103,6 +105,10 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
           speed: parsedTrack.speed,
           date: parsedTrack.date,
         });
+        // Пауза, чтобы пользователь успел увидеть результат импорта
+        window.setTimeout(() => {
+          void showEventAd('import_done');
+        }, 1500);
       } else {
         setMessage('❌ Не удалось сохранить тренировку');
         setMessageType('error');
@@ -126,6 +132,7 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
       `}</style>
 
       <PageBackground variant="blue" pattern="footsteps">
+        <BackButton to="/training_diary" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

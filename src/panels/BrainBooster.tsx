@@ -17,6 +17,7 @@ import splitIcon from '../assets/images/SplitMemoryIcon.png';
 import { AppTabbar } from '../components/AppTabbar';
 
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface BrainBoosterProps {
   id: string;
@@ -77,6 +78,7 @@ export const BrainBooster = ({ id }: BrainBoosterProps) => {
       `}</style>
 
       <PageBackground variant="violet" pattern="topo">
+        <BackButton to="/" />
         <div
           style={{
             paddingTop: '20px',

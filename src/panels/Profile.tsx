@@ -22,6 +22,7 @@ import { ShareRunModal } from '../components/ShareRunModal';
 import { trackToGpx } from '../utils/gpx';
 import { saveFile, textToFile } from '../utils/fileExport';
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 import { getCurrentUser, VKUser } from '../utils/userUtils';
 import {
   loadUserTracks,
@@ -160,6 +161,7 @@ export const Profile = ({ id }: ProfileProps) => {
 
       
         <PageBackground variant="amber" pattern="ridge">
+          <BackButton to="/" />
 
         {/* Header */}
         <div

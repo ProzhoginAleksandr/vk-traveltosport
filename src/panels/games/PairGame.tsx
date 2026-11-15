@@ -10,6 +10,7 @@ import {
   CardGrid,
 } from '@vkontakte/vkui';
 import { PageBackground } from '../../components/PageBackground';
+import { BackButton } from '../../components/BackButton';
 import { AppTabbar } from '../../components/AppTabbar';
 import { showAdIfDue } from '../../utils/adUtils';
 import { getCurrentUser } from '../../utils/userUtils';
@@ -275,6 +276,7 @@ export const PairGame = ({ id }: PairGameProps) => {
       `}</style>
 
       <PageBackground variant="violet" pattern="topo">
+        <BackButton to="/brain_booster" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

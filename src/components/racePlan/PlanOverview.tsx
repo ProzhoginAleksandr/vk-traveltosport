@@ -7,6 +7,8 @@ import { Button, Text } from '@vkontakte/vkui';
 
 import {
   formatKmNumber,
+  formatPace,
+  formatRaceTime,
   GOAL_DISTANCE_TEXT,
   LEVEL_TITLES,
   PHASE_TITLES,
@@ -27,6 +29,7 @@ import {
   type PlanState,
   type SessionStatus,
 } from '../../utils/planStorage';
+import { showEventAd } from '../../utils/adUtils';
 import { COLORS, FONT_SIZE, LINE_HEIGHT, RADIUS, SPACING } from '../../styles/tokens';
 import { SessionCard } from './SessionCard';
 import { captionStyle, cardStyle, chipStyle, FONT, sectionTitleStyle } from './ui';
@@ -51,6 +54,8 @@ const statusColor = (status: SessionStatus | undefined, isToday: boolean): strin
   return isToday ? COLORS.warning : COLORS.borderStrong;
 };
 
+const percentText = (ratio: number): string => `${(ratio * 100).toFixed(1).replace('.', ',')}%`;
+
 export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverviewProps) => {
   const today = todayISO();
   const view = useMemo(() => buildPlanView(state, today), [state, today]);
@@ -61,7 +66,25 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const handleStatus = (sessionId: string, status: SessionStatus | null) => {
-    onChange(setSessionStatus(state, sessionId, status));
+    const next = setSessionStatus(state, sessionId, status);
+    onChange(next);
+    if (status !== 'done') return;
+
+    // Реклама — не за каждую тренировку, а за закрытую неделю: это заметный
+    // рубеж, и показ не выглядит наказанием за одну галочку.
+    const nextView = buildPlanView(next, today);
+    const marked = nextView.sessions.find((session) => session.id === sessionId);
+    if (!marked) return;
+    const weekSessions = nextView.sessions.filter(
+      (session) => session.weekIndex === marked.weekIndex
+    );
+    const weekClosed =
+      weekSessions.length > 0 && weekSessions.every((session) => Boolean(session.status));
+    if (weekClosed) {
+      window.setTimeout(() => {
+        void showEventAd('plan_week');
+      }, 900);
+    }
   };
 
   const handleMove = (sessionId: string, date: string) => {
@@ -159,8 +182,31 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
           <span style={chipStyle}>выполнено {view.percent}%</span>
           <span style={chipStyle}>{formatKmNumber(view.doneKm)} км пройдено</span>
           <span style={chipStyle}>пик {formatKmNumber(plan.peakKm)} км</span>
-          <span style={chipStyle}>цель {Math.floor(plan.paces.goal / 60)}:{String(plan.paces.goal % 60).padStart(2, '0')} /км</span>
+          <span style={chipStyle}>цель {formatPace(plan.paces.goal)} /км</span>
         </div>
+
+        <Text style={{ ...captionStyle, color: COLORS.text, marginTop: SPACING.md }}>
+          Сейчас: {formatRaceTime(view.forecast.currentTimeSec)} · цель:{' '}
+          {formatRaceTime(view.forecast.targetTimeSec)} (
+          {view.forecast.goalSource === 'user' ? 'ваша цель' : 'прогноз плана'})
+        </Text>
+        <Text style={{ ...captionStyle, marginTop: SPACING.xs }}>
+          Прогноз при текущем выполнении: {formatRaceTime(view.forecast.projectedTimeSec)} · заложено
+          улучшение {percentText(view.forecast.plannedGainPercent)}
+        </Text>
+        {view.forecast.targetTimeSec < plan.paces.predictedTimeSec ? (
+          <Text style={{ ...captionStyle, color: COLORS.warning, marginTop: SPACING.xs }}>
+            Цель быстрее прогноза плана на{' '}
+            {formatRaceTime(plan.paces.predictedTimeSec - view.forecast.targetTimeSec)} — план
+            рассчитан на более скромный прирост, придётся выложиться сильнее.
+          </Text>
+        ) : null}
+        {view.forecast.completionRatio < 0.85 ? (
+          <Text style={{ ...captionStyle, marginTop: SPACING.xs }}>
+            Выполнено {Math.round(view.forecast.completionRatio * 100)}% прошедших тренировок —
+            прогноз уже скорректирован.
+          </Text>
+        ) : null}
 
         {startDateText ? (
           <Text style={{ ...captionStyle, marginTop: SPACING.sm }}>
@@ -244,6 +290,33 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
           <Text style={{ color: COLORS.warning, fontSize: FONT_SIZE.body, lineHeight: LINE_HEIGHT.body }}>
             Марафон с нуля — рискованно. Если появится боль в колене, голени или стопе, пропустите
             тренировку и покажитесь врачу.
+          </Text>
+        </div>
+      ) : null}
+
+      {view.forecast.assessment === 'unrealistic' ? (
+        <div style={{ ...cardStyle, borderColor: COLORS.warning, marginTop: SPACING.md }}>
+          <Text style={{ color: COLORS.warning, fontSize: FONT_SIZE.body, lineHeight: LINE_HEIGHT.body }}>
+            Цель больше чем на 10% быстрее текущей формы. Если это осознанное решение — следите за
+            самочувствием, иначе лучше выбрать цель поскромнее или увеличить срок подготовки.
+          </Text>
+        </div>
+      ) : null}
+
+      {view.forecast.assessment === 'ambitious' ? (
+        <div style={{ ...cardStyle, borderColor: COLORS.warning, marginTop: SPACING.md }}>
+          <Text style={{ color: COLORS.warning, fontSize: FONT_SIZE.body, lineHeight: LINE_HEIGHT.body }}>
+            Цель на 5–10% быстрее текущей формы: амбициозно, но выполнимо при регулярных
+            тренировках.
+          </Text>
+        </div>
+      ) : null}
+
+      {view.forecast.assessment === 'conservative' ? (
+        <div style={{ ...cardStyle, marginTop: SPACING.md }}>
+          <Text style={{ ...captionStyle, color: COLORS.text }}>
+            Цель медленнее текущей формы — это нормально, если вы хотите финишировать комфортно без
+            гонки за результатом.
           </Text>
         </div>
       ) : null}
@@ -432,6 +505,15 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
             Дней в неделю: {plan.daysPerWeek} · объём: {plan.weeklyKm} км
           </span>
           {state.input.age ? <span>Возраст: {state.input.age}</span> : null}
+          <span>
+            Сейчас: {formatRaceTime(view.forecast.currentTimeSec)} · цель:{' '}
+            {formatRaceTime(view.forecast.targetTimeSec)}
+          </span>
+          <span>
+            {view.forecast.goalSource === 'user'
+              ? 'Цель задана вами'
+              : `Цель — прогноз плана (заложено ${percentText(view.forecast.plannedGainPercent)})`}
+          </span>
           {plan.paces.source === 'result' ? (
             <span>Темпы уточнены по вашему результату</span>
           ) : (

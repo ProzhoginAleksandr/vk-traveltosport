@@ -1,12 +1,14 @@
 // src/panels/Home.tsx
+import { useEffect } from 'react';
 import { Panel, Group, Cell, Title, Text } from '@vkontakte/vkui';
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
+import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 import headerImage from '../assets/images/HomeHeader.png';
 import calcIcon from '../assets/images/CalculatorIcon.png';
 import brainIcon from '../assets/images/BrainBoosterIcon.png';
 import diaryIcon from '../assets/images/DiaryIcon.png';
 import profileIcon from '../assets/images/ProfileIcon.png';
 import { PageBackground } from '../components/PageBackground';
+import { hideBannerAd, showBannerAd } from '../utils/bannerAd';
 
 interface HomeProps {
   id: string;
@@ -19,6 +21,17 @@ const colors = {
 
 export const Home = ({ id }: HomeProps) => {
   const routeNavigator = useRouteNavigator();
+  const { panel } = useActiveVkuiLocation();
+  const isActive = !panel || panel === id;
+
+  // Баннер живёт только на главной: на остальных экранах его прячем,
+  // потому что там есть таббар и он бы перекрывал навигацию.
+  useEffect(() => {
+    if (isActive) void showBannerAd();
+    else void hideBannerAd();
+  }, [isActive]);
+
+  useEffect(() => () => void hideBannerAd(), []);
 
   return (
     <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
@@ -132,7 +145,7 @@ export const Home = ({ id }: HomeProps) => {
           Дневник тренировок
         </Text>
         <Text style={{ color: colors.textSecondary, fontSize: '13px', fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif' }}>
-          Трекер и импорт тренировок
+          План подготовки и импорт тренировок
         </Text>
       </div>
     </div>

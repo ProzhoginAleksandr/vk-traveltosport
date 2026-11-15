@@ -20,6 +20,7 @@ import { getCurrentUser } from '../utils/userUtils';
 import { saveCalculation } from '../utils/statsUtils';
 
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface HeartRateZonesProps {
   id: string;
@@ -330,6 +331,7 @@ export const HeartRateZones = ({ id }: HeartRateZonesProps) => {
       `}</style>
 
       <PageBackground variant="red" pattern="pulse">
+        <BackButton to="/runner_calculator" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

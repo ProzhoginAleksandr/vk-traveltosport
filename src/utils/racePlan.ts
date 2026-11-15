@@ -34,6 +34,8 @@ export interface PlanInput {
   age?: number;
   /** Результат за последние месяцы — уточняет темпы */
   recentResult?: RecentResult;
+  /** Желаемое время на дистанции забега, сек. Если нет — цель считаем прогнозом плана */
+  targetTimeSec?: number;
   /** Дата начала плана, по умолчанию сегодня */
   startDate?: string;
 }
@@ -64,16 +66,30 @@ export interface PlanWeek {
   sessions: PlannedSession[];
 }
 
+/** Насколько цель расходится с текущей формой */
+export type GoalAssessment = 'realistic' | 'ambitious' | 'unrealistic' | 'conservative';
+
 export interface TrainingPaces {
-  /** Оценка темпа на 10 км, сек/км */
+  /** Оценка текущего темпа на 10 км, сек/км */
   p10Sec: number;
   easy: [number, number];
   long: [number, number];
   tempo: [number, number];
   interval: [number, number];
-  /** Целевой темп на дистанции забега */
+  /** Целевой темп на дистанции забега (от цели, а не от текущей формы) */
   goal: number;
+  /** Откуда взята текущая форма: результат или оценка */
   source: 'result' | 'estimate';
+  /** Текущая форма, пересчитанная на дистанцию забега, сек */
+  currentTimeSec: number;
+  /** Что даст план при полном выполнении, сек */
+  predictedTimeSec: number;
+  /** Цель: введённая пользователем или прогноз плана, сек */
+  targetTimeSec: number;
+  /** Заложенный прирост к текущей форме, доли (0.03 = 3%) */
+  gainRatio: number;
+  goalSource: 'user' | 'predicted';
+  assessment: GoalAssessment;
 }
 
 export interface RacePlan {
@@ -101,6 +117,14 @@ export const GOAL_DISTANCE_TEXT: Record<GoalDistance, string> = {
   10: '10 км',
   21: '21,1 км',
   42: '42,2 км',
+};
+
+/** Реальная длина дистанции в километрах — для расчёта времени */
+export const GOAL_KM: Record<GoalDistance, number> = {
+  5: 5,
+  10: 10,
+  21: 21.0975,
+  42: 42.195,
 };
 
 export const LEVEL_TITLES: Record<Level, string> = {
@@ -194,10 +218,44 @@ const heartRateText = (age: number | undefined, zone: 'Z2' | 'Z3' | 'Z4'): strin
   return `${zone} · ${Math.round(max * from)}–${Math.round(max * to)}`;
 };
 
+const RIEGEL_EXPONENT = 1.06;
+
+/** Базовый прирост за 12 недель по уровню: новички растут быстрее */
+const BASE_GAIN: Record<Level, number> = { novice: 0.06, stable: 0.03, advanced: 0.012 };
+
+/** Время на дистанции забега из текущего темпа на 10 км */
+const timeFromP10 = (p10Sec: number, goalKm: GoalDistance): number =>
+  p10Sec * 10 * Math.pow(GOAL_KM[goalKm] / 10, RIEGEL_EXPONENT);
+
+/** Темп на 10 км, соответствующий времени на дистанции забега */
+const p10FromTime = (timeSec: number, goalKm: GoalDistance): number =>
+  timeSec / Math.pow(GOAL_KM[goalKm] / 10, RIEGEL_EXPONENT) / 10;
+
+/** Реалистичный прирост: уровень, длина плана и рост объёма */
+const estimateGain = (level: Level, weeksTotal: number, growth: number): number => {
+  const weekFactor = Math.sqrt(clamp(weeksTotal, 3, 24) / 12);
+  const volumeFactor = 0.75 + 0.25 * clamp((growth - 1) / 0.45, 0, 1);
+  return clamp(BASE_GAIN[level] * weekFactor * volumeFactor, 0.005, 0.08);
+};
+
+/** 52:09 или 1:48:41 */
+export const formatRaceTime = (seconds: number): string => {
+  const total = Math.max(0, Math.round(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  return hours > 0
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+    : `${minutes}:${String(secs).padStart(2, '0')}`;
+};
+
 /**
- * Оценка темпа на 10 км.
+ * Оценка текущего темпа на 10 км.
  * Если есть недавний результат — пересчитываем его на 10 км по правилу Риджа,
  * иначе берём базовый темп уровня с небольшой поправкой на объём.
+ *
+ * Дальше из текущей формы получаем время на дистанции забега, добавляем
+ * реалистичный прирост от плана и сравниваем с целью пользователя (если она есть).
  */
 export const estimatePaces = (input: PlanInput): TrainingPaces => {
   let p10 = 0;
@@ -205,7 +263,10 @@ export const estimatePaces = (input: PlanInput): TrainingPaces => {
 
   const result = input.recentResult;
   if (result && result.distanceKm >= 1 && result.distanceKm <= 42 && result.timeSec > 0) {
-    const equivalent = result.timeSec * Math.pow(10 / result.distanceKm, 1.06);
+    // 21 и 42 в интерфейсе означают полумарафон и марафон: для расчёта берём
+    // реальные 21,0975 и 42,195, иначе результат «плывёт» на полминуты.
+    const resultDistance = GOAL_KM[result.distanceKm as GoalDistance] ?? result.distanceKm;
+    const equivalent = result.timeSec * Math.pow(10 / resultDistance, RIEGEL_EXPONENT);
     p10 = equivalent / 10;
     source = 'result';
   } else {
@@ -215,21 +276,49 @@ export const estimatePaces = (input: PlanInput): TrainingPaces => {
     p10 = base[input.level] * (1 - volumeShare * 0.07);
   }
 
-  const goalPace: Record<GoalDistance, number> = {
-    5: p10 - 10,
-    10: p10,
-    21: p10 + 10,
-    42: p10 + 20,
-  };
+  const startDate = input.startDate ?? todayISO();
+  const rawWeeks = weeksBetween(startDate, input.raceDate);
+  const weeksTotal = clamp(Number.isFinite(rawWeeks) ? rawWeeks : 12, 3, 24);
+  const cap = LEVEL_CAP[input.level][input.goalKm];
+  const base = Math.min(cap, Math.max(MIN_BASE_KM[input.level], input.weeklyKm));
+  const peak = Math.min(cap, base * 1.45);
+  const gainRatio = estimateGain(input.level, weeksTotal, peak / Math.max(1, base));
+
+  const currentTimeSec = timeFromP10(p10, input.goalKm);
+  const predictedTimeSec = currentTimeSec * (1 - gainRatio);
+  const userTarget = input.targetTimeSec && input.targetTimeSec > 0 ? input.targetTimeSec : 0;
+  const targetTimeSec = userTarget || predictedTimeSec;
+  const goalPace = targetTimeSec / GOAL_KM[input.goalKm];
+
+  // Качественные тренировки подтягиваются к цели, но не больше чем на половину
+  // разрыва и не быстрее чем на 30 с/км: иначе слишком смелая цель ломает план.
+  const targetP10 = p10FromTime(targetTimeSec, input.goalKm);
+  const shift = clamp((targetP10 - p10) * 0.5, -30, 0);
+
+  const improvement = currentTimeSec > 0 ? 1 - targetTimeSec / currentTimeSec : 0;
+  const assessment: GoalAssessment =
+    improvement > 0.1
+      ? 'unrealistic'
+      : improvement > 0.05
+        ? 'ambitious'
+        : improvement < -0.05
+          ? 'conservative'
+          : 'realistic';
 
   return {
     p10Sec: Math.round(p10),
     easy: [Math.round(p10 + 75), Math.round(p10 + 95)],
     long: [Math.round(p10 + 60), Math.round(p10 + 80)],
-    tempo: [Math.round(p10 - 15), Math.round(p10 - 5)],
-    interval: [Math.round(p10 - 25), Math.round(p10 - 15)],
-    goal: Math.round(goalPace[input.goalKm]),
+    tempo: [Math.round(p10 + shift - 15), Math.round(p10 + shift - 5)],
+    interval: [Math.round(p10 + shift - 25), Math.round(p10 + shift - 15)],
+    goal: Math.round(goalPace),
     source,
+    currentTimeSec: Math.round(currentTimeSec),
+    predictedTimeSec: Math.round(predictedTimeSec),
+    targetTimeSec: Math.round(targetTimeSec),
+    gainRatio,
+    goalSource: userTarget ? 'user' : 'predicted',
+    assessment,
   };
 };
 
@@ -395,14 +484,15 @@ const buildGoalPace = (
  */
 export const buildRacePlan = (input: PlanInput): RacePlan => {
   const startDate = input.startDate ?? todayISO();
-  const weeksTotal = Math.min(24, Math.max(3, weeksBetween(startDate, input.raceDate)));
+  const rawWeeks = weeksBetween(startDate, input.raceDate);
+  const weeksTotal = Number.isFinite(rawWeeks) ? Math.min(24, Math.max(3, rawWeeks)) : 12;
   const daysPerWeek = clamp(Math.round(input.daysPerWeek), 2, 6);
 
   const cap = LEVEL_CAP[input.level][input.goalKm];
   const base = Math.min(cap, Math.max(MIN_BASE_KM[input.level], input.weeklyKm));
   const peakTarget = round1(Math.min(cap, base * 1.45));
 
-  const paces = estimatePaces({ ...input, daysPerWeek });
+  const paces = estimatePaces({ ...input, startDate, daysPerWeek });
 
   const growthWeeks = Math.max(1, weeksTotal - 2);
   const longPeak = LONG_PEAK_KM[input.level][input.goalKm];

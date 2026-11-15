@@ -20,6 +20,7 @@ import { getCurrentUser } from '../utils/userUtils';
 import { saveCalculation } from '../utils/statsUtils';
 
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface Vo2PredictorProps {
   id: string;
@@ -144,6 +145,7 @@ export const Vo2Predictor = ({ id }: Vo2PredictorProps) => {
       `}</style>
 
       <PageBackground variant="red" pattern="ridge">
+        <BackButton to="/runner_calculator" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

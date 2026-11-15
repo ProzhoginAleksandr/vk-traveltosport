@@ -22,6 +22,7 @@ import {
   renderRunImage,
 } from '../utils/shareImage';
 import { saveFile } from '../utils/fileExport';
+import { showEventAd } from '../utils/adUtils';
 import logoUrl from '../assets/images/TTSlogoShare.png';
 
 interface ShareRunModalProps {
@@ -262,6 +263,10 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
         blob: preview, // data:image/jpeg;base64,...
         locked: true,
       });
+      // История опубликована — естественная пауза для рекламы
+      window.setTimeout(() => {
+        void showEventAd('share_done');
+      }, 900);
     } catch (err) {
       // Код 4 — пользователь закрыл редактор, это не ошибка
       const e = err as { error_data?: { error_code?: number } };
@@ -298,9 +303,12 @@ export const ShareRunModal = ({ track, onClose }: ShareRunModalProps) => {
       setBusy(true);
       navigator
         .share({ files: [file], title: 'Моя пробежка', text: 'TraveltoSport' })
-        .then(() =>
-          setSaveInfo('Меню закрыто. Если вы выбрали «Сохранить в галерею» — картинка уже там.')
-        )
+        .then(() => {
+          setSaveInfo('Меню закрыто. Если вы выбрали «Сохранить в галерею» — картинка уже там.');
+          window.setTimeout(() => {
+            void showEventAd('share_done');
+          }, 600);
+        })
         .catch((err: unknown) => {
           if (err instanceof DOMException && err.name === 'AbortError') {
             setSaveInfo('Сохранение отменено.');

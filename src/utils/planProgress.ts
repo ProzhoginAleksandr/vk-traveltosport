@@ -6,6 +6,7 @@
 import {
   buildRacePlan,
   daysUntilRace,
+  type GoalAssessment,
   type Phase,
   type PlannedSession,
   type RacePlan,
@@ -18,6 +19,24 @@ export interface PlanSessionView extends PlannedSession {
   /** Дата с учётом переносов */
   effectiveDate: string;
   status?: SessionStatus;
+}
+
+/** Прогноз результата с учётом того, как сейчас выполняется план */
+export interface PlanForecast {
+  /** Текущая форма на дистанции забега, сек */
+  currentTimeSec: number;
+  /** Цель: введённая пользователем или прогноз плана, сек */
+  targetTimeSec: number;
+  /** Ожидаемое время с поправкой на выполнение, сек */
+  projectedTimeSec: number;
+  /** Доля выполненных тренировок среди тех, что уже прошли */
+  completionRatio: number;
+  /** Заложенный планом прирост, доли */
+  plannedGainPercent: number;
+  /** Прирост с учётом выполнения, доли */
+  effectiveGainPercent: number;
+  goalSource: 'user' | 'predicted';
+  assessment: GoalAssessment;
 }
 
 export interface PlanView {
@@ -36,7 +55,19 @@ export interface PlanView {
   currentWeekIndex: number;
   /** День забега уже прошёл */
   racePassed: boolean;
+  forecast: PlanForecast;
 }
+
+/**
+ * Насколько план отрабатывает: считаем только тренировки, которые уже прошли,
+ * чтобы будущие не портили картину. 85%+ — полный прогноз, ниже — прирост режется.
+ */
+const completionFactor = (ratio: number): number => {
+  if (ratio >= 0.85) return 1;
+  if (ratio >= 0.7) return 0.75;
+  if (ratio >= 0.5) return 0.45;
+  return 0.2;
+};
 
 export const buildPlanView = (state: PlanState, today: string): PlanView => {
   const plan = buildRacePlan(state.input);
@@ -76,6 +107,22 @@ export const buildPlanView = (state: PlanState, today: string): PlanView => {
     sessions.find((session) => !session.status && session.effectiveDate > today) ??
     null;
 
+  // Прогноз зависит от регулярности: считаем только уже прошедшие тренировки
+  const dueSessions = sessions.filter((session) => session.effectiveDate < today);
+  const dueDone = dueSessions.filter((session) => session.status === 'done').length;
+  const completionRatio = dueSessions.length > 0 ? dueDone / dueSessions.length : 1;
+  const effectiveGainPercent = plan.paces.gainRatio * completionFactor(completionRatio);
+  const forecast: PlanForecast = {
+    currentTimeSec: plan.paces.currentTimeSec,
+    targetTimeSec: plan.paces.targetTimeSec,
+    projectedTimeSec: Math.round(plan.paces.currentTimeSec * (1 - effectiveGainPercent)),
+    completionRatio,
+    plannedGainPercent: plan.paces.gainRatio,
+    effectiveGainPercent,
+    goalSource: plan.paces.goalSource,
+    assessment: plan.paces.assessment,
+  };
+
   return {
     plan,
     sessions,
@@ -89,6 +136,7 @@ export const buildPlanView = (state: PlanState, today: string): PlanView => {
     nextSession,
     currentWeekIndex: nextSession?.weekIndex ?? plan.weeksTotal,
     racePassed: daysLeft < 0,
+    forecast,
   };
 };
 

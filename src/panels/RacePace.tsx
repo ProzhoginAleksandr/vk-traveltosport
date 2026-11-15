@@ -20,6 +20,7 @@ import { getCurrentUser } from '../utils/userUtils';
 import { saveCalculation } from '../utils/statsUtils';
 
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface RacePaceProps {
   id: string;
@@ -121,6 +122,7 @@ export const RacePace = ({ id }: RacePaceProps) => {
       `}</style>
 
       <PageBackground variant="red" pattern="footsteps">
+        <BackButton to="/runner_calculator" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

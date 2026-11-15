@@ -16,6 +16,7 @@ import { Icon24Fullscreen, Icon24Pause, Icon24Play, Icon24Stop } from '@vkontakt
 import trackerHeaderImage from '../assets/images/TrackerHeader.png';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 import { BigRunScreen } from '../components/BigRunScreen';
 import { MapView, type MapSegment } from '../components/MapView';
 import { ShareRunModal } from '../components/ShareRunModal';
@@ -102,6 +103,7 @@ const buildSegments = (track: TrackPoint[]): MapSegment[] => {
 const TrackerPaused = ({ id }: TrackerProps) => (
   <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
     <PageBackground variant="blue" pattern="footsteps">
+      <BackButton to="/training_diary" />
       {/* Header */}
       <div
         style={{
@@ -259,6 +261,7 @@ const TrackerActive = ({ id }: TrackerProps) => {
       `}</style>
 
       <PageBackground variant="blue" pattern="footsteps">
+        <BackButton to="/training_diary" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

@@ -11,8 +11,10 @@ import {
 } from '@vkontakte/vkui';
 import { DICTIONARY } from '../utils/dictionary';
 import headerImage from '../assets/images/RunnerDictionaryHeader.png';
+import { AdCard } from '../components/AdCard';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface RunnerDictionaryProps {
   id: string;
@@ -83,6 +85,7 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
       `}</style>
 
       <PageBackground variant="violet" pattern="ridge" paddingBottom={24}>
+        <BackButton to="/brain_booster" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{
@@ -123,6 +126,8 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
             <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: '15px', lineHeight: '1.6' }}>
               {selectedDefinition.definition}
             </Text>
+
+            <AdCard style={{ marginTop: '16px' }} />
 
             <Div style={{ marginTop: '16px', padding: 0 }}>
               <Button
@@ -199,6 +204,8 @@ export const RunnerDictionary = ({ id }: RunnerDictionaryProps) => {
                 )}
               </label>
             </div>
+
+            <AdCard style={{ marginTop: '16px' }} />
 
             {/* Список терминов */}
             <Group

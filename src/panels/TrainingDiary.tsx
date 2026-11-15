@@ -15,6 +15,7 @@ import importIcon from '../assets/images/ProfileIcon.png';
 
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface TrainingDiaryProps {
   id: string;
@@ -71,6 +72,7 @@ export const TrainingDiary = ({ id }: TrainingDiaryProps) => {
       `}</style>
 
       <PageBackground variant="blue" pattern="footsteps">
+        <BackButton to="/" />
         {/* Header */}
         <div
           style={{

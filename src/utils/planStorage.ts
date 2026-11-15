@@ -32,7 +32,8 @@ const isPlanInput = (value: unknown): value is PlanInput => {
     typeof value.raceDate === 'string' &&
     (value.level === 'novice' || value.level === 'stable' || value.level === 'advanced') &&
     typeof value.daysPerWeek === 'number' &&
-    typeof value.weeklyKm === 'number'
+    typeof value.weeklyKm === 'number' &&
+    (value.targetTimeSec === undefined || typeof value.targetTimeSec === 'number')
   );
 };
 

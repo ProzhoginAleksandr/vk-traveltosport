@@ -13,6 +13,7 @@ import {
 import headerImage from '../../assets/images/DictionaryQuizHeader.png';
 import { AppTabbar } from '../../components/AppTabbar';
 import { PageBackground } from '../../components/PageBackground';
+import { BackButton } from '../../components/BackButton';
 import { getCurrentUser } from '../../utils/userUtils';
 import {
   loadUserGamesData,
@@ -266,6 +267,7 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
       `}</style>
 
       <PageBackground variant="violet" pattern="topo">
+        <BackButton to="/brain_booster" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

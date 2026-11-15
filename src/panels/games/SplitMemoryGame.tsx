@@ -14,6 +14,7 @@ import {
 
 import headerImage from '../../assets/images/SplitMemoryHeader.png';
 import { PageBackground } from '../../components/PageBackground';
+import { BackButton } from '../../components/BackButton';
 import { AppTabbar } from '../../components/AppTabbar';
 import { getCurrentUser } from '../../utils/userUtils';
 import {
@@ -196,6 +197,7 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
       `}</style>
 
       <PageBackground variant="violet" pattern="topo">
+        <BackButton to="/brain_booster" />
         {/* Header с кнопкой «Назад» */}
         <div
           style={{

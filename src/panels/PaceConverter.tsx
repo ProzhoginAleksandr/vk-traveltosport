@@ -14,6 +14,7 @@ import { AppTabbar } from '../components/AppTabbar';
 import { getCurrentUser } from '../utils/userUtils';
 import { saveCalculation } from '../utils/statsUtils';
 import { PageBackground } from '../components/PageBackground';
+import { BackButton } from '../components/BackButton';
 
 interface PaceConverterProps {
   id: string;
@@ -75,6 +76,7 @@ export const PaceConverter = ({ id }: PaceConverterProps) => {
       `}</style>
 
       <PageBackground variant="red" pattern="track">
+        <BackButton to="/runner_calculator" />
         {/* Кастомный Header с кнопкой «Назад» */}
         <div
           style={{
