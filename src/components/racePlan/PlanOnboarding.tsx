@@ -176,6 +176,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
             value={raceDate}
             min={shiftDate(todayISO(), 1)}
             onChange={(event) => setRaceDate(event.target.value)}
+            aria-label="Дата старта"
             style={fieldStyle}
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACING.sm, marginTop: SPACING.sm }}>
@@ -255,6 +256,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
             onChange={(event) => setWeeklyKmText(event.target.value.replace(/[^\d.,]/g, ''))}
             inputMode="decimal"
             placeholder="20"
+            aria-label="Текущий объём, километров в неделю"
             style={fieldStyle}
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACING.sm, marginTop: SPACING.sm }}>
@@ -283,6 +285,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
             onChange={(event) => setAgeText(event.target.value.replace(/[^\d]/g, ''))}
             inputMode="numeric"
             placeholder="Например, 35"
+            aria-label="Возраст"
             style={fieldStyle}
           />
           <Text style={{ ...captionStyle, marginTop: SPACING.sm }}>
@@ -318,6 +321,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
                   onChange={(event) => setResultMinText(event.target.value.replace(/[^\d]/g, ''))}
                   inputMode="numeric"
                   placeholder="минуты"
+                  aria-label="Минуты недавнего результата"
                   style={{ ...fieldStyle, width: '50%' }}
                 />
                 <Text style={{ color: COLORS.textSecondary }}>:</Text>
@@ -326,6 +330,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
                   onChange={(event) => setResultSecText(event.target.value.replace(/[^\d]/g, ''))}
                   inputMode="numeric"
                   placeholder="секунды"
+                  aria-label="Секунды недавнего результата"
                   style={{ ...fieldStyle, width: '50%' }}
                 />
               </div>
@@ -357,6 +362,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
                   onChange={(event) => setTargetMinText(event.target.value.replace(/[^\d]/g, ''))}
                   inputMode="numeric"
                   placeholder="минуты"
+                  aria-label="Минуты желаемого результата"
                   style={{ ...fieldStyle, width: '50%' }}
                 />
                 <Text style={{ color: COLORS.textSecondary }}>:</Text>
@@ -365,6 +371,7 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
                   onChange={(event) => setTargetSecText(event.target.value.replace(/[^\d]/g, ''))}
                   inputMode="numeric"
                   placeholder="секунды"
+                  aria-label="Секунды желаемого результата"
                   style={{ ...fieldStyle, width: '50%' }}
                 />
               </div>

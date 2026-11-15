@@ -21,7 +21,7 @@ import {
   loadUserGamesData,
   updateSplitMemoryRecord,
 } from '../../utils/gameStorage';
-import { showAdIfDue } from '../../utils/adUtils';
+import { showAdIfDue, showRewardedAd } from '../../utils/adUtils';
 
 interface SplitMemoryGameProps {
   id: string;
@@ -76,6 +76,9 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
   const [bestLevel, setBestLevel] = useState(0);
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [message, setMessage] = useState<string>('');
+  const [hintUsed, setHintUsed] = useState(false);
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hintMessage, setHintMessage] = useState('');
 
   const adTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -124,7 +127,37 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
     setResults([]);
     setLevelPassed(false);
     setMessage('');
+    setHintUsed(false);
+    setHintLoading(false);
+    setHintMessage('');
     setPhase('memorize');
+  };
+
+  // 💡 Подсказка за рекламу: открыть один правильный отрезок
+  const requestHint = async () => {
+    if (phase !== 'recall' || hintUsed || hintLoading) return;
+    setHintLoading(true);
+    const shown = await showRewardedAd();
+    setHintLoading(false);
+    if (!shown) {
+      setHintMessage('Реклама сейчас недоступна — попробуйте позже.');
+      return;
+    }
+    const index = splits.findIndex(
+      (split, position) => normalizePace(userAnswers[position] || '') !== split.pace
+    );
+    if (index >= 0) {
+      const pace = splits[index].pace;
+      setUserAnswers((prev) => {
+        const updated = [...prev];
+        updated[index] = pace;
+        return updated;
+      });
+      setHintMessage('');
+    } else {
+      setHintMessage('Все ответы уже верные.');
+    }
+    setHintUsed(true);
   };
 
   // 🖊 Обновить ответ игрока
@@ -499,6 +532,53 @@ export const SplitMemoryGame = ({ id }: SplitMemoryGameProps) => {
               Я запомнил → Ввести ответы
             </Button>
           )}
+
+          {phase === 'recall' && !hintUsed && (
+            <Button
+              size="l"
+              stretched
+              mode="secondary"
+              loading={hintLoading}
+              onClick={() => void requestHint()}
+              style={{
+                width: '100%',
+                height: '52px',
+                marginBottom: '12px',
+                background: 'rgba(255, 255, 255, 0.12)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#FFFFFF',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
+                fontSize: '15px',
+              }}
+            >
+              Подсказка за рекламу: открыть один отрезок
+            </Button>
+          )}
+          {phase === 'recall' && hintUsed && (
+            <Text
+              style={{
+                color: 'rgba(255,255,255,0.6)',
+                fontSize: '13px',
+                textAlign: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              Подсказка использована
+            </Text>
+          )}
+          {phase === 'recall' && hintMessage ? (
+            <Text
+              style={{
+                color: '#FF9800',
+                fontSize: '13px',
+                textAlign: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              {hintMessage}
+            </Text>
+          ) : null}
 
           {phase === 'recall' && (
             <Button

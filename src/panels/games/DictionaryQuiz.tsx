@@ -21,7 +21,7 @@ import {
   formatGameTime,
 } from '../../utils/gameStorage';
 import { DICTIONARY } from '../../utils/dictionary';
-import { showAdIfDue } from '../../utils/adUtils';
+import { showAdIfDue, showRewardedAd } from '../../utils/adUtils';
 
 interface DictionaryQuizProps {
   id: string;
@@ -94,6 +94,10 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [message, setMessage] = useState('');
+  const [hiddenOptions, setHiddenOptions] = useState<number[]>([]);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hintMessage, setHintMessage] = useState('');
 
   const [bestScore, setBestScore] = useState<number | null>(null);
   const [bestTime, setBestTime] = useState<number | null>(null);
@@ -146,6 +150,9 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
     setElapsedTime(0);
     setPhase('playing');
     setMessage('');
+    setHiddenOptions([]);
+    setHintUsed(false);
+    setHintMessage('');
     if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current);
     // Новая игра началась раньше, чем сработала реклама, — рекламу отменяем
     if (adTimeoutRef.current) clearTimeout(adTimeoutRef.current);
@@ -215,8 +222,29 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
       } else {
         setCurrentIndex(nextIndex);
         setSelectedIndex(null);
+        setHiddenOptions([]);
+        setHintUsed(false);
+        setHintMessage('');
       }
     }, ANSWER_DELAY_MS);
+  };
+
+  // 🎬 Подсказка 50/50 за просмотр рекламы
+  const requestHint = async () => {
+    if (hintUsed || hintLoading || selectedIndex !== null || !currentQuestion) return;
+    setHintLoading(true);
+    const shown = await showRewardedAd();
+    setHintLoading(false);
+    if (!shown) {
+      setHintMessage('Реклама сейчас недоступна — попробуйте позже.');
+      return;
+    }
+    const wrong = currentQuestion.options
+      .map((_, index) => index)
+      .filter((index) => index !== currentQuestion.correctIndex);
+    setHiddenOptions(wrong.slice(0, 2));
+    setHintUsed(true);
+    setHintMessage('');
   };
 
   // 🎨 Цвет кнопки-варианта
@@ -239,6 +267,17 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
       display: 'flex',
       alignItems: 'center',
     };
+
+    if (hiddenOptions.includes(index)) {
+      return {
+        ...base,
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        color: 'rgba(255, 255, 255, 0.25)',
+        textDecoration: 'line-through',
+        cursor: 'default',
+      };
+    }
 
     if (selectedIndex === null) {
       return { ...base, background: 'rgba(255, 255, 255, 0.12)' };
@@ -379,19 +418,39 @@ export const DictionaryQuiz = ({ id }: DictionaryQuizProps) => {
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {currentQuestion.options.map((option, index) => (
-                  <button
-                    key={option}
-                    onClick={() => handleAnswer(index)}
-                    disabled={selectedIndex !== null}
-                    style={getOptionStyle(index)}
-                  >
-                    <span style={{ marginRight: '10px', opacity: 0.6 }}>
-                      {String.fromCharCode(65 + index)}.
-                    </span>
-                    {option}
-                  </button>
-                ))}
+                {currentQuestion.options.map((option, index) => {
+                  const hidden = hiddenOptions.includes(index);
+                  return (
+                    <button
+                      key={option}
+                      onClick={() => handleAnswer(index)}
+                      disabled={selectedIndex !== null || hidden}
+                      style={getOptionStyle(index)}
+                    >
+                      <span style={{ marginRight: '10px', opacity: 0.6 }}>
+                        {String.fromCharCode(65 + index)}.
+                      </span>
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <Button
+                  size="m"
+                  mode="secondary"
+                  loading={hintLoading}
+                  disabled={hintUsed || selectedIndex !== null}
+                  onClick={() => void requestHint()}
+                >
+                  {hintUsed ? 'Подсказка использована' : '50/50 за рекламу'}
+                </Button>
+                {hintMessage ? (
+                  <Text style={{ color: '#FF9800', fontSize: '13px', textAlign: 'center' }}>
+                    {hintMessage}
+                  </Text>
+                ) : null}
               </div>
             </Group>
           </>

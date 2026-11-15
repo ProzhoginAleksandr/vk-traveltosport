@@ -376,9 +376,22 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
               : isToday
                 ? COLORS.borderStrong
                 : COLORS.border;
+          const statusText =
+            daySessions.length === 0
+              ? 'отдых'
+              : daySessions.some((session) => session.status === 'done')
+                ? 'выполнено'
+                : daySessions.some((session) => session.status === 'skipped')
+                  ? 'пропущено'
+                  : isToday
+                    ? 'сегодня'
+                    : 'запланировано';
           return (
             <div
               key={label}
+              role="img"
+              aria-label={`${label}, ${date.slice(8, 10)}.${date.slice(5, 7)}: ${statusText}`}
+              title={`${label}: ${statusText}`}
               style={{
                 ...cardStyle,
                 padding: `${SPACING.sm}px 4px`,
@@ -391,21 +404,24 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
               <Text style={{ color: COLORS.text, fontSize: FONT_SIZE.body, lineHeight: 1.1 }}>
                 {Number(date.slice(8, 10))}
               </Text>
-              <div
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: 3,
-                  margin: '4px auto 0',
-                  background: color,
-                }}
-              />
+              <Text
+                aria-hidden="true"
+                style={{ color, fontSize: 12, lineHeight: 1, marginTop: 4 }}
+              >
+                {daySessions.some((session) => session.status === 'done')
+                  ? '✓'
+                  : daySessions.some((session) => session.status === 'skipped')
+                    ? '✕'
+                    : daySessions.length > 0
+                      ? '●'
+                      : '·'}
+              </Text>
             </div>
           );
         })}
       </div>
       <Text style={captionStyle}>
-        Зелёная точка — выполнено, красная — пропущено, жёлтая — сегодня, светлая — впереди.
+        ✓ — выполнено, ✕ — пропущено, ● — запланировано, · — отдых; рамка выделяет сегодня.
       </Text>
 
       {/* Весь план */}

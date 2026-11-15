@@ -12,7 +12,7 @@ import {
 import { PageBackground } from '../../components/PageBackground';
 import { BackButton } from '../../components/BackButton';
 import { AppTabbar } from '../../components/AppTabbar';
-import { showAdIfDue } from '../../utils/adUtils';
+import { showAdIfDue, showRewardedAd } from '../../utils/adUtils';
 import { getCurrentUser } from '../../utils/userUtils';
 import headerImage from '../../assets/images/PairGameHeader.webp';
 import {
@@ -85,6 +85,10 @@ export const PairGame = ({ id }: PairGameProps) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [message, setMessage] = useState<string>('');
+  const [peek, setPeek] = useState(false);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hintMessage, setHintMessage] = useState('');
   const [bestTime, setBestTime] = useState<number | null>(null);
   const [bestMoves, setBestMoves] = useState<number | null>(null);
   const [gamesPlayed, setGamesPlayed] = useState(0);
@@ -152,6 +156,10 @@ export const PairGame = ({ id }: PairGameProps) => {
     setElapsedTime(0);
     setIsFinished(false);
     setMessage('');
+    setPeek(false);
+    setHintUsed(false);
+    setHintLoading(false);
+    setHintMessage('');
     lockRef.current = false;
     if (timerRef.current) clearInterval(timerRef.current);
   };
@@ -166,6 +174,22 @@ export const PairGame = ({ id }: PairGameProps) => {
   const startGame = () => {
     resetBoard(gridSize);
     setStartTime(Date.now());
+  };
+
+  // 👀 Подсказка за рекламу: показать все карточки на 3 секунды
+  const requestHint = async () => {
+    if (!startTime || isFinished || hintUsed || hintLoading) return;
+    setHintLoading(true);
+    const shown = await showRewardedAd();
+    setHintLoading(false);
+    if (!shown) {
+      setHintMessage('Реклама сейчас недоступна — попробуйте позже.');
+      return;
+    }
+    setHintUsed(true);
+    setHintMessage('');
+    setPeek(true);
+    later(() => setPeek(false), 3000);
   };
 
   // 🖱 Клик по карточке
@@ -423,35 +447,38 @@ export const PairGame = ({ id }: PairGameProps) => {
               opacity: startTime || isFinished ? 1 : 0.6,
             }}
           >
-            {cards.map((card) => (
-              <button
-                key={card.id}
-                onClick={() => handleCardClick(card.id)}
-                disabled={card.isMatched || card.isOpen || !isPlaying}
-                aria-label={card.isOpen || card.isMatched ? card.icon : 'Закрытая карточка'}
-                style={{
-                  aspectRatio: '1 / 1',
-                  borderRadius: '10px',
-                  fontSize: gridSize === 4 ? '28px' : '20px',
-                  background: card.isMatched
-                    ? 'rgba(76, 175, 80, 0.35)'
-                    : card.isOpen
-                    ? 'rgba(255, 255, 255, 0.9)'
-                    : 'rgba(255, 255, 255, 0.15)',
-                  cursor: isPlaying && !card.isMatched && !card.isOpen ? 'pointer' : 'default',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: card.isOpen || card.isMatched ? '#0a0f0a' : 'transparent',
-                  border: card.isMatched
-                    ? '2px solid #4CAF50'
-                    : '1px solid rgba(255, 255, 255, 0.15)',
-                }}
-              >
-                {(card.isOpen || card.isMatched) ? card.icon : ''}
-              </button>
-            ))}
+            {cards.map((card) => {
+              const faceUp = peek || card.isOpen || card.isMatched;
+              return (
+                <button
+                  key={card.id}
+                  onClick={() => handleCardClick(card.id)}
+                  disabled={peek || card.isMatched || card.isOpen || !isPlaying}
+                  aria-label={faceUp ? card.icon : 'Закрытая карточка'}
+                  style={{
+                    aspectRatio: '1 / 1',
+                    borderRadius: '10px',
+                    fontSize: gridSize === 4 ? '28px' : '20px',
+                    background: card.isMatched
+                      ? 'rgba(76, 175, 80, 0.35)'
+                      : faceUp
+                        ? 'rgba(255, 255, 255, 0.9)'
+                        : 'rgba(255, 255, 255, 0.15)',
+                    cursor: isPlaying && !card.isMatched && !card.isOpen ? 'pointer' : 'default',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: faceUp ? '#0a0f0a' : 'transparent',
+                    border: card.isMatched
+                      ? '2px solid #4CAF50'
+                      : '1px solid rgba(255, 255, 255, 0.15)',
+                  }}
+                >
+                  {faceUp ? card.icon : ''}
+                </button>
+              );
+            })}
           </div>
         </Group>
 
@@ -486,6 +513,52 @@ export const PairGame = ({ id }: PairGameProps) => {
             marginTop: '16px',
           }}
         >
+          {isPlaying && !hintUsed && (
+            <Button
+              size="l"
+              stretched
+              mode="secondary"
+              loading={hintLoading}
+              onClick={() => void requestHint()}
+              style={{
+                width: '100%',
+                height: '52px',
+                marginBottom: '10px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#FFFFFF',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
+                fontSize: '15px',
+              }}
+            >
+              Подсказка за рекламу: открыть карточки на 3 секунды
+            </Button>
+          )}
+          {isPlaying && hintUsed && (
+            <Text
+              style={{
+                color: 'rgba(255,255,255,0.6)',
+                fontSize: '13px',
+                textAlign: 'center',
+                marginBottom: '10px',
+              }}
+            >
+              Подсказка использована
+            </Text>
+          )}
+          {hintMessage ? (
+            <Text
+              style={{
+                color: '#FF9800',
+                fontSize: '13px',
+                textAlign: 'center',
+                marginBottom: '10px',
+              }}
+            >
+              {hintMessage}
+            </Text>
+          ) : null}
+
           <Button
             size="l"
             stretched
