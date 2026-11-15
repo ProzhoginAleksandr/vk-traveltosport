@@ -23,7 +23,7 @@ import {
 } from '../utils/shareImage';
 import { saveFile } from '../utils/fileExport';
 import { showEventAd } from '../utils/adUtils';
-import logoUrl from '../assets/images/TTSlogoShare.png';
+import logoUrl from '../assets/images/TTSlogoShare.webp';
 
 interface ShareRunModalProps {
   track: SavedTrack;

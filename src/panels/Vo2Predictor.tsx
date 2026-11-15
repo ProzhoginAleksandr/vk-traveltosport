@@ -14,7 +14,7 @@ import {
 } from '@vkontakte/vkui';
 
 
-import headerImage from '../assets/images/Vo2PredictorHeader.png';
+import headerImage from '../assets/images/Vo2PredictorHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
 import { getCurrentUser } from '../utils/userUtils';
 import { saveCalculation } from '../utils/statsUtils';

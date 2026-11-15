@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    name: Типы, линтер, сборка
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run build
+
+  deploy-dev:
+    name: Публикация в dev
+    needs: checks
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Деплой в dev-окружение VK
+        env:
+          MINI_APPS_ACCESS_TOKEN: ${{ secrets.MINI_APPS_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$MINI_APPS_ACCESS_TOKEN" ]; then
+            echo "MINI_APPS_ACCESS_TOKEN не задан — деплой пропущен"
+            exit 0
+          fi
+          node -e "const fs=require('fs');const p='vk-hosting-config.json';const c=JSON.parse(fs.readFileSync(p,'utf8'));c.noprompt=true;fs.writeFileSync(p,JSON.stringify(c,null,2))"
+          npm run deploy:dev
+
+# Продакшен публикуется вручную: VK требует подтверждения на телефоне,
+# и в CI это может зависнуть. Локально: npm run deploy:prod.

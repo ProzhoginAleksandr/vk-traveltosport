@@ -30,6 +30,7 @@ import {
   type SessionStatus,
 } from '../../utils/planStorage';
 import { showEventAd } from '../../utils/adUtils';
+import { downloadCalendar } from '../../utils/calendar';
 import { COLORS, FONT_SIZE, LINE_HEIGHT, RADIUS, SPACING } from '../../styles/tokens';
 import { SessionCard } from './SessionCard';
 import { captionStyle, cardStyle, chipStyle, FONT, sectionTitleStyle } from './ui';
@@ -64,6 +65,16 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
   const [openSessionId, setOpenSessionId] = useState<string | null>(null);
   const [openWeek, setOpenWeek] = useState<number | null>(view.currentWeekIndex);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [calendarMessage, setCalendarMessage] = useState('');
+
+  const handleCalendar = async () => {
+    const saved = await downloadCalendar(plan);
+    setCalendarMessage(
+      saved
+        ? 'Файл с планом передан в календарь устройства.'
+        : 'Не удалось сохранить файл. Попробуйте открыть приложение в браузере.'
+    );
+  };
 
   const handleStatus = (sessionId: string, status: SessionStatus | null) => {
     const next = setSessionStatus(state, sessionId, status);
@@ -525,6 +536,9 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
           <Button mode="secondary" size="m" onClick={onEdit}>
             Изменить параметры
           </Button>
+          <Button mode="secondary" size="m" onClick={() => void handleCalendar()}>
+            Добавить в календарь
+          </Button>
           {confirmDelete ? (
             <>
               <Button appearance="negative" size="m" onClick={onDelete}>
@@ -543,6 +557,11 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
         {confirmDelete ? (
           <Text style={{ ...captionStyle, color: COLORS.danger, marginTop: SPACING.sm }}>
             План и все отметки удалятся с этого устройства.
+          </Text>
+        ) : null}
+        {calendarMessage ? (
+          <Text style={{ ...captionStyle, color: COLORS.textSecondary, marginTop: SPACING.sm }}>
+            {calendarMessage}
           </Text>
         ) : null}
       </div>

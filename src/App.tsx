@@ -15,6 +15,7 @@ import {
   Tracker,
   TrainingImport,
   Profile,
+  Privacy,
   SplitMemoryGame,
   DictionaryQuiz,
 } from './panels';
@@ -48,6 +49,7 @@ export const App = () => {
           <Tracker id={PANELS.TRACKER} />
           <TrainingImport id={PANELS.TRAINING_IMPORT} />
           <Profile id={PANELS.PROFILE} />
+          <Privacy id={PANELS.PRIVACY} />
         </View>
       </SplitCol>
     </SplitLayout>

@@ -1,7 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import vkBridge from '@vkontakte/vk-bridge';
 import { AppConfig } from './AppConfig';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { getBuildId } from './utils/buildInfo';
+import { installGlobalErrorHandlers } from './utils/errorLog';
 
 // Метка сборки в заголовке страницы: на телефоне в браузере VK заголовок виден
 // в шапке, поэтому сразу понятно, какая версия открыта — старая или новая.
@@ -20,7 +22,13 @@ vkBridge.send('VKWebAppInit')
   .then(() => console.log('✅ Bridge init OK'))
   .catch(err => console.error('❌ Bridge init error:', err));
 
-createRoot(document.getElementById('root')!).render(<AppConfig />);
+installGlobalErrorHandlers();
+
+createRoot(document.getElementById('root')!).render(
+  <ErrorBoundary>
+    <AppConfig />
+  </ErrorBoundary>
+);
 
 if (import.meta.env.MODE === 'development') {
   import('./eruda.ts');

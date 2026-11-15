@@ -10,7 +10,7 @@ import {
   Button,
 } from '@vkontakte/vkui';
 import { DICTIONARY } from '../utils/dictionary';
-import headerImage from '../assets/images/RunnerDictionaryHeader.png';
+import headerImage from '../assets/images/RunnerDictionaryHeader.webp';
 import { AdCard } from '../components/AdCard';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';

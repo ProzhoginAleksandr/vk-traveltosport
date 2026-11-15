@@ -11,6 +11,7 @@ export { RacePlan } from './RacePlan';
 export { Tracker } from './Tracker';
 export { TrainingImport } from './TrainingImport';
 export { Profile } from './Profile';
+export { Privacy } from './Privacy';
 export { PairGame } from './games/PairGame';
 export { SplitMemoryGame } from './games/SplitMemoryGame';
 export { DictionaryQuiz } from './games/DictionaryQuiz';

@@ -10,7 +10,7 @@ import {
   Card,
   CardGrid,
 } from '@vkontakte/vkui';
-import headerImage from '../../assets/images/DictionaryQuizHeader.png';
+import headerImage from '../../assets/images/DictionaryQuizHeader.webp';
 import { AppTabbar } from '../../components/AppTabbar';
 import { PageBackground } from '../../components/PageBackground';
 import { BackButton } from '../../components/BackButton';

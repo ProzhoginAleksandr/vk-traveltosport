@@ -40,6 +40,7 @@ export const PANELS = {
   TRACKER:            'tracker',
   TRAINING_IMPORT:    'training_import',
   PROFILE:            'profile',
+  PRIVACY:            'privacy',
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -69,6 +70,7 @@ const routes: RouteWithoutRoot[] = [
   { path: `/${PANELS.TRACKER}`,         view: VIEWS.DIARY, panel: PANELS.TRACKER },
   { path: `/${PANELS.TRAINING_IMPORT}`, view: VIEWS.DIARY, panel: PANELS.TRAINING_IMPORT },
   { path: `/${PANELS.PROFILE}`,         view: VIEWS.DIARY, panel: PANELS.PROFILE },
+  { path: `/${PANELS.PRIVACY}`,         view: VIEWS.DIARY, panel: PANELS.PRIVACY },
 ];
 
 export const router = createHashRouter(routes);

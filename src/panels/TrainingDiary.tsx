@@ -8,9 +8,8 @@ import {
 } from '@vkontakte/vkui';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
-import diaryHeader from '../assets/images/TrainingDiaryHeader.png';
+import diaryHeader from '../assets/images/TrainingDiaryHeader.webp';
 import planIcon from '../assets/images/RacePlanIcon.png';
-import trackerIcon from '../assets/images/TrackerIcon.png';
 import importIcon from '../assets/images/ProfileIcon.png';
 
 import { AppTabbar } from '../components/AppTabbar';
@@ -43,14 +42,6 @@ const TOOLS: ToolItem[] = [
     description: 'План тренировок к забегу по неделям',
     route: 'race_plan',
     alt: 'Программа подготовки',
-  },
-  {
-    key: 'tracker',
-    icon: trackerIcon,
-    title: 'Трекер пробежек',
-    description: 'Записывайте маршрут, дистанцию, темп и время пробежки',
-    route: 'tracker',
-    alt: 'Трекер пробежек',
   },
   {
     key: 'import',

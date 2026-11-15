@@ -9,7 +9,7 @@ import {
 } from '@vkontakte/vkui';
 
 
-import headerImage from '../assets/images/PaceConverterHeader.png';
+import headerImage from '../assets/images/PaceConverterHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
 import { getCurrentUser } from '../utils/userUtils';
 import { saveCalculation } from '../utils/statsUtils';

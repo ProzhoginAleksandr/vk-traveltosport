@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { Panel, Group, Cell, Title, Text } from '@vkontakte/vkui';
 import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
-import headerImage from '../assets/images/HomeHeader.png';
+import headerImage from '../assets/images/HomeHeader.webp';
 import calcIcon from '../assets/images/CalculatorIcon.png';
 import brainIcon from '../assets/images/BrainBoosterIcon.png';
 import diaryIcon from '../assets/images/DiaryIcon.png';

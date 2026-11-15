@@ -52,7 +52,8 @@ export type AdTrigger =
   | 'plan_week'
   | 'import_done'
   | 'share_done'
-  | 'opt_in';
+  | 'opt_in'
+  | 'rewarded';
 
 type AdCounters = Partial<Record<AdTrigger, number>>;
 
@@ -330,6 +331,57 @@ export const showAdAndNavigate = (
 
 /** Показ по кнопке: пользователь сам решил посмотреть ролик */
 export const showOptInAd = (): Promise<boolean> => runAd('opt_in', true);
+
+/**
+ * Rewarded-видео: пользователь смотрит ролик и получает награду от игры.
+ * Частотные лимиты не применяем — показ всегда инициирует сам пользователь,
+ * но защищаемся от двойного запуска и короткого спама повторами.
+ */
+export const showRewardedAd = async (): Promise<boolean> => {
+  if (adInFlight || adsBlocked || isLocalHost()) return false;
+
+  const now = Date.now();
+  const state = loadState();
+  beginSession(state, now);
+  if (now - state.lastAdAt < 15_000) {
+    bump(state.stats.skipped, 'rewarded');
+    saveState(state);
+    return false;
+  }
+  bump(state.stats.attempts, 'rewarded');
+  saveState(state);
+  adInFlight = true;
+
+  try {
+    await withTimeout(
+      bridge.send('VKWebAppCheckNativeAds', { ad_format: EAdsFormats.REWARD }),
+      CHECK_TIMEOUT_MS
+    );
+    if (adsBlocked) return false;
+
+    const data = await withTimeout(
+      bridge.send('VKWebAppShowNativeAds', { ad_format: EAdsFormats.REWARD }),
+      SHOW_TIMEOUT_MS
+    );
+    const shown = Boolean(data.result);
+
+    const fresh = loadState();
+    fresh.lastAdAt = Date.now();
+    if (shown) bump(fresh.stats.shown, 'rewarded');
+    else bump(fresh.stats.failed, 'rewarded');
+    saveState(fresh);
+    return shown;
+  } catch (error) {
+    const fresh = loadState();
+    fresh.lastFailureAt = Date.now();
+    bump(fresh.stats.failed, 'rewarded');
+    saveState(fresh);
+    console.warn('Rewarded-реклама не показана:', error);
+    return false;
+  } finally {
+    adInFlight = false;
+  }
+};
 
 /** Счётчики показов — пригодятся, чтобы сравнить триггеры по отдаче */
 export const getAdStats = (): AdStats => {

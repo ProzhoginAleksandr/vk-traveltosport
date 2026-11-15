@@ -8,7 +8,7 @@ import {
 } from '@vkontakte/vkui';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
-import calculatorHeader from '../assets/images/RunnerCalculatorHeader.png';
+import calculatorHeader from '../assets/images/RunnerCalculatorHeader.webp';
 
 import paceIcon from '../assets/images/PaceConverterIcon.png';
 import heartIcon from '../assets/images/HeartRateZonesIcon.png';

@@ -7,7 +7,7 @@ import { Panel } from '@vkontakte/vkui';
 import { Icon24ChevronLeft } from '@vkontakte/icons';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
-import racePlanHeaderImage from '../assets/images/RacePlanHeader.png';
+import racePlanHeaderImage from '../assets/images/RacePlanHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
 import { PlanOnboarding } from '../components/racePlan/PlanOnboarding';

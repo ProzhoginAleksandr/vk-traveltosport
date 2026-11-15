@@ -8,7 +8,7 @@ import {
 } from '@vkontakte/vkui';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
-import brainHeader from '../assets/images/BrainBoosterHeader.png';
+import brainHeader from '../assets/images/BrainBoosterHeader.webp';
 import dictionaryIcon from '../assets/images/DictionaryIcon.png';
 import quizIcon from '../assets/images/DictionaryQuizIcon.png';
 import pairIcon from '../assets/images/PairGameIcon.png';

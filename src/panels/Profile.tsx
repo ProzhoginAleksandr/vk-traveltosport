@@ -14,7 +14,7 @@ import {
   CardGrid,
   Spinner,
 } from '@vkontakte/vkui';
-import profileHeaderImage from '../assets/images/ProfileHeader.png';
+import profileHeaderImage from '../assets/images/ProfileHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
 import { MapView } from '../components/MapView';
 import { RankBadge } from '../components/RankBadge';
@@ -31,6 +31,7 @@ import {
   SavedTrack,
 } from '../utils/trackStorage';
 import { getBuildId } from '../utils/buildInfo';
+import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
 interface ProfileProps {
   id: string;
@@ -66,6 +67,7 @@ const formatDate = (iso: string): string => {
 };
 
 export const Profile = ({ id }: ProfileProps) => {
+  const routeNavigator = useRouteNavigator();
   const [user, setUser] = useState<VKUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [tracks, setTracks] = useState<SavedTrack[]>([]);
@@ -561,6 +563,40 @@ export const Profile = ({ id }: ProfileProps) => {
             )}
           </>
         )}
+
+      <Group
+        style={{
+          background: 'rgba(255, 255, 255, 0.08)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          marginTop: '16px',
+          padding: '4px 0',
+        }}
+      >
+        <Cell onClick={() => routeNavigator.push('/privacy')} style={{ color: '#FFFFFF' }}>
+          <div>
+            <Text
+              weight="2"
+              style={{
+                color: '#FFFFFF',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
+              }}
+            >
+              Данные и конфиденциальность
+            </Text>
+            <Text
+              style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '13px',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
+              }}
+            >
+              Что хранится, резервная копия и удаление
+            </Text>
+          </div>
+        </Cell>
+      </Group>
+
       {/* Метка сборки: сразу видно, какой бандл исполняется на устройстве */}
       <Div style={{ textAlign: 'center', paddingTop: 0, paddingBottom: 4 }}>
         <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: 13 }}>

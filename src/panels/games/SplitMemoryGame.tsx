@@ -12,7 +12,7 @@ import {
   CardGrid,
 } from '@vkontakte/vkui';
 
-import headerImage from '../../assets/images/SplitMemoryHeader.png';
+import headerImage from '../../assets/images/SplitMemoryHeader.webp';
 import { PageBackground } from '../../components/PageBackground';
 import { BackButton } from '../../components/BackButton';
 import { AppTabbar } from '../../components/AppTabbar';

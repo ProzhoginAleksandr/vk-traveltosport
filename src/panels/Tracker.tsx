@@ -13,7 +13,7 @@ import {
 
 import { Icon24Fullscreen, Icon24Pause, Icon24Play, Icon24Stop } from '@vkontakte/icons';
 
-import trackerHeaderImage from '../assets/images/TrackerHeader.png';
+import trackerHeaderImage from '../assets/images/TrackerHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
 import { PageBackground } from '../components/PageBackground';
 import { BackButton } from '../components/BackButton';

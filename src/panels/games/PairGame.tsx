@@ -14,7 +14,7 @@ import { BackButton } from '../../components/BackButton';
 import { AppTabbar } from '../../components/AppTabbar';
 import { showAdIfDue } from '../../utils/adUtils';
 import { getCurrentUser } from '../../utils/userUtils';
-import headerImage from '../../assets/images/PairGameHeader.png';
+import headerImage from '../../assets/images/PairGameHeader.webp';
 import {
   loadUserGamesData,
   updatePairGameRecord,

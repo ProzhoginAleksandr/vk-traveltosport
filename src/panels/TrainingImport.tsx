@@ -13,7 +13,7 @@ import {
 } from '@vkontakte/vkui';
 import { Icon24Upload } from '@vkontakte/icons';
 
-import headerImage from '../assets/images/HomeHeader.png';
+import headerImage from '../assets/images/HomeHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
 
 import { getCurrentUser } from '../utils/userUtils';
