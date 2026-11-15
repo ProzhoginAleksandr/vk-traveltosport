@@ -27,6 +27,14 @@ export const Home = ({ id }: HomeProps) => {
       `}</style>
 
       <PageBackground variant="green" pattern="ridge" paddingBottom={24}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 'calc(100vh - 24px)',
+            boxSizing: 'border-box',
+          }}
+        >
         {/* Header */}
         <div
           style={{
@@ -206,6 +214,32 @@ export const Home = ({ id }: HomeProps) => {
 
 
 
+        {/* Автор */}
+        <div style={{ marginTop: 'auto', paddingTop: '28px', textAlign: 'center' }}>
+          <Text
+            style={{
+              color: 'rgba(255, 255, 255, 0.85)',
+              fontSize: '13px',
+              lineHeight: 1.4,
+              fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
+            }}
+          >
+            автор{' '}
+            <a
+              href="https://vk.ru/prozhogin.aleksandr"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'rgba(255, 255, 255, 0.9)',
+                textDecoration: 'none',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.35)',
+              }}
+            >
+              Александр Прожогин
+            </a>
+          </Text>
+        </div>
+        </div>
       </PageBackground>
 
     </Panel>
