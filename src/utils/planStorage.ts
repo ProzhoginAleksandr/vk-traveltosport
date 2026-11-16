@@ -6,6 +6,7 @@
 // об этом честно предупреждаем на онбординге.
 
 import type { PlanInput } from './racePlan';
+import { pushPlanToCloud } from './cloudSync';
 
 const STORAGE_KEY = 'traveltosport_race_plan_v1';
 
@@ -15,6 +16,8 @@ export interface PlanState {
   input: PlanInput;
   /** Когда план создан, ISO */
   createdAt: string;
+  /** Когда план последний раз менялся, ISO — по нему сравниваем локальную и облачную копии */
+  updatedAt?: string;
   /** id тренировки → выполнено или пропущено */
   status: Record<string, SessionStatus>;
   /** id тренировки → новая дата, ISO */
@@ -64,6 +67,7 @@ export const loadPlanState = (): PlanState | null => {
     return {
       input: parsed.input,
       createdAt: typeof parsed.createdAt === 'string' ? parsed.createdAt : '',
+      updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : undefined,
       status: sanitizeStatus(parsed.status),
       moved: sanitizeMoved(parsed.moved),
     };
@@ -73,11 +77,14 @@ export const loadPlanState = (): PlanState | null => {
 };
 
 export const savePlanState = (state: PlanState): void => {
+  const next: PlanState = { ...state, updatedAt: new Date().toISOString() };
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   } catch {
     // Приватный режим или переполненное хранилище: план останется в памяти до перезагрузки
   }
+  // Копия в VK Storage: при ошибке молчим, локальная версия важнее
+  void pushPlanToCloud(next);
 };
 
 export const clearPlanState = (): void => {
@@ -91,6 +98,7 @@ export const clearPlanState = (): void => {
 export const createPlanState = (input: PlanInput): PlanState => ({
   input,
   createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   status: {},
   moved: {},
 });

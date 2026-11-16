@@ -2,7 +2,7 @@
 // Главный экран плана: сколько осталось до старта, что делать сегодня,
 // вся неделя по дням и полный список недель с отметками.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, Text } from '@vkontakte/vkui';
 
 import {
@@ -31,6 +31,7 @@ import {
 } from '../../utils/planStorage';
 import { showEventAd } from '../../utils/adUtils';
 import { downloadCalendar } from '../../utils/calendar';
+import { track } from '../../utils/analytics';
 import { COLORS, FONT_SIZE, LINE_HEIGHT, RADIUS, SPACING } from '../../styles/tokens';
 import { SessionCard } from './SessionCard';
 import { captionStyle, cardStyle, chipStyle, FONT, sectionTitleStyle } from './ui';
@@ -69,12 +70,24 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
 
   const handleCalendar = async () => {
     const saved = await downloadCalendar(plan);
+    if (saved) track('plan_calendar_added');
     setCalendarMessage(
       saved
         ? 'Файл с планом передан в календарь устройства.'
         : 'Не удалось сохранить файл. Попробуйте открыть приложение в браузере.'
     );
   };
+
+  useEffect(() => {
+    track('plan_view', {
+      weeks: plan.weeksTotal,
+      sessions: view.total,
+      done: view.doneCount,
+      goal_source: view.forecast.goalSource,
+    });
+    // Событие отправляем один раз при открытии экрана
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleStatus = (sessionId: string, status: SessionStatus | null) => {
     const next = setSessionStatus(state, sessionId, status);
@@ -86,12 +99,14 @@ export const PlanOverview = ({ state, onChange, onEdit, onDelete }: PlanOverview
     const nextView = buildPlanView(next, today);
     const marked = nextView.sessions.find((session) => session.id === sessionId);
     if (!marked) return;
+    track('plan_session_done', { week: marked.weekIndex, type: marked.type });
     const weekSessions = nextView.sessions.filter(
       (session) => session.weekIndex === marked.weekIndex
     );
     const weekClosed =
       weekSessions.length > 0 && weekSessions.every((session) => Boolean(session.status));
     if (weekClosed) {
+      track('plan_week_closed', { week: marked.weekIndex });
       window.setTimeout(() => {
         void showEventAd('plan_week');
       }, 900);

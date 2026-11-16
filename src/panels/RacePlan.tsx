@@ -21,6 +21,8 @@ import {
   type PlanState,
 } from '../utils/planStorage';
 import type { PlanInput } from '../utils/racePlan';
+import { buildRacePlan } from '../utils/racePlan';
+import { track } from '../utils/analytics';
 import { COLORS, RADIUS, SPACING } from '../styles/tokens';
 
 interface RacePlanProps {
@@ -33,6 +35,16 @@ export const RacePlan = ({ id }: RacePlanProps) => {
   const [editing, setEditing] = useState(false);
 
   const handleCreate = (input: PlanInput) => {
+    const plan = buildRacePlan(input);
+    track('plan_created', {
+      goal_km: input.goalKm,
+      level: input.level,
+      days: input.daysPerWeek,
+      weeks: plan.weeksTotal,
+      has_result: input.recentResult ? 1 : 0,
+      target_source: plan.paces.goalSource,
+      planned_gain_pct: Math.round(plan.paces.gainRatio * 1000) / 10,
+    });
     const next = createPlanState(input);
     savePlanState(next);
     setState(next);
@@ -45,6 +57,7 @@ export const RacePlan = ({ id }: RacePlanProps) => {
   };
 
   const handleDelete = () => {
+    track('plan_deleted');
     clearPlanState();
     setState(null);
     setEditing(false);
@@ -107,7 +120,10 @@ export const RacePlan = ({ id }: RacePlanProps) => {
             <PlanOverview
               state={state}
               onChange={handleChange}
-              onEdit={() => setEditing(true)}
+              onEdit={() => {
+                track('plan_edit_opened');
+                setEditing(true);
+              }}
               onDelete={handleDelete}
             />
           ) : (

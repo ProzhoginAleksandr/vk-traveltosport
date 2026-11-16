@@ -3,7 +3,7 @@
 // недавний результат. После них сразу видно, что получится, — план считается
 // на лету и сохраняется только по кнопке «Составить план».
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Text } from '@vkontakte/vkui';
 
 import {
@@ -21,6 +21,7 @@ import {
   type PlanInput,
 } from '../../utils/racePlan';
 import { formatPlanDate, plural } from '../../utils/planProgress';
+import { track } from '../../utils/analytics';
 import { COLORS, FONT_SIZE, LINE_HEIGHT, SPACING } from '../../styles/tokens';
 import { captionStyle, cardStyle, choiceStyle, fieldStyle, sectionTitleStyle } from './ui';
 
@@ -105,10 +106,17 @@ export const PlanOnboarding = ({ initial, onSubmit, onCancel }: PlanOnboardingPr
     startDate: todayISO(),
   });
 
-  const preview = dateValid ? buildRacePlan(composeInput()) : null;
-  const improvementSec = preview ? preview.paces.currentTimeSec - preview.paces.targetTimeSec : 0;
+  const preview = dateValid ? buildRacePlan(composeInput()) : null;  const improvementSec = preview ? preview.paces.currentTimeSec - preview.paces.targetTimeSec : 0;
   const improvementRatio =
     preview && preview.paces.currentTimeSec > 0 ? improvementSec / preview.paces.currentTimeSec : 0;
+
+  // Воронка онбординга: сколько людей доходит до каждого шага
+  useEffect(() => {
+    track('plan_onboarding_started');
+  }, []);
+  useEffect(() => {
+    track('plan_step', { step: step + 1 });
+  }, [step]);
 
   const canNext = step === 0 ? dateValid : true;
 

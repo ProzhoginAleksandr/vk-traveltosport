@@ -4,6 +4,8 @@ import { AppConfig } from './AppConfig';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { getBuildId } from './utils/buildInfo';
 import { installGlobalErrorHandlers } from './utils/errorLog';
+import { initAnalytics } from './utils/analytics';
+import { syncPlanOnStart } from './utils/cloudSync';
 
 // Метка сборки в заголовке страницы: на телефоне в браузере VK заголовок виден
 // в шапке, поэтому сразу понятно, какая версия открыта — старая или новая.
@@ -19,10 +21,15 @@ if (typeof document.fonts?.load === 'function') {
 }
 
 vkBridge.send('VKWebAppInit')
-  .then(() => console.log('✅ Bridge init OK'))
+  .then(() => {
+    console.log('✅ Bridge init OK');
+    // Подтягиваем облачную копию плана, если она свежее локальной
+    void syncPlanOnStart();
+  })
   .catch(err => console.error('❌ Bridge init error:', err));
 
 installGlobalErrorHandlers();
+initAnalytics();
 
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary>
