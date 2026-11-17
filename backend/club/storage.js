@@ -1,157 +1,148 @@
 // backend/club/storage.js
-// Хранилище клубной статистики в YDB: одна строка на пользователя и месяц.
-// Хранится только максимум километража, поэтому повторные отправки и очистка
-// кэша на устройстве не уменьшают вклад и не создают дублей.
-const {
-  Driver,
-  getCredentialsFromEnv,
-  TypedValues,
-  TableDescription,
-  Column,
-  Types,
-} = require('ydb-sdk');
+// Хранилище клубной статистики в Yandex Object Storage.
+//
+// Ключ объекта: club/<месяц>/<хеш пользователя>/<км>. Один объект на
+// пользователя и месяц: при обновлении старый ключ удаляется, поэтому вклад
+// не дублируется. Наружу читаются только суммы, без имён и маршрутов.
+const BUCKET = () => process.env.CLUB_BUCKET || '';
+const STORAGE_HOST = 'https://storage.yandexcloud.net';
+const METADATA_URL =
+  'http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token';
 
-let driverPromise = null;
-let tablePromise = null;
+let tokenCache = { token: '', expiresAt: 0 };
 
-const getDriver = () => {
-  if (driverPromise) return driverPromise;
+const getIamToken = async () => {
+  if (process.env.CLUB_IAM_TOKEN) return process.env.CLUB_IAM_TOKEN;
+  if (tokenCache.token && Date.now() < tokenCache.expiresAt) return tokenCache.token;
 
-  const endpoint = process.env.YDB_ENDPOINT;
-  const database = process.env.YDB_DATABASE;
-  if (!endpoint || !database) {
-    return Promise.reject(new Error('YDB_ENDPOINT и YDB_DATABASE не заданы'));
+  const response = await fetch(METADATA_URL, {
+    headers: { 'Metadata-Flavor': 'Google' },
+  });
+  if (!response.ok) throw new Error(`metadata token: ${response.status}`);
+  const data = await response.json();
+  if (!data.access_token) throw new Error('metadata token: empty');
+
+  tokenCache = {
+    token: data.access_token,
+    expiresAt: Date.now() + Math.max(60, (data.expires_in || 3600) - 60) * 1000,
+  };
+  return tokenCache.token;
+};
+
+const storageRequest = async (method, path, query = '') => {
+  const token = await getIamToken();
+  const url = `${STORAGE_HOST}/${BUCKET()}${path}${query}`;
+  const response = await fetch(url, {
+    method,
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok && response.status !== 404) {
+    const body = await response.text().catch(() => '');
+    throw new Error(`storage ${method} ${response.status}: ${body.slice(0, 200)}`);
+  }
+  return response;
+};
+
+const decodeXml = (value) =>
+  value
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+/** Все ключи по префиксу, с постраничной выдачей */
+const listKeys = async (prefix) => {
+  const keys = [];
+  let continuation = '';
+
+  for (let page = 0; page < 50; page += 1) {
+    const query =
+      `?list-type=2&prefix=${encodeURIComponent(prefix)}&max-keys=1000` +
+      (continuation ? `&continuation-token=${encodeURIComponent(continuation)}` : '');
+    const response = await storageRequest('GET', '', query);
+    if (response.status === 404) break;
+
+    const xml = await response.text();
+    for (const match of xml.matchAll(/<Key>([^<]+)<\/Key>/g)) {
+      keys.push(decodeXml(match[1]));
+    }
+
+    const truncated = /<IsTruncated>true<\/IsTruncated>/.test(xml);
+    const next = xml.match(/<NextContinuationToken>([^<]+)<\/NextContinuationToken>/);
+    if (!truncated || !next) break;
+    continuation = decodeXml(next[1]);
   }
 
-  const driver = new Driver({
-    endpoint,
-    database,
-    authService: getCredentialsFromEnv(),
-  });
-  driverPromise = driver.ready(10000).then(() => driver);
-  return driverPromise;
+  return keys;
 };
 
-/** Первый холодный старт создаёт таблицу сам — ручной SQL не нужен */
-const ensureTable = () => {
-  if (tablePromise) return tablePromise;
+const objectPath = (key) =>
+  `/${key
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/')}`;
 
-  tablePromise = (async () => {
-    const driver = await getDriver();
-    await driver.tableClient.withSession(async (session) => {
-      const description = new TableDescription()
-        .withColumns(
-          new Column('user_hash', Types.UTF8),
-          new Column('month', Types.UTF8),
-          new Column('km', Types.DOUBLE),
-          new Column('updated_at', Types.TIMESTAMP)
-        )
-        .withPrimaryKeys('user_hash', 'month');
-
-      try {
-        await session.createTable('club_month', description);
-      } catch (error) {
-        const message = String((error && error.message) || error);
-        if (!/already exists|ALREADY_EXISTS/i.test(message)) throw error;
-      }
-    });
-  })().catch((error) => {
-    tablePromise = null;
-    throw error;
-  });
-
-  return tablePromise;
+const putObject = async (key) => {
+  await storageRequest('PUT', objectPath(key));
 };
 
-const numeric = (value) => {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') return Number(value);
-  if (value && typeof value.toString === 'function') return Number(value.toString());
-  return 0;
+const deleteObject = async (key) => {
+  await storageRequest('DELETE', objectPath(key));
 };
 
-const valueToJs = (value) => {
-  if (!value) return null;
-  if (Object.prototype.hasOwnProperty.call(value, 'nullFlagValue')) return null;
-  if (value.boolValue !== undefined) return Boolean(value.boolValue);
-  if (value.int32Value !== undefined) return numeric(value.int32Value);
-  if (value.int64Value !== undefined) return numeric(value.int64Value);
-  if (value.uint32Value !== undefined) return numeric(value.uint32Value);
-  if (value.uint64Value !== undefined) return numeric(value.uint64Value);
-  if (value.floatValue !== undefined) return numeric(value.floatValue);
-  if (value.doubleValue !== undefined) return numeric(value.doubleValue);
-  if (value.textValue !== undefined) return value.textValue;
-  if (value.bytesValue !== undefined) return value.bytesValue;
-  if (value.timestampValue !== undefined) return numeric(value.timestampValue);
-  return null;
+const kmFromKey = (key) => {
+  const value = Number(key.split('/').pop());
+  return Number.isFinite(value) ? value : 0;
 };
 
-const rowsToObjects = (resultSet) => {
-  if (!resultSet || !Array.isArray(resultSet.rows) || !Array.isArray(resultSet.columns)) return [];
-  return resultSet.rows.map((row) => {
-    const record = {};
-    resultSet.columns.forEach((column, index) => {
-      record[column.name] = valueToJs(row.items[index]);
-    });
-    return record;
-  });
-};
-
-const query = async (sql, params = {}) => {
-  await ensureTable();
-  const driver = await getDriver();
-  return driver.tableClient.withSession(async (session) => {
-    const result = await session.executeQuery(sql, params);
-    return (result.resultSets || []).map(rowsToObjects);
-  });
-};
+const monthPrefix = (month) => `club/${month}/`;
+const userPrefix = (month, userHash) => `${monthPrefix(month)}${userHash}/`;
 
 const getMonthKm = async (userHash, month) => {
-  const sets = await query(
-    'DECLARE $user AS Utf8; DECLARE $month AS Utf8; ' +
-      'SELECT km FROM club_month WHERE user_hash = $user AND month = $month;',
-    {
-      $user: TypedValues.utf8(userHash),
-      $month: TypedValues.utf8(month),
-    }
-  );
-  const row = sets[0] && sets[0][0];
-  return row ? Math.max(0, numeric(row.km)) : 0;
+  const keys = await listKeys(userPrefix(month, userHash));
+  return keys.reduce((max, key) => Math.max(max, kmFromKey(key)), 0);
 };
 
 /** Сохраняет максимум из текущего и присланного значения */
 const saveMonthKm = async (userHash, month, km) => {
   const current = await getMonthKm(userHash, month);
-  const next = Math.max(current, km);
-  if (next === current && current > 0) return current;
+  if (km <= current && current > 0) return current;
 
-  await query(
-    'DECLARE $user AS Utf8; DECLARE $month AS Utf8; DECLARE $km AS Double; DECLARE $ts AS Timestamp; ' +
-      'UPSERT INTO club_month (user_hash, month, km, updated_at) ' +
-      'VALUES ($user, $month, $km, $ts);',
-    {
-      $user: TypedValues.utf8(userHash),
-      $month: TypedValues.utf8(month),
-      $km: TypedValues.double(next),
-      $ts: TypedValues.timestamp(new Date()),
-    }
+  const next = Math.max(current, km);
+  const keys = await listKeys(userPrefix(month, userHash));
+
+  await putObject(`${userPrefix(month, userHash)}${next.toFixed(1)}`);
+  await Promise.all(
+    keys
+      .filter((key) => kmFromKey(key) !== next)
+      .map((key) => deleteObject(key))
   );
+
   return next;
 };
 
 /** Общие километры и число участников за месяц */
 const getMonthStats = async (month) => {
-  const sets = await query(
-    'DECLARE $month AS Utf8; ' +
-      'SELECT SUM(km) AS km, COUNT(*) AS users FROM club_month ' +
-      'WHERE month = $month AND km > 0;',
-    { $month: TypedValues.utf8(month) }
-  );
-  const row = (sets[0] && sets[0][0]) || {};
+  const keys = await listKeys(monthPrefix(month));
+  const byUser = new Map();
+
+  keys.forEach((key) => {
+    const parts = key.split('/');
+    if (parts.length < 4) return;
+    const userHash = parts[2];
+    byUser.set(userHash, Math.max(byUser.get(userHash) || 0, kmFromKey(key)));
+  });
+
+  let km = 0;
+  byUser.forEach((value) => {
+    km += value;
+  });
+
   return {
-    km: Math.round(numeric(row.km) * 10) / 10,
-    users: Math.max(0, Math.round(numeric(row.users))),
+    km: Math.round(km * 10) / 10,
+    users: byUser.size,
   };
 };
 
-module.exports = { getMonthKm, saveMonthKm, getMonthStats, __private: { valueToJs } };
+module.exports = { getMonthKm, saveMonthKm, getMonthStats };

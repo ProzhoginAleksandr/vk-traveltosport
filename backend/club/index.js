@@ -72,12 +72,11 @@ const parseBody = (event) => {
   }
 };
 
-const moscowMonth = () =>
-  new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Moscow',
-    year: 'numeric',
-    month: '2-digit',
-  }).format(new Date());
+// Москва — UTC+3 без перехода на летнее время, Intl в рантайме не нужен
+const moscowMonth = () => {
+  const now = new Date(Date.now() + 3 * 3600 * 1000);
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+};
 
 const isMonth = (value) =>
   typeof value === 'string' && MONTH_RE.test(value) && value <= moscowMonth();

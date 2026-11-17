@@ -3,8 +3,5 @@
   "private": true,
   "version": "1.0.0",
   "description": "Yandex Cloud Function для клубного пробега TraveltoSport",
-  "main": "index.js",
-  "dependencies": {
-    "ydb-sdk": "^5.11.1"
-  }
+  "main": "index.js"
 }
