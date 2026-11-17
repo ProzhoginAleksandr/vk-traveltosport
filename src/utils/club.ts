@@ -191,7 +191,12 @@ export const syncClubContribution = (
     const month = monthKey();
     const km = collectMonthKm(loadUserTracks(userId), month);
     await submitContribution(auth, month, km, allowDecrease);
-    return fetchClubStats(month);
+    const stats = await fetchClubStats(month);
+    if (stats && typeof window !== 'undefined') {
+      // Главная и экран клуба обновляют карточку без перезагрузки
+      window.dispatchEvent(new CustomEvent('traveltosport:club', { detail: stats }));
+    }
+    return stats;
   })().finally(() => {
     inFlight = null;
   });

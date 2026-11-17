@@ -45,6 +45,16 @@ export const useClubStats = (): ClubView => {
     };
   }, [tick]);
 
+  useEffect(() => {
+    const onClubStats = (event: Event) => {
+      const detail = (event as CustomEvent<ClubStats>).detail;
+      if (detail) setStats(detail);
+      void getOwnMonthKm().then((km) => setOwnKm(km));
+    };
+    window.addEventListener('traveltosport:club', onClubStats);
+    return () => window.removeEventListener('traveltosport:club', onClubStats);
+  }, []);
+
   return {
     stats,
     ownKm,
