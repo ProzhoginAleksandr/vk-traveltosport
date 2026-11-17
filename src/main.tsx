@@ -37,6 +37,25 @@ createRoot(document.getElementById('root')!).render(
   </ErrorBoundary>
 );
 
+// Прячем заставку после первого кадра и загрузки шрифта, но не ждём дольше
+// 700 мс: на медленной сети лучше показать приложение в запасном шрифте.
+const splash = document.getElementById('splash');
+let splashHidden = false;
+const hideSplash = () => {
+  if (!splash || splashHidden) return;
+  splashHidden = true;
+  splash.classList.add('is-hidden');
+  window.setTimeout(() => splash.remove(), 500);
+};
+
+const revealApp = () => window.setTimeout(hideSplash, 180);
+if (document.fonts?.ready) {
+  document.fonts.ready.then(revealApp).catch(revealApp);
+  window.setTimeout(revealApp, 700);
+} else {
+  revealApp();
+}
+
 if (import.meta.env.MODE === 'development') {
   import('./eruda.ts');
 }

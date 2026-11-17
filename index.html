@@ -2,14 +2,143 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="./logo.svg" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
     />
+    <meta name="theme-color" content="#07110d" />
     <title>TraveltoSport — калькуляторы бегуна, брейнбустер и дневник тренировок</title>
+    <style>
+      /* Заставка рисуется до загрузки бандла: пользователь видит бренд,
+         а не пустой тёмный экран. Стили инлайновые, чтобы не ждать CSS. */
+      html,
+      body {
+        margin: 0;
+        background: #050b08;
+      }
+
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
+        box-sizing: border-box;
+        background:
+          radial-gradient(circle at bottom right, #096b11 0%, #1c4934 17%, #01130f 40%, transparent 70%),
+          radial-gradient(circle at top left, #096b11 0%, #1c4934 7%, #01130f 20%, #000000 100%);
+        color: #ffffff;
+        font-family: 'Oswald', Impact, 'Arial Narrow', Arial, sans-serif;
+        text-align: center;
+        transition: opacity 0.45s ease, visibility 0.45s ease;
+      }
+
+      #splash.is-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .splash-logo {
+        width: 88px;
+        height: 88px;
+        filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+        animation: splashFloat 3.4s ease-in-out infinite;
+      }
+
+      .splash-title {
+        font-size: 30px;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        font-weight: 600;
+      }
+
+      .splash-sub {
+        font-size: 12px;
+        line-height: 1.4;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .splash-bar {
+        width: min(220px, 60vw);
+        height: 3px;
+        margin-top: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+
+      .splash-bar span {
+        display: block;
+        width: 40%;
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, transparent, #bedda2, transparent);
+        animation: splashSweep 1.6s ease-in-out infinite;
+      }
+
+      .splash-hint {
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .splash-hint--late {
+        opacity: 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        animation: splashLate 0.4s ease 8s forwards;
+      }
+
+      @keyframes splashSweep {
+        0% {
+          transform: translateX(-120%);
+        }
+        100% {
+          transform: translateX(320%);
+        }
+      }
+
+      @keyframes splashFloat {
+        0%,
+        100% {
+          transform: translateY(-2px);
+        }
+        50% {
+          transform: translateY(3px);
+        }
+      }
+
+      @keyframes splashLate {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .splash-logo,
+        .splash-bar span {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="splash" role="status" aria-live="polite">
+      <img class="splash-logo" src="./logo.svg" alt="" width="88" height="88" />
+      <div class="splash-title">TraveltoSport</div>
+      <div class="splash-sub">калькуляторы · брейнбустер · дневник</div>
+      <div class="splash-bar" aria-hidden="true"><span></span></div>
+      <div class="splash-hint">Загружаем приложение…</div>
+      <div class="splash-hint splash-hint--late">Если загрузка затянулась, проверьте соединение</div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
