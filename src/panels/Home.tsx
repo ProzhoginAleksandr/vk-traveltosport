@@ -39,7 +39,7 @@ export const Home = ({ id }: HomeProps) => {
         .vkuiGroup { background: transparent !important; }
       `}</style>
 
-      <PageBackground variant="green" pattern="ridge" paddingBottom={24}>
+      <PageBackground variant="green" pattern="ridge" paddingBottom={24} atmospheric>
         <div
           style={{
             display: 'flex',
