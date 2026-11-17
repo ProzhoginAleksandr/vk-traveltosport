@@ -26,7 +26,7 @@ interface Metrics {
   speed: number;      // км/ч
 }
 
-const calculateMetrics = (points: TrackPoint[]): Metrics => {
+export const calculateMetrics = (points: TrackPoint[]): Metrics => {
   if (points.length < 2) {
     return { distance: 0, duration: 0, pace: 0, speed: 0 };
   }
@@ -43,13 +43,20 @@ const calculateMetrics = (points: TrackPoint[]): Metrics => {
     const curr = points[i];
 
     const segmentDistance = haversine(prev.lat, prev.lon, curr.lat, curr.lon);
-    const segmentTime = (curr.timestamp - prev.timestamp) / 1000;
 
+    // Расстояние считаем по координатам и не зависим от времени:
+    // в GPX-«туда-обратно» время второй половины может идти назад или
+    // отсутствовать, но километры при этом реальные.
+    distance += segmentDistance;
+
+    if (!prev.timestamp || !curr.timestamp) continue;
+
+    // abs — на случай немонотонных меток времени в файле
+    const segmentTime = Math.abs((curr.timestamp - prev.timestamp) / 1000);
     if (segmentTime <= 0) continue;
 
     const speedKmh = (segmentDistance / 1000) / (segmentTime / 3600);
 
-    distance += segmentDistance;
     totalDuration += segmentTime;
 
     const isPause =
@@ -197,7 +204,7 @@ export const parseGPX = (content: string): SavedTrack | null => {
       const timeEl = trkpt.querySelector('time');
       const timestamp = timeEl
         ? new Date(timeEl.textContent || '').getTime()
-        : Date.now();
+        : 0;
 
       if (!isNaN(lat) && !isNaN(lon)) {
         points.push({ lat, lon, timestamp, isPaused: false });
@@ -235,7 +242,10 @@ export const parseGPX = (content: string): SavedTrack | null => {
       console.log('✅ Используем активное время из extensions');
     } else if (extMetrics.totalTime && extMetrics.totalTime > 0) {
       // Иначе берём totalTime, но вычитаем паузы по нашей логике
-      finalDuration = Math.min(computedMetrics.duration, extMetrics.totalTime);
+      finalDuration =
+        computedMetrics.duration > 0
+          ? Math.min(computedMetrics.duration, extMetrics.totalTime)
+          : extMetrics.totalTime;
       console.log('✅ Используем totalTime из extensions с корректировкой');
     }
 
@@ -252,7 +262,9 @@ export const parseGPX = (content: string): SavedTrack | null => {
       `темп ${Math.round(finalPace)} сек/км`
     );
 
-    const date = new Date(points[0].timestamp).toISOString();
+    const date = points[0].timestamp > 0
+      ? new Date(points[0].timestamp).toISOString()
+      : new Date().toISOString();
 
     return {
       id: `imported_gpx_${Date.now()}`,
@@ -332,7 +344,7 @@ export const parseTCX = (content: string): SavedTrack | null => {
         const lon = parseFloat(lonEl.textContent || '0');
         const timestamp = timeEl
           ? new Date(timeEl.textContent || '').getTime()
-          : Date.now();
+          : 0;
 
         if (!isNaN(lat) && !isNaN(lon)) {
           points.push({ lat, lon, timestamp, isPaused: false });
@@ -350,7 +362,9 @@ export const parseTCX = (content: string): SavedTrack | null => {
     // 🎯 Приоритет у метрик из Lap
     const finalDistance = extDistance > 0 ? extDistance : computedMetrics.distance;
     const finalDuration = extDuration > 0
-      ? Math.min(extDuration, computedMetrics.duration)
+      ? computedMetrics.duration > 0
+        ? Math.min(extDuration, computedMetrics.duration)
+        : extDuration
       : computedMetrics.duration;
 
     const finalPace = finalDistance > 0 && finalDuration > 0
@@ -365,7 +379,9 @@ export const parseTCX = (content: string): SavedTrack | null => {
       `время ${Math.round(finalDuration)} сек`
     );
 
-    const date = new Date(points[0].timestamp).toISOString();
+    const date = points[0].timestamp > 0
+      ? new Date(points[0].timestamp).toISOString()
+      : new Date().toISOString();
 
     return {
       id: `imported_tcx_${Date.now()}`,
