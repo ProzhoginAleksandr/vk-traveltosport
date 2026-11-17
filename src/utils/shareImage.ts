@@ -42,7 +42,6 @@ interface Box {
 
 type Align = 'left' | 'center' | 'right';
 type StatKey = 'distance' | 'duration' | 'pace' | 'speed';
-type Overlay = 'bottom' | 'top' | 'left' | 'right';
 
 /* --------------------------------- стили ----------------------------------- */
 
@@ -82,7 +81,6 @@ export interface LayoutSpec {
   id: string;
   name: string;
   /** Где затемнять фото, чтобы текст читался */
-  overlay: Overlay;
   route: Box;
   /** Множитель толщины линии маршрута */
   lineScale?: number;
@@ -97,7 +95,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'classic',
     name: 'Классика',
-    overlay: 'bottom',
     route: { x: 240, y: 350, w: 600, h: 650 },
     stats: [
       { key: 'distance', x: 540, y: 1450, align: 'center', size: 230 },
@@ -111,7 +108,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'big',
     name: 'Крупно',
-    overlay: 'bottom',
     route: { x: 260, y: 320, w: 560, h: 580 },
     stats: [
       { key: 'distance', x: 540, y: 1370, align: 'center', size: 330 },
@@ -126,7 +122,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'minimal',
     name: 'Минимал',
-    overlay: 'bottom',
     route: { x: 240, y: 300, w: 600, h: 720 },
     stats: [
       { key: 'distance', x: 200, y: 1580, align: 'center', size: 70, label: true, maxW: 300 },
@@ -140,7 +135,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'left',
     name: 'Слева',
-    overlay: 'left',
     route: { x: 560, y: 420, w: 400, h: 800 },
     lineScale: 0.85,
     stats: [
@@ -156,7 +150,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'right',
     name: 'Справа',
-    overlay: 'right',
     route: { x: 120, y: 420, w: 400, h: 800 },
     lineScale: 0.85,
     stats: [
@@ -172,7 +165,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'top',
     name: 'Сверху',
-    overlay: 'top',
     route: { x: 260, y: 700, w: 560, h: 660 },
     stats: [
       { key: 'distance', x: 540, y: 400, align: 'center', size: 280 },
@@ -187,7 +179,6 @@ export const LAYOUTS: readonly LayoutSpec[] = [
   {
     id: 'compact',
     name: 'Мелко',
-    overlay: 'bottom',
     route: { x: 240, y: 330, w: 600, h: 660 },
     lineScale: 0.8,
     stats: [
@@ -265,50 +256,6 @@ const trimEnds = (points: Pt[], meters: number): Pt[] => {
   return trimmed.length >= 2 ? trimmed : points;
 };
 
-const roundedRect = (
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  radius: number
-) => {
-  const r = Math.max(0, Math.min(radius, w / 2, h / 2));
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-};
-
-/** Подложка вокруг маршрута: трек перестаёт «плавать» по фото и держит композицию */
-const drawRoutePanel = (ctx: CanvasRenderingContext2D, bounds: Box) => {
-  const pad = 42;
-  const x = bounds.x - pad;
-  const y = bounds.y - pad;
-  const w = bounds.w + pad * 2;
-  const h = bounds.h + pad * 2;
-
-  ctx.save();
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-  ctx.shadowBlur = 40;
-  ctx.shadowOffsetY = 14;
-  ctx.fillStyle = 'rgba(6, 12, 8, 0.34)';
-  roundedRect(ctx, x, y, w, h, 64);
-  ctx.fill();
-
-  ctx.shadowColor = 'transparent';
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetY = 0;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
-  ctx.lineWidth = 2;
-  roundedRect(ctx, x, y, w, h, 64);
-  ctx.stroke();
-  ctx.restore();
-};
-
 const drawRoute = (ctx: CanvasRenderingContext2D, points: Pt[], box: Box, lineScale: number) => {
   if (points.length < 2) return;
 
@@ -336,18 +283,6 @@ const drawRoute = (ctx: CanvasRenderingContext2D, points: Pt[], box: Box, lineSc
     ctx.beginPath();
     pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
   };
-
-  // Подложка по фактическим габаритам маршрута, а не по всему отведённому полю
-  const px = pts.map((p) => p.x);
-  const py = pts.map((p) => p.y);
-  const boundsMinX = Math.min(...px);
-  const boundsMinY = Math.min(...py);
-  drawRoutePanel(ctx, {
-    x: boundsMinX,
-    y: boundsMinY,
-    w: Math.max(1, Math.max(...px) - boundsMinX),
-    h: Math.max(1, Math.max(...py) - boundsMinY),
-  });
 
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
@@ -384,48 +319,7 @@ const drawRoute = (ctx: CanvasRenderingContext2D, points: Pt[], box: Box, lineSc
 
 /* ---------------------------------- фон ------------------------------------ */
 
-const fillGradient = (
-  ctx: CanvasRenderingContext2D,
-  from: [number, number],
-  to: [number, number],
-  stops: Array<[number, string]>,
-  rect: Box
-) => {
-  const g = ctx.createLinearGradient(from[0], from[1], to[0], to[1]);
-  stops.forEach(([offset, color]) => g.addColorStop(offset, color));
-  ctx.fillStyle = g;
-  ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-};
-
-const drawOverlay = (ctx: CanvasRenderingContext2D, overlay: Overlay) => {
-  const dark = (a: number) => `rgba(0, 0, 0, ${a})`;
-  const full: Box = { x: 0, y: 0, w: W, h: H };
-
-  switch (overlay) {
-    case 'bottom':
-      fillGradient(ctx, [0, H * 0.42], [0, H], [[0, dark(0)], [1, dark(0.85)]], full);
-      fillGradient(ctx, [0, 0], [0, H * 0.18], [[0, dark(0.55)], [1, dark(0)]], full);
-      break;
-    case 'top':
-      fillGradient(ctx, [0, 0], [0, H * 0.5], [[0, dark(0.82)], [1, dark(0)]], full);
-      fillGradient(ctx, [0, H * 0.85], [0, H], [[0, dark(0)], [1, dark(0.65)]], full);
-      break;
-    case 'left':
-      fillGradient(ctx, [0, 0], [W * 0.85, 0], [[0, dark(0.85)], [1, dark(0)]], full);
-      fillGradient(ctx, [0, H * 0.85], [0, H], [[0, dark(0)], [1, dark(0.5)]], full);
-      break;
-    case 'right':
-      fillGradient(ctx, [W, 0], [W * 0.15, 0], [[0, dark(0.85)], [1, dark(0)]], full);
-      fillGradient(ctx, [0, H * 0.85], [0, H], [[0, dark(0)], [1, dark(0.5)]], full);
-      break;
-  }
-};
-
-const drawBackground = (
-  ctx: CanvasRenderingContext2D,
-  photo: HTMLImageElement | null,
-  overlay: Overlay
-) => {
+const drawBackground = (ctx: CanvasRenderingContext2D, photo: HTMLImageElement | null) => {
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, W, H);
 
@@ -436,9 +330,10 @@ const drawBackground = (
     const h = photo.height * s;
     ctx.drawImage(photo, (W - w) / 2, (H - h) / 2, w, h);
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    // Ровная тёмная вуаль вместо градиентов: фото остаётся читаемым,
+    // а трек и подписи не теряются на светлых участках
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.34)';
     ctx.fillRect(0, 0, W, H);
-    drawOverlay(ctx, overlay);
     return;
   }
 
@@ -554,7 +449,7 @@ export const renderRunImage = (track: SavedTrack, options: RenderOptions): strin
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas недоступен');
 
-  drawBackground(ctx, options.photo, layout.overlay);
+  drawBackground(ctx, options.photo);
 
   const raw: Pt[] = track.points.map((p) => ({ lat: p.lat, lon: p.lon }));
   const route = options.hideEnds ? trimEnds(raw, PRIVACY_ZONE_M) : raw;
