@@ -96,7 +96,8 @@ const extractExtensionMetrics = (doc: Document): ExtensionMetrics => {
   const result: ExtensionMetrics = {};
 
   try {
-    // Ищем элементы в любом пространстве имён с именами Distance / Duration / TotalTimeSeconds
+    // Ищем элементы в любом пространстве имён: Garmin/Health пишут Distance/TotalTime,
+    // а некоторые экспортеры — totalDistance/totalTime внутри <trk><extensions>
     const findFirstByLocalName = (names: string[]): string | null => {
       for (const name of names) {
         // Ищем по всем узлам, проверяя localName (без namespace)
@@ -117,6 +118,7 @@ const extractExtensionMetrics = (doc: Document): ExtensionMetrics => {
       'Distance',
       'distanceMeters',
       'distance',
+      'totalDistance',
     ]);
     if (distanceStr) {
       const d = parseFloat(distanceStr);
@@ -131,6 +133,7 @@ const extractExtensionMetrics = (doc: Document): ExtensionMetrics => {
       'TotalTimeSeconds',
       'TotalTime',
       'totalTimeSeconds',
+      'totalTime',
     ]);
     if (totalTimeStr) {
       const t = parseFloat(totalTimeStr);
@@ -367,11 +370,8 @@ export const parseTCX = (content: string): SavedTrack | null => {
 
     // 🎯 Приоритет у метрик из Lap
     const finalDistance = extDistance > 0 ? extDistance : computedMetrics.distance;
-    const finalDuration = extDuration > 0
-      ? computedMetrics.duration > 0
-        ? Math.min(extDuration, computedMetrics.duration)
-        : extDuration
-      : computedMetrics.duration;
+    // Lap в TCX — итог всей тренировки, он точнее суммы по точкам
+    const finalDuration = extDuration > 0 ? extDuration : computedMetrics.duration;
 
     const finalPace = finalDistance > 0 && finalDuration > 0
       ? finalDuration / (finalDistance / 1000)
