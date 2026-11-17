@@ -4,6 +4,7 @@ export { PaceConverter } from './PaceConverter';
 export { HeartRateZones } from './HeartRateZones';
 export { RacePace } from './RacePace';
 export { Vo2Predictor } from './Vo2Predictor';
+export { ClubRun } from './ClubRun';
 export { BrainBooster } from './BrainBooster';
 export { RunnerDictionary } from './RunnerDictionary';
 export { TrainingDiary } from './TrainingDiary';

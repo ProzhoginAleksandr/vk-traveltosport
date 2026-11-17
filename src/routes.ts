@@ -26,6 +26,7 @@ export const PANELS = {
   HEART_RATE_ZONES:   'heart_rate_zones',
   RACE_PACE:          'race_pace',
   VO2_PREDICTOR:      'vo2_predictor',
+  CLUB_RUN:           'club_run',
 
   // --- Брейнбустер ---
   BRAIN_BOOSTER:      'brain_booster',
@@ -56,6 +57,7 @@ const routes: RouteWithoutRoot[] = [
   { path: `/${PANELS.HEART_RATE_ZONES}`,  view: VIEWS.RUNNER_CALCULATOR, panel: PANELS.HEART_RATE_ZONES },
   { path: `/${PANELS.RACE_PACE}`,         view: VIEWS.RUNNER_CALCULATOR, panel: PANELS.RACE_PACE },
   { path: `/${PANELS.VO2_PREDICTOR}`,     view: VIEWS.RUNNER_CALCULATOR, panel: PANELS.VO2_PREDICTOR },
+  { path: `/${PANELS.CLUB_RUN}`,          view: VIEWS.RUNNER_CALCULATOR, panel: PANELS.CLUB_RUN },
 
   // Брейнбустер
   { path: `/${PANELS.BRAIN_BOOSTER}`,     view: VIEWS.BRAINBOOSTER, panel: PANELS.BRAIN_BOOSTER },

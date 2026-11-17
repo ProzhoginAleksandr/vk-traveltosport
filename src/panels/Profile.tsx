@@ -507,7 +507,7 @@ export const Profile = ({ id }: ProfileProps) => {
               {tracks.length === 0 ? (
                 <Div>
                   <Text style={{ color: 'rgba(255, 255, 255, 0.6)', textAlign: 'center' }}>
-                    История пуста. Начните пробежку в трекере!
+                    История пуста. Загрузите первую пробежку!
                   </Text>
                 </Div>
               ) : (

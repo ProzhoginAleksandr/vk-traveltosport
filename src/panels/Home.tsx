@@ -8,6 +8,8 @@ import brainIcon from '../assets/images/BrainBoosterIcon.png';
 import diaryIcon from '../assets/images/DiaryIcon.png';
 import profileIcon from '../assets/images/ProfileIcon.png';
 import { PageBackground } from '../components/PageBackground';
+import { ClubRunCard } from '../components/ClubRunCard';
+import { useClubStats } from '../hooks/useClubStats';
 import { hideBannerAd, showBannerAd } from '../utils/bannerAd';
 
 interface HomeProps {
@@ -32,6 +34,8 @@ export const Home = ({ id }: HomeProps) => {
   }, [isActive]);
 
   useEffect(() => () => void hideBannerAd(), []);
+
+  const club = useClubStats();
 
   return (
     <Panel id={id} style={{ background: 'transparent', padding: 0 }}>
@@ -64,6 +68,15 @@ export const Home = ({ id }: HomeProps) => {
             style={{ width: '100%', maxWidth: '380px', height: 'auto', objectFit: 'contain' }}
           />
         </div>
+
+        {/* Клубный пробег */}
+        {club.stats ? (
+          <ClubRunCard
+            stats={club.stats}
+            ownKm={club.ownKm}
+            onClick={() => routeNavigator.push('/club_run')}
+          />
+        ) : null}
 
         {/* Заголовок */}
         <Title

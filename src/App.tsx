@@ -7,6 +7,7 @@ import {
   HeartRateZones,
   RacePace,
   Vo2Predictor,
+  ClubRun,
   BrainBooster,
   RunnerDictionary,
   PairGame,
@@ -35,6 +36,7 @@ export const App = () => {
           <HeartRateZones id={PANELS.HEART_RATE_ZONES} />
           <RacePace id={PANELS.RACE_PACE} />
           <Vo2Predictor id={PANELS.VO2_PREDICTOR} />
+          <ClubRun id={PANELS.CLUB_RUN} />
 
           {/* Брейнбустер */}
           <BrainBooster id={PANELS.BRAIN_BOOSTER} />

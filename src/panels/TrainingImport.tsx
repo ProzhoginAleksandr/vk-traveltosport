@@ -20,6 +20,7 @@ import { getCurrentUser } from '../utils/userUtils';
 import { saveTrackToStorage } from '../utils/trackStorage';
 import { parseTrackFile } from '../utils/importUtils';
 import { showEventAd } from '../utils/adUtils';
+import { syncClubContribution } from '../utils/club';
 
 import { PageBackground} from '../components/PageBackground';
 import { BackButton} from '../components/BackButton';
@@ -105,6 +106,8 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
           speed: parsedTrack.speed,
           date: parsedTrack.date,
         });
+        // Обновляем вклад в клубном пробеге: сумма по месяцу уходит в облако
+        void syncClubContribution();
         // Пауза, чтобы пользователь успел увидеть результат импорта
         window.setTimeout(() => {
           void showEventAd('import_done');
