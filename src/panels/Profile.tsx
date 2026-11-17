@@ -16,7 +16,6 @@ import {
 } from '@vkontakte/vkui';
 import profileHeaderImage from '../assets/images/ProfileHeader.webp';
 import { AppTabbar } from '../components/AppTabbar';
-import { MapView } from '../components/MapView';
 import { RankBadge } from '../components/RankBadge';
 import { ShareRunModal } from '../components/ShareRunModal';
 import { trackToGpx } from '../utils/gpx';
@@ -162,7 +161,6 @@ export const Profile = ({ id }: ProfileProps) => {
         .vkuiGroup { background: transparent !important; }
         .vkuiCard { background: transparent !important; }
         .vkuiCell { background: transparent !important; }
-        .maplibregl-map { border-radius: 12px; background: #0a0f0a; }
       `}</style>
 
       
@@ -223,46 +221,7 @@ export const Profile = ({ id }: ProfileProps) => {
         {/* Детальный просмотр трека */}
         {selectedTrack ? (
           <>
-            <Group
-              style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '16px',
-                marginBottom: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                padding: '8px',
-              }}
-            >
-              <div style={{ height: '300px' }}>
-                <MapView
-                  center={
-                    selectedTrack.points.length > 0
-                      ? [selectedTrack.points[0].lat, selectedTrack.points[0].lon]
-                      : [55.7558, 37.6173]
-                  }
-                  zoom={15}
-                  segments={
-                    selectedTrack.points.length > 1
-                      ? [
-                          {
-                            positions: selectedTrack.points.map(
-                              (p) => [p.lat, p.lon] as [number, number]
-                            ),
-                            paused: false,
-                          },
-                        ]
-                      : []
-                  }
-                  marker={
-                    selectedTrack.points.length > 0
-                      ? [
-                          selectedTrack.points[selectedTrack.points.length - 1].lat,
-                          selectedTrack.points[selectedTrack.points.length - 1].lon,
-                        ]
-                      : null
-                  }
-                />
-              </div>
-            </Group>
+            
 
             <Group
               style={{
