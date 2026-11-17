@@ -191,7 +191,7 @@ export const parseGPX = (content: string): SavedTrack | null => {
     const extMetrics = extractExtensionMetrics(doc);
 
     // 📍 Извлекаем точки
-    const trkpts = doc.querySelectorAll('trkpt');
+    const trkpts = doc.querySelectorAll('trkpt, rtept');
     if (trkpts.length === 0) {
       console.warn('⚠️ В файле нет точек трека');
       return null;
@@ -211,6 +211,8 @@ export const parseGPX = (content: string): SavedTrack | null => {
       }
     });
 
+    console.log(`📍 GPX: точек ${points.length}`);
+
     if (points.length < 2) {
       console.warn('⚠️ Слишком мало точек в треке');
       return null;
@@ -223,30 +225,34 @@ export const parseGPX = (content: string): SavedTrack | null => {
     let finalDistance = computedMetrics.distance;
     let finalDuration = computedMetrics.duration;
 
-    // Если extensions дали дистанцию и она близка к вычисленной (±5%) — доверяем
-    if (extMetrics.distance && extMetrics.distance > 0) {
-      const diff = Math.abs(extMetrics.distance - computedMetrics.distance) / computedMetrics.distance;
-      if (diff < 0.05) {
+    // Дистанция из extensions — авторитет устройства. Берём её, если она
+    // близка к вычисленной или заметно больше (парсер мог не увидеть часть
+    // точек, например вторую половину маршрута «туда-обратно»). Слишком
+    // большие значения (в разы) игнорируем — это похоже на чужой lap.
+    if (extMetrics.distance && extMetrics.distance > 0 && computedMetrics.distance > 0) {
+      const ratio = extMetrics.distance / computedMetrics.distance;
+      if (ratio >= 0.95 && ratio <= 3) {
         finalDistance = extMetrics.distance;
-        console.log(`✅ Используем дистанцию из extensions (расхождение ${(diff * 100).toFixed(1)}%)`);
+        console.log(`✅ Используем дистанцию из extensions (x${ratio.toFixed(2)})`);
       } else {
-        console.warn(
-          `⚠️ Дистанция из extensions отличается на ${(diff * 100).toFixed(0)}% — используем вычисленную`
-        );
+        console.warn(`⚠️ Дистанция из extensions x${ratio.toFixed(2)} — используем вычисленную`);
       }
     }
 
-    // Если extensions дали активное время — доверяем
+    // Время из extensions: если оно заметно больше вычисленного, значит
+    // парсер потерял часть точек — доверяем устройству. Иначе оставляем
+    // активное время, вычитая паузы.
     if (extMetrics.duration && extMetrics.duration > 0) {
       finalDuration = extMetrics.duration;
       console.log('✅ Используем активное время из extensions');
     } else if (extMetrics.totalTime && extMetrics.totalTime > 0) {
-      // Иначе берём totalTime, но вычитаем паузы по нашей логике
+      const ratio =
+        computedMetrics.duration > 0 ? extMetrics.totalTime / computedMetrics.duration : 2;
       finalDuration =
-        computedMetrics.duration > 0
-          ? Math.min(computedMetrics.duration, extMetrics.totalTime)
+        computedMetrics.duration > 0 && ratio <= 1.5
+          ? computedMetrics.duration
           : extMetrics.totalTime;
-      console.log('✅ Используем totalTime из extensions с корректировкой');
+      console.log(`✅ Используем totalTime из extensions (x${ratio.toFixed(2)})`);
     }
 
     const finalPace = finalDistance > 0 && finalDuration > 0
