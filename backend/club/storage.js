@@ -104,15 +104,21 @@ const getMonthKm = async (userHash, month) => {
   return keys.reduce((max, key) => Math.max(max, kmFromKey(key)), 0);
 };
 
-/** Сохраняет максимум из текущего и присланного значения */
-const saveMonthKm = async (userHash, month, km) => {
+/**
+ * Сохраняет вклад. По умолчанию берётся максимум (повторные отправки не
+ * уменьшают сумму), а с allowDecrease — ровно присланное значение: так
+ * удаление тренировки уменьшает клубный пробег.
+ */
+const saveMonthKm = async (userHash, month, km, options = {}) => {
   const current = await getMonthKm(userHash, month);
-  if (km <= current && current > 0) return current;
+  const next = options.allowDecrease ? km : Math.max(current, km);
+  if (next === current) return current;
 
-  const next = Math.max(current, km);
   const keys = await listKeys(userPrefix(month, userHash));
 
-  await putObject(`${userPrefix(month, userHash)}${next.toFixed(1)}`);
+  if (next > 0) {
+    await putObject(`${userPrefix(month, userHash)}${next.toFixed(1)}`);
+  }
   await Promise.all(
     keys
       .filter((key) => kmFromKey(key) !== next)

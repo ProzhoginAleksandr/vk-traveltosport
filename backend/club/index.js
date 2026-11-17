@@ -129,7 +129,10 @@ module.exports.handler = async (event) => {
       }
 
       const userHash = hashUser(auth.vk_user_id);
-      const savedKm = await saveMonthKm(userHash, month, Math.round(amount * 10) / 10);
+      const allowDecrease = body.allowDecrease === true;
+      const savedKm = await saveMonthKm(userHash, month, Math.round(amount * 10) / 10, {
+        allowDecrease,
+      });
       const stats = await getMonthStats(month);
 
       return respond(

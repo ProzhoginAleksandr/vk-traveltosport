@@ -31,6 +31,7 @@ import {
   SavedTrack,
 } from '../utils/trackStorage';
 import { getBuildId } from '../utils/buildInfo';
+import { syncClubContribution } from '../utils/club';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
 interface ProfileProps {
@@ -110,6 +111,8 @@ export const Profile = ({ id }: ProfileProps) => {
     setTracks(updated);
     setSelectedTrack(null);
     setShareOpen(false);
+    // Удалённая тренировка больше не должна входить в клубный пробег
+    void syncClubContribution({ allowDecrease: true });
   };
 
   // 🗑️ Очистка всех треков
@@ -120,6 +123,7 @@ export const Profile = ({ id }: ProfileProps) => {
     setTracks([]);
     setSelectedTrack(null);
     setShareOpen(false);
+    void syncClubContribution({ allowDecrease: true });
   };
 
   // 🔙 Возврат к списку из детального просмотра

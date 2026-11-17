@@ -144,23 +144,41 @@ const fetchClubStats = async (month: string): Promise<ClubStats | null> => {
   return stats;
 };
 
-const submitContribution = async (auth: LaunchAuth, month: string, km: number): Promise<void> => {
+const submitContribution = async (
+  auth: LaunchAuth,
+  month: string,
+  km: number,
+  allowDecrease: boolean
+): Promise<void> => {
   await requestJson(`${CLUB_API_URL}?action=submit`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ auth, month, km }),
+    body: JSON.stringify({ auth, month, km, allowDecrease }),
   });
 };
 
 let inFlight: Promise<ClubStats | null> | null = null;
 
+export interface ClubSyncOptions {
+  /** Разрешить уменьшить вклад: включается только при удалении тренировки */
+  allowDecrease?: boolean;
+}
+
 /**
  * Отправляет свой месячный километраж и возвращает свежую сводку.
- * Параллельные вызовы переиспользуют один запрос.
+ * Параллельные вызовы переиспользуют один запрос; перерасчёт после удаления
+ * выполняется после текущей отправки, чтобы не потерять порядок.
  */
-export const syncClubContribution = (): Promise<ClubStats | null> => {
+export const syncClubContribution = (
+  options: ClubSyncOptions = {}
+): Promise<ClubStats | null> => {
   if (!CLUB_ENABLED) return Promise.resolve(null);
-  if (inFlight) return inFlight;
+  if (inFlight) {
+    if (!options.allowDecrease) return inFlight;
+    return inFlight.then(() => syncClubContribution(options));
+  }
+
+  const allowDecrease = options.allowDecrease === true;
 
   inFlight = (async () => {
     const auth = await getAuth();
@@ -172,7 +190,7 @@ export const syncClubContribution = (): Promise<ClubStats | null> => {
 
     const month = monthKey();
     const km = collectMonthKm(loadUserTracks(userId), month);
-    await submitContribution(auth, month, km);
+    await submitContribution(auth, month, km, allowDecrease);
     return fetchClubStats(month);
   })().finally(() => {
     inFlight = null;
