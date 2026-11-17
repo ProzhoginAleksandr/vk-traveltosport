@@ -2,9 +2,17 @@
 // Хранилище клубной статистики в YDB: одна строка на пользователя и месяц.
 // Хранится только максимум километража, поэтому повторные отправки и очистка
 // кэша на устройстве не уменьшают вклад и не создают дублей.
-const { Driver, getCredentialsFromEnv, TypedValues } = require('ydb-sdk');
+const {
+  Driver,
+  getCredentialsFromEnv,
+  TypedValues,
+  TableDescription,
+  Column,
+  Types,
+} = require('ydb-sdk');
 
 let driverPromise = null;
+let tablePromise = null;
 
 const getDriver = () => {
   if (driverPromise) return driverPromise;
@@ -22,6 +30,37 @@ const getDriver = () => {
   });
   driverPromise = driver.ready(10000).then(() => driver);
   return driverPromise;
+};
+
+/** Первый холодный старт создаёт таблицу сам — ручной SQL не нужен */
+const ensureTable = () => {
+  if (tablePromise) return tablePromise;
+
+  tablePromise = (async () => {
+    const driver = await getDriver();
+    await driver.tableClient.withSession(async (session) => {
+      const description = new TableDescription()
+        .withColumns(
+          new Column('user_hash', Types.UTF8),
+          new Column('month', Types.UTF8),
+          new Column('km', Types.DOUBLE),
+          new Column('updated_at', Types.TIMESTAMP)
+        )
+        .withPrimaryKeys('user_hash', 'month');
+
+      try {
+        await session.createTable('club_month', description);
+      } catch (error) {
+        const message = String((error && error.message) || error);
+        if (!/already exists|ALREADY_EXISTS/i.test(message)) throw error;
+      }
+    });
+  })().catch((error) => {
+    tablePromise = null;
+    throw error;
+  });
+
+  return tablePromise;
 };
 
 const numeric = (value) => {
@@ -59,6 +98,7 @@ const rowsToObjects = (resultSet) => {
 };
 
 const query = async (sql, params = {}) => {
+  await ensureTable();
   const driver = await getDriver();
   return driver.tableClient.withSession(async (session) => {
     const result = await session.executeQuery(sql, params);

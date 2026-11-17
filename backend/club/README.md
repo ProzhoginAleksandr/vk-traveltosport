@@ -8,6 +8,25 @@ HTTP-функция Yandex Cloud, которая собирает сумму к�
 повторные запросы и очистка кэша на устройстве не уменьшают вклад и не создают
 дублей. Наружу отдаются только суммы.
 
+## Быстрый старт (Windows)
+
+Нужен установленный yc CLI и выполненный yc init.
+
+1. Установите CLI: https://yandex.cloud/ru/docs/cli/operations/install-cli
+2. Войдите: `yc init` (выберите облако и каталог).
+3. В корне репозитория выполните:
+
+`powershell
+powershell -ExecutionPolicy Bypass -File backend/club/deploy.ps1
+`
+
+Скрипт создаст сервисный аккаунт, базу YDB, функцию и HTTP-триггер, а в конце
+напечатает URL. Таблицу функция создаст сама при первом запросе.
+
+4. Добавьте этот URL в GitHub: Settings → Secrets and variables → Actions →
+   Variables → `VITE_CLUB_API_URL`.
+5. Сделайте push в `main` — Pages пересоберётся, и клубный блок появится.
+
 ## API
 
 ```
@@ -57,11 +76,8 @@ yc ydb database get club-db
 # из вывода возьмите endpoint и database
 ```
 
-Создайте таблицу через `ydb` CLI (ставится отдельно):
-
-```bash
-ydb -e <YDB_ENDPOINT> -d <YDB_DATABASE> sql -s club.sql
-```
+Таблицу создавать вручную не нужно: функция создаёт её сама при первом запросе
+(`CREATE TABLE` в холодном старте). `club.sql` оставлен как справка о схеме.
 
 ### 3. Функция
 
