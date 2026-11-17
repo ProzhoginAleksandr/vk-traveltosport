@@ -21,12 +21,22 @@ npm install        # зависимости
 npm start          # dev-сервер Vite (http://localhost:5173)
 npm run build      # продакшен-сборка в build/
 npm run lint       # ESLint без предупреждений
+npm test           # unit-тесты (Vitest)
 npm run deploy:dev # сборка и публикация в dev-окружение VK
 npm run deploy:prod
 npm run deploy     # оба окружения
 ```
 
-Для деплоя нужен `MINI_APPS_ACCESS_TOKEN` в `.env` (файл не коммитится).
+Для деплоя в VK нужен `MINI_APPS_ACCESS_TOKEN` в `.env` (файл не коммитится).
+
+## Стабильный адрес
+
+Прод-версия публикуется на GitHub Pages при каждом push в `main`:
+
+**https://prozhoginaleksandr.github.io/vk-traveltosport/**
+
+Это постоянный origin: `localStorage` (треки, настройки) не теряется при обновлениях, в отличие от VK hosting, где хост меняется после каждой публикации. VK hosting остаётся для stage-предпросмотров.
+
 
 ## Структура
 
