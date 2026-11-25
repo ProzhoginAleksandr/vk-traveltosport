@@ -51,8 +51,15 @@ export const useClubStats = (): ClubView => {
       if (detail) setStats(detail);
       void getOwnMonthKm().then((km) => setOwnKm(km));
     };
+    const onTracksRestored = () => {
+      void getOwnMonthKm().then((km) => setOwnKm(km));
+    };
     window.addEventListener('traveltosport:club', onClubStats);
-    return () => window.removeEventListener('traveltosport:club', onClubStats);
+    window.addEventListener('traveltosport:tracks-restored', onTracksRestored);
+    return () => {
+      window.removeEventListener('traveltosport:club', onClubStats);
+      window.removeEventListener('traveltosport:tracks-restored', onTracksRestored);
+    };
   }, []);
 
   return {

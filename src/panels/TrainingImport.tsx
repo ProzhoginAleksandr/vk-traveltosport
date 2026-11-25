@@ -19,6 +19,7 @@ import { AppTabbar } from '../components/AppTabbar';
 import { getCurrentUser } from '../utils/userUtils';
 import { saveTrackToStorage } from '../utils/trackStorage';
 import { parseTrackFile } from '../utils/importUtils';
+import { pushTrackToCloud } from '../utils/trackSync';
 import { showEventAd } from '../utils/adUtils';
 import { syncClubContribution } from '../utils/club';
 
@@ -106,6 +107,8 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
           speed: parsedTrack.speed,
           date: parsedTrack.date,
         });
+        // Резервная копия в VK Storage: переживёт очистку кэша и смену устройства
+        void pushTrackToCloud(parsedTrack);
         // Обновляем вклад в клубном пробеге: сумма по месяцу уходит в облако
         void syncClubContribution();
         // Пауза, чтобы пользователь успел увидеть результат импорта

@@ -46,6 +46,27 @@ export const loadUserTracks = (userId: number): SavedTrack[] => {
   }
 };
 
+// 🔄 Заменить всю историю (восстановление из облачной копии)
+export const replaceUserTracks = (userId: number, tracks: SavedTrack[]): boolean => {
+  try {
+    const key = `${STORAGE_PREFIX}${userId}`;
+    localStorage.setItem(key, JSON.stringify(tracks));
+    return true;
+  } catch (err) {
+    console.error('❌ Ошибка восстановления треков:', err);
+    return false;
+  }
+};
+
+// ❓ Есть ли вообще локальная история (даже пустая — значит её уже смотрели)
+export const hasUserTracks = (userId: number): boolean => {
+  try {
+    return localStorage.getItem(`${STORAGE_PREFIX}${userId}`) !== null;
+  } catch {
+    return false;
+  }
+};
+
 // 🗑️ Удалить один трек
 export const deleteUserTrack = (userId: number, trackId: string) => {
   try {

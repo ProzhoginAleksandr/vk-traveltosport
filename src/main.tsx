@@ -6,6 +6,8 @@ import { getBuildId } from './utils/buildInfo';
 import { installGlobalErrorHandlers } from './utils/errorLog';
 import { initAnalytics } from './utils/analytics';
 import { syncPlanOnStart } from './utils/cloudSync';
+import { syncTracksOnStart } from './utils/trackSync';
+import { getCurrentUser } from './utils/userUtils';
 
 // Метка сборки в заголовке страницы: на телефоне в браузере VK заголовок виден
 // в шапке, поэтому сразу понятно, какая версия открыта — старая или новая.
@@ -23,8 +25,16 @@ if (typeof document.fonts?.load === 'function') {
 vkBridge.send('VKWebAppInit')
   .then(() => {
     console.log('✅ Bridge init OK');
-    // Подтягиваем облачную копию плана, если она свежее локальной
-    void syncPlanOnStart();
+    void (async () => {
+      // Если локальная история пуста, поднимаем резервную копию тренировок
+      const user = await getCurrentUser();
+      if (user) {
+        const restored = await syncTracksOnStart(user.id);
+        if (restored) window.dispatchEvent(new Event('traveltosport:tracks-restored'));
+      }
+      // Подтягиваем облачную копию плана, если она свежее локальной
+      await syncPlanOnStart();
+    })();
   })
   .catch(err => console.error('❌ Bridge init error:', err));
 

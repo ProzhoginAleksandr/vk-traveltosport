@@ -31,6 +31,7 @@ import {
 } from '../utils/trackStorage';
 import { getBuildId } from '../utils/buildInfo';
 import { syncClubContribution } from '../utils/club';
+import { clearCloudTracks, removeTrackFromCloud } from '../utils/trackSync';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 
 interface ProfileProps {
@@ -78,6 +79,14 @@ export const Profile = ({ id }: ProfileProps) => {
   // Загрузка пользователя и его треков
   useEffect(() => {
     let isMounted = true;
+    let currentUserId: number | null = null;
+
+    const refreshTracks = () => {
+      if (!isMounted || !currentUserId) return;
+      const saved = loadUserTracks(currentUserId);
+      saved.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setTracks(saved);
+    };
 
     const loadUserData = async () => {
       setIsLoading(true);
@@ -85,6 +94,7 @@ export const Profile = ({ id }: ProfileProps) => {
 
       if (!isMounted) return;
       setUser(userData);
+      currentUserId = userData?.id ?? null;
 
       if (userData) {
         const saved = loadUserTracks(userData.id);
@@ -95,9 +105,11 @@ export const Profile = ({ id }: ProfileProps) => {
     };
 
     loadUserData();
+    window.addEventListener('traveltosport:tracks-restored', refreshTracks);
 
     return () => {
       isMounted = false;
+      window.removeEventListener('traveltosport:tracks-restored', refreshTracks);
     };
   }, []);
 
@@ -110,6 +122,8 @@ export const Profile = ({ id }: ProfileProps) => {
     setTracks(updated);
     setSelectedTrack(null);
     setShareOpen(false);
+    // Убираем и облачную копию, иначе она вернётся после очистки кэша
+    void removeTrackFromCloud(trackId);
     // Удалённая тренировка больше не должна входить в клубный пробег
     void syncClubContribution({ allowDecrease: true });
   };
@@ -122,6 +136,7 @@ export const Profile = ({ id }: ProfileProps) => {
     setTracks([]);
     setSelectedTrack(null);
     setShareOpen(false);
+    void clearCloudTracks();
     void syncClubContribution({ allowDecrease: true });
   };
 

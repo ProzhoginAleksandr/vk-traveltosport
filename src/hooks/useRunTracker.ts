@@ -13,6 +13,7 @@ import {
 } from '../utils/geo';
 import { getCurrentUser } from '../utils/userUtils';
 import { saveTrackToStorage, loadUserTracks, type SavedTrack } from '../utils/trackStorage';
+import { pushTrackToCloud } from '../utils/trackSync';
 import { saveSession, loadSession, clearSession, type ActiveSession } from '../utils/trackSession';
 import { createWakeLock } from '../utils/wakeLock';
 import { getRank, type Rank } from '../utils/ranks';
@@ -433,6 +434,9 @@ export const useRunTracker = () => {
         ok = saveTrackToStorage(user.id, toSave);
       }
       if (!ok) throw new Error('Хранилище переполнено или недоступно');
+
+      // Резервная копия в VK Storage: переживёт очистку кэша и смену устройства
+      void pushTrackToCloud(toSave);
 
       clearSession();
       const next: RunSummary = { track: toSave, splits: summaryRef.current?.splits ?? splitsRef.current };

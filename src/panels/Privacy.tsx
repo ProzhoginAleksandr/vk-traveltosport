@@ -19,6 +19,7 @@ import {
 } from '../utils/appData';
 import { clearErrorLog, getErrorLog } from '../utils/errorLog';
 import { clearCloudPlan } from '../utils/cloudSync';
+import { clearCloudTracks } from '../utils/trackSync';
 import { clearAnalyticsLog } from '../utils/analytics';
 import { COLORS, FONT_SIZE, LINE_HEIGHT, RADIUS, SPACING } from '../styles/tokens';
 
@@ -80,6 +81,7 @@ export const Privacy = ({ id }: PrivacyProps) => {
 
   const handleDelete = () => {
     void clearCloudPlan();
+    void clearCloudTracks();
     clearAnalyticsLog();
     const removed = clearAppData();
     clearErrorLog();
@@ -132,20 +134,21 @@ export const Privacy = ({ id }: PrivacyProps) => {
         <div style={card}>
           <Text style={sectionTitle}>Где это лежит</Text>
           <Text style={paragraph}>
-            Пробежки, настройки и игровая статистика хранятся только в памяти мини-приложения на
-            устройстве (localStorage). План подготовки дополнительно синхронизируется через
-            серверное хранилище ВКонтакте (VK Storage) — по умолчанию синхронизация включена, чтобы
-            план пережил очистку кэша и был доступен на другом устройстве. Маршруты пробежек в
-            облако не отправляются.
+            Пробежки, настройки и игровая статистика хранятся в памяти мини-приложения на
+            устройстве (localStorage). Пробежки и план подготовки дополнительно синхронизируются
+            через серверное хранилище ВКонтакте (VK Storage) — по умолчанию синхронизация включена,
+            чтобы история пережила очистку кэша и была доступна на другом устройстве. В облако
+            уходят итоги тренировки и упрощённый маршрут, а не полный трек с тысячами точек.
           </Text>
         </div>
 
         <div style={card}>
-          <Text style={sectionTitle}>Синхронизация плана</Text>
+          <Text style={sectionTitle}>Синхронизация плана и тренировок</Text>
           <Text style={paragraph}>
-            В облаке ВКонтакте лежит только сам план: цель, дата, ответы онбординга и отметки о
-            тренировках. Удалить облачную копию можно кнопкой «Удалить все данные» ниже — она
-            очищает и устройство, и хранилище ВКонтакте.
+            В облаке ВКонтакте лежат план (цель, дата, ответы онбординга, отметки) и резервные копии
+            тренировок: дата, дистанция, время, темп и упрощённый маршрут. Удалить облачные копии
+            можно кнопкой «Удалить все данные» ниже — она очищает и устройство, и хранилище
+            ВКонтакте.
           </Text>
         </div>
 
@@ -203,7 +206,8 @@ export const Privacy = ({ id }: PrivacyProps) => {
           <Text style={sectionTitle}>Удаление данных</Text>
           <Text style={paragraph}>
             Удаляет всё, что приложение сохранило на устройстве: пробежки, план, настройки,
-            игровую статистику и журнал ошибок. Отменить это нельзя.
+            игровую статистику и журнал ошибок, а также облачные копии плана и тренировок в VK
+            Storage. Отменить это нельзя.
           </Text>
           {confirmDelete ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACING.sm, marginTop: SPACING.md }}>
