@@ -199,9 +199,21 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".gpx,.tcx,application/gpx+xml,application/vnd.garmin.tcx+xml"
+            // iOS выбирает файл по UTI и часто блокирует .gpx при жёстком accept.
+            // Разрешаем любой файл, а формат проверяем уже в parseTrackFile.
+            accept="*/*"
             onChange={handleFileChange}
-            style={{ display: 'none' }}
+            aria-label="Выбрать файл тренировки GPX или TCX"
+            style={{
+              position: 'absolute',
+              width: 1,
+              height: 1,
+              opacity: 0,
+              overflow: 'hidden',
+              clip: 'rect(0 0 0 0)',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+            }}
           />
 
           <Button
