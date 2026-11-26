@@ -196,45 +196,48 @@ export const TrainingImport = ({ id }: TrainingImportProps) => {
             padding: '16px',
           }}
         >
-          <input
-            ref={fileInputRef}
-            type="file"
-            // iOS выбирает файл по UTI и часто блокирует .gpx при жёстком accept.
-            // Разрешаем любой файл, а формат проверяем уже в parseTrackFile.
-            accept="*/*"
-            onChange={handleFileChange}
-            aria-label="Выбрать файл тренировки GPX или TCX"
-            style={{
-              position: 'absolute',
-              width: 1,
-              height: 1,
-              opacity: 0,
-              overflow: 'hidden',
-              clip: 'rect(0 0 0 0)',
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-            }}
-          />
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Button
+              size="l"
+              stretched
+              onClick={handleFileClick}
+              disabled={isProcessing}
+              before={isProcessing ? <Spinner size="s" /> : <Icon24Upload />}
+              style={{
+                width: '100%',
+                background: 'rgba(76, 175, 80, 0.7)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
+                fontSize: '15px',
+                height: '56px',
+              }}
+            >
+              {isProcessing ? 'Обработка...' : '📁 Выбрать файл'}
+            </Button>
 
-          <Button
-            size="l"
-            stretched
-            onClick={handleFileClick}
-            disabled={isProcessing}
-            before={isProcessing ? <Spinner size="s" /> : <Icon24Upload />}
-            style={{
-              width: '100%',
-              background: 'rgba(76, 175, 80, 0.7)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              color: '#FFFFFF',
-              fontFamily: 'Oswald, Impact, "Arial Narrow", Arial, sans-serif',
-              fontSize: '15px',
-              height: '56px',
-            }}
-          >
-            {isProcessing ? 'Обработка...' : '📁 Выбрать файл'}
-          </Button>
+            {/* На iOS программный click по скрытому input иногда игнорируется,
+                поэтому прозрачный input лежит прямо поверх кнопки и получает тап. */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="*/*"
+              onChange={handleFileChange}
+              disabled={isProcessing}
+              aria-label="Выбрать файл тренировки GPX или TCX"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                opacity: 0,
+                cursor: 'pointer',
+                zIndex: 2,
+              }}
+            />
+          </div>
 
           {message && (
             <Div style={{ marginTop: '12px' }}>
